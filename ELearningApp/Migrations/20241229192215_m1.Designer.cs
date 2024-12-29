@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241229151145_m1")]
+    [Migration("20241229192215_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -77,6 +77,15 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("imgCover")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("imgProfile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("joinDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -88,6 +97,8 @@ namespace ELearningApp.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("ELearningApp.Model.CategoryCours", b =>
@@ -218,16 +229,13 @@ namespace ELearningApp.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CreateurId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("EnseignantId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<float>("Evaluation")
@@ -594,6 +602,23 @@ namespace ELearningApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ELearningApp.Model.Enseignant", b =>
+                {
+                    b.HasBaseType("ELearningApp.Data.ApplicationUser");
+
+                    b.Property<string>("speciality")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("Enseignants", (string)null);
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.Etudiant", b =>
+                {
+                    b.HasBaseType("ELearningApp.Data.ApplicationUser");
+
+                    b.ToTable("Etudiants", (string)null);
+                });
+
             modelBuilder.Entity("ELearningApp.Model.Certificat", b =>
                 {
                     b.HasOne("ELearningApp.Model.Cours", "Cours")
@@ -602,7 +627,7 @@ namespace ELearningApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ELearningApp.Data.ApplicationUser", "Etudiant")
+                    b.HasOne("ELearningApp.Model.Etudiant", "Etudiant")
                         .WithMany("Certificats")
                         .HasForeignKey("EtudiantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -651,9 +676,11 @@ namespace ELearningApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ELearningApp.Data.ApplicationUser", "Enseignant")
+                    b.HasOne("ELearningApp.Model.Enseignant", "Enseignant")
                         .WithMany("CoursCrees")
-                        .HasForeignKey("EnseignantId");
+                        .HasForeignKey("EnseignantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
 
@@ -668,7 +695,7 @@ namespace ELearningApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ELearningApp.Data.ApplicationUser", "Etudiant")
+                    b.HasOne("ELearningApp.Model.Etudiant", "Etudiant")
                         .WithMany("CoursCommences")
                         .HasForeignKey("EtudiantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -733,7 +760,7 @@ namespace ELearningApp.Migrations
 
             modelBuilder.Entity("ELearningApp.Model.Soumission", b =>
                 {
-                    b.HasOne("ELearningApp.Data.ApplicationUser", "Etudiant")
+                    b.HasOne("ELearningApp.Model.Etudiant", "Etudiant")
                         .WithMany("Soumissions")
                         .HasForeignKey("EtudiantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -812,19 +839,29 @@ namespace ELearningApp.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ELearningApp.Model.Enseignant", b =>
+                {
+                    b.HasOne("ELearningApp.Data.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("ELearningApp.Model.Enseignant", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.Etudiant", b =>
+                {
+                    b.HasOne("ELearningApp.Data.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("ELearningApp.Model.Etudiant", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ELearningApp.Data.ApplicationUser", b =>
                 {
-                    b.Navigation("Certificats");
-
                     b.Navigation("CommentairesVideos");
 
-                    b.Navigation("CoursCommences");
-
-                    b.Navigation("CoursCrees");
-
                     b.Navigation("ReponsesCommentaires");
-
-                    b.Navigation("Soumissions");
                 });
 
             modelBuilder.Entity("ELearningApp.Model.CategoryCours", b =>
@@ -861,6 +898,20 @@ namespace ELearningApp.Migrations
             modelBuilder.Entity("ELearningApp.Model.Video", b =>
                 {
                     b.Navigation("Commentaires");
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.Enseignant", b =>
+                {
+                    b.Navigation("CoursCrees");
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.Etudiant", b =>
+                {
+                    b.Navigation("Certificats");
+
+                    b.Navigation("CoursCommences");
+
+                    b.Navigation("Soumissions");
                 });
 #pragma warning restore 612, 618
         }

@@ -33,12 +33,12 @@ namespace ELearningApp.Model
         public CategoryCours Category { get; set; }
 
         [Required(ErrorMessage = "Le créateur du cours est obligatoire.")]
-        [ForeignKey("ApplicationUser")]
+        [ForeignKey("Enseignant")]
         [Display(Name = "Identifiant de la catégorie")]
-        public string CreateurId { get; set; }
+        public string EnseignantId { get; set; }
 
         [Display(Name = "Enseignant")]
-        public ApplicationUser Enseignant { get; set; }
+        public Enseignant Enseignant { get; set; }
 
         public Examen Examen { get; set; }
     }

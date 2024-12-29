@@ -29,11 +29,11 @@ namespace ELearningApp.Model
         public Cours Cours { get; set; }
 
         [Required(ErrorMessage = "L'utilisateur associé est obligatoire.")]
-        [ForeignKey("ApplicationUser")]
+        [ForeignKey("Etudiant")]
         [Display(Name = "Etudiant")]
         public string EtudiantId { get; set; }
 
-        public ApplicationUser Etudiant { get; set; }
+        public Etudiant Etudiant { get; set; }
 
         [Display(Name = "Lien de téléchargement")]
         public string LienTelechargement { get; set; } // Par exemple, un lien vers un PDF généré

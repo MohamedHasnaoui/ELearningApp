@@ -20,11 +20,11 @@ namespace ELearningApp.Model
         public Examen Examen { get; set; }
 
         [Required(ErrorMessage = "L'identifiant de l'utilisateur est obligatoire.")]
-        [ForeignKey("ApplicationUser")]
+        [ForeignKey("Etudiant")]
         [Display(Name = "Etudiant")]
         public string EtudiantId { get; set; }
 
-        public ApplicationUser Etudiant { get; set; }
+        public Etudiant Etudiant { get; set; }
 
         [Required(ErrorMessage = "La date de soumission est obligatoire.")]
         [Display(Name = "Date de soumission")]

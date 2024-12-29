@@ -44,7 +44,7 @@ namespace ELearningApp.Services
         public async Task<IEnumerable<Cours>> GetCoursByEnseignantIdAsync(string enseignantId)
         {
             return await _context.Cours
-                .Where(c => c.CreateurId == enseignantId) // Filter by EnseignantId (CreateurId)
+                .Where(c => c.EnseignantId == enseignantId) // Filter by EnseignantId (CreateurId)
                 .Include(c => c.Category) // Eagerly load the associated Category
                 .ToListAsync();
         }
