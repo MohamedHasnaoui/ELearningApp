@@ -4,6 +4,7 @@ using ELearningApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241229115112_ExtendIdentityUser")]
+    partial class ExtendIdentityUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,6 +36,11 @@ namespace ELearningApp.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -80,8 +88,8 @@ namespace ELearningApp.Migrations
                     b.Property<string>("imgProfile")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("joinDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("joinDate")
+                        .HasColumnType("date");
 
                     b.HasKey("Id");
 
@@ -95,7 +103,9 @@ namespace ELearningApp.Migrations
 
                     b.ToTable("AspNetUsers", (string)null);
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -238,14 +248,14 @@ namespace ELearningApp.Migrations
                     b.Property<string>("speciality")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Enseignants", (string)null);
+                    b.HasDiscriminator().HasValue("Enseignant");
                 });
 
             modelBuilder.Entity("ELearningApp.Model.Etudiant", b =>
                 {
                     b.HasBaseType("ELearningApp.Data.ApplicationUser");
 
-                    b.ToTable("Etudiants", (string)null);
+                    b.HasDiscriminator().HasValue("Etudiant");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -295,24 +305,6 @@ namespace ELearningApp.Migrations
                     b.HasOne("ELearningApp.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ELearningApp.Model.Enseignant", b =>
-                {
-                    b.HasOne("ELearningApp.Data.ApplicationUser", null)
-                        .WithOne()
-                        .HasForeignKey("ELearningApp.Model.Enseignant", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ELearningApp.Model.Etudiant", b =>
-                {
-                    b.HasOne("ELearningApp.Data.ApplicationUser", null)
-                        .WithOne()
-                        .HasForeignKey("ELearningApp.Model.Etudiant", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
