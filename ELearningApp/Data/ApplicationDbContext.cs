@@ -18,5 +18,18 @@ namespace ELearningApp.Data
         public DbSet<Certificat> Certificats { get; set; }
         public DbSet<Soumission> Soumissions { get; set; }
         public DbSet<CoursCommence> CoursCommences { get; set; }
+        public DbSet<Etudiant> Etudiants { get; set; }
+        public DbSet<Enseignant> Enseignants { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Map Etudiant to its table
+            builder.Entity<Etudiant>().ToTable("Etudiants");
+
+            // Map Enseignant to its table
+            builder.Entity<Enseignant>().ToTable("Enseignants");
+        }
     }
 }
