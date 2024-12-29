@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ELearningApp.Model
 {
-    public class Assignement
+    public class Examen
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-incrément

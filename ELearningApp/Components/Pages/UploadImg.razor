@@ -1,0 +1,37 @@
+﻿@page "/upload"
+@inject ICloudinaryService CloudinaryService;
+@inject IVideoService VideoService;
+@rendermode InteractiveServer
+
+<h3>uploadImg</h3>
+<InputFile Accept="video/*" OnChange="UploadImage" />
+@if (!string.IsNullOrEmpty(UploadedVideoUrl))
+{
+    <p>Video uploaded successfully:</p>
+    <video width="600" controls>
+        <source src="@UploadedVideoUrl" type="video/mp4" />
+        Your browser does not support the video tag.
+    </video>
+}
+@if (!string.IsNullOrEmpty(message)){
+    <p>@message</p>
+}
+@code {
+    private string UploadedVideoUrl;
+    private string message;
+
+    private async Task UploadImage(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file is not null)
+        {
+            message = "changed";
+            using var stream = file.OpenReadStream(maxAllowedSize:100000000);
+            message = "changed2";
+            Console.WriteLine("done");
+            UploadedVideoUrl = await CloudinaryService.UploadVideoAsync(stream, file.Name);
+        }
+      
+        message = "changed1";
+    }
+}

@@ -17,11 +17,11 @@ namespace ELearningApp.Model
         public string Enonce { get; set; }
 
         [Required(ErrorMessage = "L'assignement associé est obligatoire.")]
-        [ForeignKey("Assignement")]
-        [Display(Name = "Assignement")]
-        public int AssignementId { get; set; }
+        [ForeignKey("Examen")]
+        [Display(Name = "Examen")]
+        public int ExamenId { get; set; }
 
-        public Assignement Assignement { get; set; }
+        public Examen Examen { get; set; }
 
         public ICollection<Choix> Choix { get; set; }
     }

@@ -39,5 +39,7 @@ namespace ELearningApp.Model
 
         [Display(Name = "Enseignant")]
         public ApplicationUser Enseignant { get; set; }
+
+        public Examen Examen { get; set; }
     }
 }

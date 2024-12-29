@@ -13,11 +13,11 @@ namespace ELearningApp.Model
         public int Id { get; set; }
 
         [Required(ErrorMessage = "L'identifiant de l'assignement est obligatoire.")]
-        [ForeignKey("Assignement")]
-        [Display(Name = "Assignement")]
-        public int AssignementId { get; set; }
+        [ForeignKey("Examen")]
+        [Display(Name = "Examen")]
+        public int ExamenId { get; set; }
 
-        public Assignement Assignement { get; set; }
+        public Examen Examen { get; set; }
 
         [Required(ErrorMessage = "L'identifiant de l'utilisateur est obligatoire.")]
         [ForeignKey("ApplicationUser")]
