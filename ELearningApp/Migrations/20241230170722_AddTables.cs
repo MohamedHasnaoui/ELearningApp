@@ -5,7 +5,7 @@
 namespace ELearningApp.Migrations
 {
     /// <inheritdoc />
-    public partial class AddColumnFormalUserNameToTableUser : Migration
+    public partial class AddTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
