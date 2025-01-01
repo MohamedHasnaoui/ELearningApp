@@ -1,6 +1,6 @@
 ﻿@page "/Login"
 @layout Layout.MainLayoutAuhtentification
-
+@using Microsoft.AspNetCore.Mvc;
 @using System.ComponentModel.DataAnnotations
 @using ELearningApp.Components.Account
 @using Microsoft.AspNetCore.Authentication
@@ -24,7 +24,7 @@
         <h2 class="mb-8">Welcome to Back! &#128075;</h2>
         <p class="text-gray-600 text-15 mb-32">Please sign in to your account and start the adventure</p>
 
-        <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+		<EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
             <DataAnnotationsValidator />
             @if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -109,7 +109,6 @@
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
     }
-
     public async Task LoginUser()
     {
         ApplicationUser? user = null;

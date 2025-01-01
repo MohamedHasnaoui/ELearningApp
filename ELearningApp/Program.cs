@@ -109,6 +109,7 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
+    .DisableAntiforgery()
     .AddInteractiveServerRenderMode();
 
 // Add additional endpoints required by the Identity /Account Razor components.
@@ -118,7 +119,6 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await InitializeRoles(services);
 }
-// cloudinary setup
 
 
 app.Run();

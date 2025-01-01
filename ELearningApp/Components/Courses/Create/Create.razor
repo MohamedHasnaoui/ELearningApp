@@ -3,27 +3,27 @@
 @rendermode InteractiveServer
 
 @* part0 *@
-<div class="@(b[0] ? "" : "d-none")">
+<div class="@(b[0] ? "" : "d-none") dashboard-body">
     <Part0 OnContinueButtonClick="nextPage" @ref="refpart0" UpdateNumberSections="UpdateNumberSections" />
 </div>
 
 @* part1 *@
-<div class="@(b[1] ? "" : "d-none")">
+<div class="@(b[1] ? "" : "d-none") dashboard-body">
     <Part1 OnContinueButtonClick="nextPage" @ref="refpart1" OnBackButtonClick="priviousPage" numberSections="numberSections" />
 </div>
 
 @* part2 *@
-<div class="@(b[2] ? "" : "d-none")">
+<div class="@(b[2] ? "" : "d-none") dashboard-body">
     <Part2 OnContinueButtonClick="nextPage" @ref="refpart2" OnBackButtonClick="priviousPage" numberSections="numberSections" />
 </div>
 
 @* part3 *@
-<div class="@(b[3] ? "" : "d-none")">
+<div class="@(b[3] ? "" : "d-none") dashboard-body">
     <AddExam OnContinueButtonClick="nextPage" @ref="refAddExam" OnBackButtonClick="priviousPage" />
 </div>
 
 @* part4 *@
-<div class="@(b[4] ? "" : "d-none")">
+<div class="@(b[4] ? "" : "d-none") dashboard-body">
     <Publish coursTitle="@refpart0?.Title" coursLevel="@refpart0?.Level" numberSections="@numberSections" publishCourse="publishCourse" CoursCategoryId="@refpart0?.CategoryId" CoursDescription="@refpart0?.Description" coursImgUrl="@refpart0?.coursImgUrl" OnBackButtonClick="priviousPage" />
 </div>
 
