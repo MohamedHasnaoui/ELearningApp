@@ -1,5 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
+@inject IUserService UserService
+
+<body>
 
     <ToastContainer />
 
@@ -16,9 +19,26 @@
     <!-- ============================ Sidebar End  ============================ -->
 
     <div class="dashboard-main-wrapper">
-        <NavTop />
-        <div class="dashboard-body">
+        <NavTop AuthenticatedUser="AuthenticatedUser" />
+        <CascadingValue Value="AuthenticatedUser">
             @Body
-        </div>
+        </CascadingValue>
     </div>
 
+    
+
+
+
+
+    
+
+
+</body>
+@code {
+    private ApplicationUser? AuthenticatedUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticatedUser = await UserService.GetAuthenticatedUserAsync();
+    }
+}
