@@ -85,6 +85,7 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IReponseCommentaireService, ReponseCommentaireService>();
 builder.Services.AddScoped<ISectionService, SectionService>();
 builder.Services.AddScoped<ISoumissionService, SoumissionService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
