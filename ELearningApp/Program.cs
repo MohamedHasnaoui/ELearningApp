@@ -86,6 +86,7 @@ builder.Services.AddTransient<IQuestionService, QuestionService>();
 builder.Services.AddTransient<IReponseCommentaireService, ReponseCommentaireService>();
 builder.Services.AddTransient<ISectionService, SectionService>();
 builder.Services.AddTransient<ISoumissionService, SoumissionService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
