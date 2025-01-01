@@ -1,6 +1,7 @@
 using ELearningApp.Model;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace ELearningApp.Data
 {
@@ -30,6 +31,26 @@ namespace ELearningApp.Data
 
             // Map Enseignant to its table
             builder.Entity<Enseignant>().ToTable("Enseignants");
+            builder.Entity<CategoryCours>().HasData(
+               new CategoryCours
+               {
+                   Id = 1,
+                   Name = "Programming",
+                   Description = "Courses related to programming languages and software development."
+               },
+               new CategoryCours
+               {
+                   Id = 2,
+                   Name = "Data Science",
+                   Description = "Courses related to data analysis, machine learning, and statistics."
+               },
+               new CategoryCours
+               {
+                   Id = 3,
+                   Name = "Web Development",
+                   Description = "Courses related to building websites and web applications."
+               }
+           );
         }
     }
 }

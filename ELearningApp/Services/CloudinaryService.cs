@@ -11,7 +11,7 @@ namespace ELearningApp.Services
         {
             _cloudinary = cloudinary;
         }
-        public async Task<string> UploadVideoAsync(Stream videoStream, string fileName, string notificationUrl = null)
+        public async Task<VideoUploadResult> UploadVideoAsync(Stream videoStream, string fileName, string notificationUrl = null)
         {
             var uniqueId = Guid.NewGuid().ToString();
             var publicId = $"videos/{uniqueId}_{fileName}";
@@ -25,13 +25,12 @@ namespace ELearningApp.Services
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams); 
-
             if (uploadResult.StatusCode != System.Net.HttpStatusCode.OK)
                 throw new Exception($"Video upload failed: {uploadResult.Error.Message}");
 
-            return uploadResult.SecureUrl.ToString(); // Return the URL of the uploaded video
+            return uploadResult;
         }
-        public async Task<string> UploadImageAsync(Stream imageStream, string fileName)
+        public async Task<ImageUploadResult> UploadImageAsync(Stream imageStream, string fileName)
         {
             // Generate a unique ID to ensure no filename conflicts
             var uniqueId = Guid.NewGuid().ToString();
@@ -53,7 +52,22 @@ namespace ELearningApp.Services
                 throw new Exception($"Image upload failed: {uploadResult.Error.Message}");
 
             // Return the URL of the uploaded image
-            return uploadResult.SecureUrl.ToString();
+            return uploadResult;
+        }
+        public async Task<bool> DeleteAsync(string publicId, ResourceType type)
+        {
+            var deletionParams = new DeletionParams(publicId)
+            {
+                ResourceType = type
+            };
+
+            var result = await _cloudinary.DestroyAsync(deletionParams);
+
+            if (result.Result == "ok")
+            {
+                return true;
+            }
+            return false;
         }
 
     }

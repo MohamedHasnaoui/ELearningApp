@@ -4,6 +4,7 @@ using ELearningApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241230221923_m2")]
+    partial class m2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,26 +122,6 @@ namespace ELearningApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CategoriesCours");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Courses related to programming languages and software development.",
-                            Name = "Programming"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Courses related to data analysis, machine learning, and statistics.",
-                            Name = "Data Science"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Courses related to building websites and web applications.",
-                            Name = "Web Development"
-                        });
                 });
 
             modelBuilder.Entity("ELearningApp.Model.Certificat", b =>
@@ -246,30 +229,16 @@ namespace ELearningApp.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CoursImg")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CoursImgPublicId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<double>("Duree")
-                        .HasColumnType("float");
 
                     b.Property<string>("EnseignantId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<float?>("Evaluation")
                         .HasColumnType("real");
-
-                    b.Property<int>("Niveau")
-                        .HasColumnType("int");
 
                     b.Property<string>("Nom")
                         .IsRequired()
@@ -331,6 +300,11 @@ namespace ELearningApp.Migrations
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Titre")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
@@ -411,9 +385,6 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("Duree")
-                        .HasColumnType("float");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -473,24 +444,18 @@ namespace ELearningApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("Duree")
-                        .HasColumnType("float");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("SectionId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Thumbnail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("VidPublicId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoUrl")
                         .IsRequired()

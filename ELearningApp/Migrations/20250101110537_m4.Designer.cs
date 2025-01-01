@@ -4,6 +4,7 @@ using ELearningApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250101110537_m4")]
+    partial class m4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,17 +262,14 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double>("Duree")
-                        .HasColumnType("float");
+                    b.Property<float>("Duree")
+                        .HasColumnType("real");
 
                     b.Property<string>("EnseignantId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<float?>("Evaluation")
                         .HasColumnType("real");
-
-                    b.Property<int>("Niveau")
-                        .HasColumnType("int");
 
                     b.Property<string>("Nom")
                         .IsRequired()
@@ -331,6 +331,11 @@ namespace ELearningApp.Migrations
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Titre")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
@@ -411,8 +416,8 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("Duree")
-                        .HasColumnType("float");
+                    b.Property<float?>("Duree")
+                        .HasColumnType("real");
 
                     b.Property<string>("Title")
                         .IsRequired()

@@ -4,6 +4,7 @@ using ELearningApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250101120207_m5")]
+    partial class m5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,17 +262,14 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double>("Duree")
-                        .HasColumnType("float");
+                    b.Property<float>("Duree")
+                        .HasColumnType("real");
 
                     b.Property<string>("EnseignantId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<float?>("Evaluation")
                         .HasColumnType("real");
-
-                    b.Property<int>("Niveau")
-                        .HasColumnType("int");
 
                     b.Property<string>("Nom")
                         .IsRequired()
@@ -411,8 +411,8 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("Duree")
-                        .HasColumnType("float");
+                    b.Property<float?>("Duree")
+                        .HasColumnType("real");
 
                     b.Property<string>("Title")
                         .IsRequired()

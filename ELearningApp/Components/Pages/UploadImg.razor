@@ -17,8 +17,8 @@
     <p>@message</p>
 }
 @code {
-    private string UploadedVideoUrl;
-    private string message;
+    private string UploadedVideoUrl="";
+    private string message="";
 
     private async Task UploadImage(InputFileChangeEventArgs e)
     {
@@ -29,7 +29,7 @@
             using var stream = file.OpenReadStream(maxAllowedSize:100000000);
             message = "changed2";
             Console.WriteLine("done");
-            UploadedVideoUrl = await CloudinaryService.UploadVideoAsync(stream, file.Name);
+            await CloudinaryService.UploadVideoAsync(stream, file.Name);
         }
       
         message = "changed1";
