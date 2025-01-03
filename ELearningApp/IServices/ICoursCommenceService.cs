@@ -12,5 +12,6 @@ namespace ELearningApp.IServices
         Task<CoursCommence> AddAsync(CoursCommence coursCommence);
         Task<CoursCommence> UpdateAsync(CoursCommence coursCommence);
         Task<bool> DeleteAsync(int id);
+        Task<int> CountByCoursIdAsync(int coursId);
     }
 }

@@ -69,6 +69,11 @@ namespace ELearningApp.Services
             }
             return false;
         }
-
+        public async Task<string> TransformImg(string publicId, int width, int height)
+        {
+            return _cloudinary.Api.UrlImgUp.Transform(
+            new Transformation().Width(width).Height(height).Crop("fill")
+            ).BuildUrl(publicId) + ".png"; 
+        } 
     }
 }

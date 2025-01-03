@@ -67,7 +67,7 @@ var cloudinaryAccount = new Account(
     builder.Configuration.GetValue<string>("Cloudinary:ApiKey"),
     builder.Configuration.GetValue<string>("Cloudinary:ApiSecret")
 );
-builder.Services.AddSingleton<Cloudinary>(serviceProvider =>
+builder.Services.AddTransient<Cloudinary>(serviceProvider =>
 {
     return new Cloudinary(cloudinaryAccount);
 });
@@ -86,7 +86,7 @@ builder.Services.AddTransient<IQuestionService, QuestionService>();
 builder.Services.AddTransient<IReponseCommentaireService, ReponseCommentaireService>();
 builder.Services.AddTransient<ISectionService, SectionService>();
 builder.Services.AddTransient<ISoumissionService, SoumissionService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddTransient<IUserService, UserService>();
 
 var app = builder.Build();
 

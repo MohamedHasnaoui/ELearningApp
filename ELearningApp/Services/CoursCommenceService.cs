@@ -37,7 +37,12 @@ namespace ELearningApp.Services
                 .Where(cc => cc.CoursId == coursId)
                 .ToListAsync();
         }
-
+        public async Task<int> CountByCoursIdAsync(int coursId)
+        {
+            return await _context.CoursCommences
+                .Where(cc => cc.CoursId == coursId)
+                .CountAsync();
+        }
         public async Task<IEnumerable<CoursCommence>> GetByEtudiantIdAsync(string etudiantId)
         {
             return await _context.CoursCommences
