@@ -46,6 +46,9 @@ namespace ELearningApp.Model
         [Display(Name = "CoursImgPublicId")]
         public string CoursImgPublicId { get; set; }
 
+        [Display(Name = "NombreVideos")]
+        public int nbVids { get; set; }
+
         public Enseignant Enseignant { get; set; }
 
         public ICollection<Section> sections { get; set; }

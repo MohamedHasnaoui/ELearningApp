@@ -5,7 +5,7 @@ namespace ELearningApp.IServices
     public interface ICoursCommenceService
     {
         Task<IEnumerable<CoursCommence>> GetAllAsync();
-        Task<CoursCommence> GetByIdAsync(int id);
+        Task<CoursCommence?> GetByIdAsync(int id);
         Task<IEnumerable<CoursCommence>> GetByCoursIdAsync(int coursId);
         Task<IEnumerable<CoursCommence>> GetByEtudiantIdAsync(string etudiantId);
         Task<CoursCommence> GetByEtudiantAndCoursAsync(string etudiantId, int coursId);
@@ -13,5 +13,7 @@ namespace ELearningApp.IServices
         Task<CoursCommence> UpdateAsync(CoursCommence coursCommence);
         Task<bool> DeleteAsync(int id);
         Task<int> CountByCoursIdAsync(int coursId);
+        Task<IEnumerable<CoursCommence>> GetByEtudiantIdOnGoingAsync(string etudiantId);
+        Task<IEnumerable<CoursCommence>> GetByEtudiantIdCompletedAsync(string etudiantId);
     }
 }

@@ -1,6 +1,9 @@
 ﻿@page "/cours/details"
 @inject ICoursService CoursService
 @inject ISectionService SectionService
+@inject NavigationManager NavigationManager
+@inject ICoursCommenceService CoursCommenceService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 @if(cours!=null){
     <div class="dashboard-body">
@@ -136,7 +139,6 @@
                                         @{ int j = 1; }
                                         @foreach(var vid in s.Videos){
                                             <li class="course-list__item flex-align gap-8 mb-16">
-                                                <span class="circle flex-shrink-0 text-32 d-flex text-gray-100"><i class="ph ph-circle"></i></span>
                                                 <div class="w-100">
                                                     <button class="text-gray-300 fw-medium d-block hover-text-main-600 d-lg-block">
                                                         @j. @vid.Title
@@ -154,9 +156,15 @@
                 </div>
                 <div class="card mt-24">
                     <div class="card-body">
-                        <h5 class="mb-16">Start Learning</h5>
-                        <p class="text-gray-300">Ready For a new Journey</p>
-                        <a href="course-details.html" class="btn btn-main rounded-pill py-11 w-100  mt-16">Start Now</a>
+                        @if(coursCommence1==null){
+                            <h5 class="mb-16">Start Learning</h5>
+                            <p class="text-gray-300">Ready For a new Journey</p>
+                            <button @onclick="startCourse" class="btn btn-main rounded-pill py-11 w-100  mt-16">Start Now</button>
+                        }else {
+                            <h5 class="mb-16">Continue Learning</h5>
+                            <p class="text-gray-300">You have already started this Course</p>
+                            <NavLink href="@continueLink" class="btn btn-main rounded-pill py-11 w-100  mt-16">Continue Watching</NavLink>
+                        }
                     </div>
                 </div>
             </div>
@@ -193,6 +201,7 @@
 }
 @code {
     [SupplyParameterFromQuery] public int coursId { get; set; }
+    string? EtudiantId = "";
     private bool IsActive { get; set; } = false;
     private bool ShowIcons { get; set; } = false;
     private void ToggleShare()
@@ -203,14 +212,44 @@
     private Cours cours ;
     private IEnumerable<Section> sections = new List<Section>();
     public int nbVid = 0;
+    CoursCommence coursCommence1;
+    string continueLink;
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            EtudiantId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+        coursCommence1 = await CoursCommenceService.GetByEtudiantAndCoursAsync(EtudiantId, coursId);
+        if (coursCommence1!=null){
+            continueLink = NavigationManager.GetUriWithQueryParameters(
+       NavigationManager.ToAbsoluteUri("courses/etudiant/watch").AbsoluteUri,
+       new Dictionary<string, object?> { ["coursCommenceId"] = coursCommence1.Id });
+        }
         cours = await CoursService.GetByIdAsync(coursId);
         sections = await SectionService.GetSectionsByCoursIdAsync(coursId);
-        Console.WriteLine("gone");
         foreach (var s in sections)
         {
             nbVid += s.Videos.Count();
         }
+    }
+    private async Task startCourse(){
+       
+        if (!string.IsNullOrEmpty(EtudiantId))
+        {
+            CoursCommence coursCommence = new CoursCommence()
+            {
+                CoursId = coursId,
+                DateDebut = DateTime.UtcNow,
+                EtudiantId = EtudiantId
+            };
+            await CoursCommenceService.AddAsync(coursCommence);
+        }else {
+            Console.WriteLine("null");
+        }
+        NavigationManager.NavigateTo("/courses/etudiant/started");
     }
 }

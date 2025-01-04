@@ -25,7 +25,6 @@ async Task InitializeRoles(IServiceProvider serviceProvider)
 }
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddServerSideBlazor().AddCircuitOptions(options => options.DetailedErrors = true);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -103,13 +102,12 @@ else
 }
 
 app.UseHttpsRedirection();
-
-
+app.UseAuthorization();
 app.UseAntiforgery();
+
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .DisableAntiforgery()
     .AddInteractiveServerRenderMode();
 
 // Add additional endpoints required by the Identity /Account Razor components.
