@@ -44,7 +44,7 @@
     }
 
 
- 
+
 
     private async Task CallWebhook()
     {
@@ -54,7 +54,7 @@
                 // Utiliser l'Id récupéré pour envoyer au webhook
                 var requestData = new
                 {
-                    IdEtudiant = "c01e4948-a16a-4253-c01e4948-a16a-4253-b29e-c01e4948-a16a-4253-b29e-213e390d2481", // Remplacer par l'id réel
+                    IdEtudiant = "04b58e25-73df-4c34-a75b-330641bc2ffc", // Remplacer par l'id réel
                     IdAbonnement = abonnementId // Utiliser l'ID récupéré de la requête
                 };
 
@@ -69,14 +69,15 @@
                 }
                 else
                 {
-                    Console.WriteLine("Failed to process payment.");
+                    //Console.WriteLine("Failed to process payment.");
+                    throw new Exception();
                 }
             }
             
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur lors de l'appel au webhook : {ex.Message}");
+            Console.WriteLine($"Erreur lors de l'appel au webhook : {ex}");
         }
     }
 }
