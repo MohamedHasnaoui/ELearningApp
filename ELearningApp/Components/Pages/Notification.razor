@@ -1,0 +1,49 @@
+﻿
+@page "/notification"
+@layout ELearningApp.Components.Layout.EmptyLayout
+
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+
+
+<div class="alert @GetAlertClass()">
+    <strong>@Status</strong>: @Message
+</div>
+
+<button class="btn btn-primary" @onclick="GoBack">Retour à l'accueil</button>
+
+@code {
+
+    private string? Message { get; set; }
+    private string? Status { get; set; }
+
+    // Cette méthode sera appelée lors de l'initialisation de la page
+    protected override void OnInitialized()
+    {
+        // Récupérer les paramètres de l'URL
+        var uri = Navigation.Uri;
+        var queryParameters = new Uri(uri).Query;
+
+        // Extraire les paramètres "Message" et "Status" de l'URL
+        var parameters = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(queryParameters);
+        if (parameters.ContainsKey("Message"))
+        {
+            Message = parameters["Message"];
+        }
+        if (parameters.ContainsKey("Status"))
+        {
+            Status = parameters["Status"];
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");  // Retour à la page d'accueil ou à une autre page spécifique
+    }
+    // Cette méthode définit la classe CSS de l'alerte en fonction du statut (Succès ou Erreur)
+    private string GetAlertClass()
+    {
+        return Status == "Success" ? "alert-success" : "alert-danger";
+    }
+}

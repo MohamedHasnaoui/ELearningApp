@@ -1,0 +1,30 @@
+﻿@page "/call-webhook"
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+<h3>Appel du Webhook Stripe</h3>
+
+<button @onclick="CallWebhook">Envoyer au Webhook</button>
+
+@code {
+    private async Task CallWebhook()
+    {
+        var requestData = new
+        {
+            IdEtudiant = "c01e4948-a16a-4253-c01e4948-a16a-4253-b29e-c01e4948-a16a-4253-b29e-213e390d2481",
+            IdAbonnement = 7
+        };
+
+        var response = await Http.PostAsJsonAsync("https://localhost:7134/api/payment/webhook", requestData);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Traitez la réponse si nécessaire
+            Console.WriteLine("Payment processed successfully.");
+        }
+        else
+        {
+            Console.WriteLine("Failed to process payment.");
+        }
+    }
+}

@@ -21,6 +21,9 @@ namespace ELearningApp.Data
         public DbSet<CoursCommence> CoursCommences { get; set; }
         public DbSet<Etudiant> Etudiants { get; set; }
         public DbSet<Enseignant> Enseignants { get; set; }
+        public DbSet<Abonnement> Abonnements { get; set; }
+        public DbSet<AbonnementTemp> AbonnementTemps { get; set; }
+        public DbSet<AbonnementAchete> AbonnementsAchetes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,9 +31,26 @@ namespace ELearningApp.Data
 
             // Map Etudiant to its table
             builder.Entity<Etudiant>().ToTable("Etudiants");
+            /* builder.Entity<AbonnementAchete>()
+             .HasKey(a => new { a.IdEtudiant, a.IdAbonnement });*/
+
+           
 
             // Map Enseignant to its table
             builder.Entity<Enseignant>().ToTable("Enseignants");
+            builder.Entity<Abonnement>().ToTable("Abonnements");
+            builder.Entity<AbonnementTemp>().ToTable("AbonnementTemps");
+            builder.Entity<AbonnementAchete>().ToTable("AbonnementAchetes")
+            .HasOne(a => a.Etudiant)
+            .WithMany(e => e.AbonnementsAchetes)
+            .HasForeignKey(a => a.IdEtudiant)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<AbonnementAchete>()
+           .HasOne(a => a.Abonnement)
+           .WithMany(ab => ab.AbonnementsAchetes)
+           .HasForeignKey(a => a.IdAbonnement)
+           .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<CategoryCours>().HasData(
                new CategoryCours
                {

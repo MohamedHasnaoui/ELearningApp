@@ -6,13 +6,15 @@ using ELearningApp.IServices;
 using ELearningApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+
 async Task InitializeRoles(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    // Définissez les rôles requis
+    // DÃ©finissez les rÃ´les requis
     string[] roleNames = { "Etudiant", "Enseignant" };
 
     foreach (var roleName in roleNames)
@@ -25,21 +27,26 @@ async Task InitializeRoles(IServiceProvider serviceProvider)
 }
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-// blazored toast
+
+//StripeService
+builder.Services.AddSingleton(new StripeService("sk_test_51Qc2SdKXk8GKN0SWJzl1muovelWngKG3y8YEnoBtOXyE71skkpIvXRzyszipUKBRuOxEHD2MvZA1g0vVKReD5Mik00DJLjMFcS"));
+
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
     .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -54,6 +61,10 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .EnableSensitiveDataLogging()
+           .LogTo(Console.WriteLine));
 
 
 
@@ -73,22 +84,36 @@ builder.Services.AddTransient<Cloudinary>(serviceProvider =>
 // cloudinary service
 builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
 //other services
-builder.Services.AddTransient<IVideoService, VideoService>();
-builder.Services.AddTransient<ICategoryCoursService, CategoryCoursService>();
-builder.Services.AddTransient<ICertificatService, CertificatService>();
-builder.Services.AddTransient<IChoixService, ChoixService>();
-builder.Services.AddTransient<ICommentaireVideoService, CommentaireVideoService>();
-builder.Services.AddTransient<ICoursCommenceService, CoursCommenceService>();
-builder.Services.AddTransient<ICoursService, CoursService>();
-builder.Services.AddTransient<IExamenService, ExamenService>();
-builder.Services.AddTransient<IQuestionService, QuestionService>();
-builder.Services.AddTransient<IReponseCommentaireService, ReponseCommentaireService>();
-builder.Services.AddTransient<ISectionService, SectionService>();
-builder.Services.AddTransient<ISoumissionService, SoumissionService>();
-builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddScoped<IVideoService, VideoService>();
+builder.Services.AddScoped<ICategoryCoursService, CategoryCoursService>();
+builder.Services.AddScoped<ICertificatService, CertificatService>();
+builder.Services.AddScoped<IChoixService, ChoixService>();
+builder.Services.AddScoped<ICommentaireVideoService, CommentaireVideoService>();
+builder.Services.AddScoped<ICoursCommenceService, CoursCommenceService>();
+builder.Services.AddScoped<ICoursService, CoursService>();
+builder.Services.AddScoped<IExamenService, ExamenService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IReponseCommentaireService, ReponseCommentaireService>();
+builder.Services.AddScoped<ISectionService, SectionService>();
+builder.Services.AddScoped<ISoumissionService, SoumissionService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+//AbonnementService
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IAbonnementService, AbonnementService>();
+builder.Services.AddScoped<IPayment, PaymentS>();
+builder.Services.AddScoped<IAbonnementAchete, AbonnementAcheteService>();
+builder.Services.AddScoped<IAbonnementTempService, AbonnementTempService>();
+
+/*builder.Services.AddHttpClient<IPayment, PaymentS>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7134/"); // Remplacez par l'URL correcte de votre backend
+});
+*/
 
 var app = builder.Build();
-
+app.MapControllers();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
