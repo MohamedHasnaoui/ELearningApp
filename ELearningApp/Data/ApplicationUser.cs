@@ -8,6 +8,9 @@ namespace ELearningApp.Data
     public class ApplicationUser : IdentityUser
     {
         public string? imgProfile { get; set; }
+        public string? Adress { get; set; }
+        public string? PhoneNumberCode { get; set; }
+        public string? Bio { get; set; }
         public string? imgCover { get; set; }
         public string? FormalUserName { get; set; }
         public DateTime joinDate { get; set; } = DateTime.UtcNow;
