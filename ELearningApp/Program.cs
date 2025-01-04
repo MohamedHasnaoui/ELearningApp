@@ -6,6 +6,7 @@ using ELearningApp.IServices;
 using ELearningApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 async Task InitializeRoles(IServiceProvider serviceProvider)
@@ -86,6 +87,8 @@ builder.Services.AddScoped<IReponseCommentaireService, ReponseCommentaireService
 builder.Services.AddScoped<ISectionService, SectionService>();
 builder.Services.AddScoped<ISoumissionService, SoumissionService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
 
 var app = builder.Build();
 

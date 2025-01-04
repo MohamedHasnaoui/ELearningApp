@@ -1,0 +1,60 @@
+﻿@using ELearningApp.Components.Account
+
+@if (!string.IsNullOrEmpty(DisplayMessage))
+{
+    var statusMessageClass = DisplayMessage.StartsWith("Error") ? "danger" : "success";
+    <div id="alertMessage" class="alert align-items-center alert-@statusMessageClass border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                @DisplayMessage
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+}
+<style>
+    #alertMessage {
+        transition: opacity 1s ease-out;
+    }
+
+    .fade-out {
+        opacity: 0;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const alertElement = document.getElementById('alertMessage');
+        if (alertElement) {
+            setTimeout(() => {
+                alertElement.classList.add('fade-out');
+                // Optionally, hide it completely after fading out
+                setTimeout(() => {
+                    alertElement.style.display = 'none';
+                }, 1000); // Wait for the transition to complete before hiding
+            }, 3000); // 3 seconds
+        }
+    });
+</script>
+
+
+@code {
+    private string? messageFromCookie;
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private string? DisplayMessage => Message ?? messageFromCookie;
+
+    protected override void OnInitialized()
+    {
+        messageFromCookie = HttpContext.Request.Cookies[IdentityRedirectManager.StatusCookieName];
+
+        if (messageFromCookie is not null)
+        {
+            HttpContext.Response.Cookies.Delete(IdentityRedirectManager.StatusCookieName);
+        }
+    }
+}
