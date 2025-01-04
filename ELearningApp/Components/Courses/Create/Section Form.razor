@@ -1,0 +1,71 @@
+﻿@rendermode InteractiveServer
+@inject ISectionService SectionService
+<div class="col-lg-6 col-sm-12 my-20">
+    <h5 class="mb-4">Section @SectionNumber</h5>
+    <div class="mb-3">
+        <label for="sectionTitle_@SectionNumber" class="form-label">Section Title</label>
+        <input type="text" id="sectionTitle_@SectionNumber" class="form-control" placeholder="Enter section title" @bind="sectionTitle" />
+        @if (!string.IsNullOrEmpty(titleError))
+        {
+            <div class="text-danger">@titleError</div>
+        }
+    </div>
+    <div class="mb-3">
+        <label for="sectionDescription_@SectionNumber" class="form-label">Section Description</label>
+        <textarea id="sectionDescription_@SectionNumber" class="form-control" placeholder="Enter section description" @bind="sectionDescription"></textarea>
+        @if (!string.IsNullOrEmpty(descriptionError))
+        {
+            <div class="text-danger">@descriptionError</div>
+        }
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="text-success mb-3">
+                @successMessage
+            </div>
+        }
+    </div>
+</div>
+@code {
+    [Parameter] public int SectionNumber { get; set; }
+    [Parameter] public EventCallback<bool> OnSaveCompleted { get; set; }
+
+    private string sectionTitle;
+    private string sectionDescription;
+
+    private string titleError;
+    private string successMessage;
+    private string descriptionError;
+
+    public async Task<bool> HandleSave()
+    {
+        titleError = null;
+        descriptionError = null;
+        successMessage = null;
+
+        if (string.IsNullOrEmpty(sectionTitle))
+        {
+            titleError = "Title is required.";
+        }
+        if (string.IsNullOrEmpty(sectionDescription))
+        {
+            descriptionError = "Description is required.";
+        }
+        StateHasChanged();
+        if (!string.IsNullOrEmpty(titleError) || !string.IsNullOrEmpty(descriptionError))
+        {
+            return false;
+        }
+        return true;
+    }
+    public async Task<Section> SaveToDataBase(int coursId){
+        Section section = new Section(){CoursId=coursId,Description=sectionDescription,Title=sectionTitle};
+        try
+        {
+            await SectionService.CreateAsync(section);
+            return section;
+        }catch(Exception e){
+            Console.WriteLine("error saving the section {0}", e.Message);
+        }
+        return section;
+    }
+}

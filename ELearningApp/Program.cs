@@ -50,7 +50,8 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString),
+    ServiceLifetime.Transient);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -80,7 +81,7 @@ builder.Services.AddSingleton<Cloudinary>(serviceProvider =>
     return new Cloudinary(cloudinaryAccount);
 });
 // cloudinary service
-builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
+builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
 //other services
 builder.Services.AddScoped<IVideoService, VideoService>();
 builder.Services.AddScoped<ICategoryCoursService, CategoryCoursService>();
@@ -128,6 +129,7 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
+    .DisableAntiforgery()
     .AddInteractiveServerRenderMode();
 
 // Add additional endpoints required by the Identity /Account Razor components.
@@ -137,7 +139,6 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await InitializeRoles(services);
 }
-// cloudinary setup
 
 
 app.Run();

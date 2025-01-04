@@ -1,8 +1,11 @@
-﻿namespace ELearningApp.IServices
+﻿using CloudinaryDotNet.Actions;
+
+namespace ELearningApp.IServices
 {
     public interface ICloudinaryService
     {
-        public Task<string> UploadVideoAsync(Stream videoStream, string fileName, string notificationUrl = null);
-        public Task<string> UploadImageAsync(Stream imageStream, string fileName);
+        public Task<VideoUploadResult> UploadVideoAsync(Stream videoStream, string fileName, string notificationUrl = null);
+        public Task<ImageUploadResult> UploadImageAsync(Stream imageStream, string fileName);
+        public Task<bool> DeleteAsync(string publicId, ResourceType type);
     }
 }

@@ -1,0 +1,114 @@
+﻿@inject IQuestionService QuestionService
+@inject IChoixService ChoixService
+<div>
+    <div class="mb-20">
+        <label for="question" class="h6 mb-8 fw-semibold">Question @QuestionNb</label>
+        <input type="text" id="question" class="form-control fw-medium text-15" @bind="Question" />
+    </div>
+
+    <div class="mb-20">
+        <label class="h6 mb-8 fw-semibold">Multiple Choices</label>
+        <div class="row g-20">
+            <div class="col-sm-6">
+                <div class="delete-item py-4 px-16 rounded-8 bg-gray-50 border border-main-200 flex-align gap-8">
+                    <span class="w-24 h-24 bg-white rounded-circle flex-center text-capitalize text-14">A</span>
+                    <input type="text" class="form-control border-0 fw-medium text-15" @bind="OptionA" />
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="delete-item py-4 px-16 rounded-8 bg-gray-50 border border-main-200 flex-align gap-8">
+                    <span class="w-24 h-24 bg-white rounded-circle flex-center text-capitalize text-14">B</span>
+                    <input type="text" class="form-control border-0 fw-medium text-15" @bind="OptionB" />
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="delete-item py-4 px-16 rounded-8 bg-gray-50 border border-main-200 flex-align gap-8">
+                    <span class="w-24 h-24 bg-white rounded-circle flex-center text-capitalize text-14">C</span>
+                    <input type="text" class="form-control border-0 fw-medium text-15" @bind="OptionC" />
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="delete-item py-4 px-16 rounded-8 bg-gray-50 border border-main-200 flex-align gap-8">
+                    <span class="w-24 h-24 bg-white rounded-circle flex-center text-capitalize text-14">D</span>
+                    <input type="text" class="form-control border-0 fw-medium text-15" @bind="OptionD" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-20">
+        <label for="answer" class="h6 mb-8 fw-semibold">Answer</label>
+        <select id="answer" class="form-control form-select rounded-8 bg-gray-50 border border-main-200 py-19" @bind="CorrectAnswer">
+            <option selected value="" disabled>Select correct answer</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+        </select>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(ValidationError))
+    {
+        <div class="text-danger my-3">@ValidationError</div>
+    }
+</div>
+
+@code {
+    [Parameter] public int QuestionNb { get; set; }
+
+    private string Question { get; set; }
+    private string OptionA { get; set; }
+    private string OptionB { get; set; }
+    private string OptionC { get; set; }
+    private string OptionD { get; set; }
+    private string CorrectAnswer { get; set; }
+    private string ValidationError { get; set; }
+
+    public async Task<bool> ValidateForm()
+    {
+        ValidationError = null;
+
+        if (string.IsNullOrWhiteSpace(Question))
+        {
+            ValidationError = "The question field is required.";
+        }
+        else if (string.IsNullOrWhiteSpace(OptionA))
+        {
+            ValidationError = "Option A is required.";
+        }
+        else if (string.IsNullOrWhiteSpace(OptionB))
+        {
+            ValidationError = "Option B is required.";
+        }
+        else if (string.IsNullOrWhiteSpace(OptionC))
+        {
+            ValidationError = "Option C is required.";
+        }
+        else if (string.IsNullOrWhiteSpace(OptionD))
+        {
+            ValidationError = "Option D is required.";
+        }
+        else if (string.IsNullOrWhiteSpace(CorrectAnswer))
+        {
+            ValidationError = "Please select a correct answer.";
+        }
+        if (ValidationError == null)
+        {
+            StateHasChanged();
+            return true;
+        }
+        StateHasChanged();
+        return false;
+    }
+    public async Task SaveToDateBase(int examId){
+        Question question = new Question() { ExamenId = examId, Enonce = Question };
+        await QuestionService.CreateAsync(question);
+        Choix ca = new Choix() { QuestionId = question.Id, Texte = OptionA, EstCorrect = CorrectAnswer.Equals("A") };
+        await ChoixService.CreateAsync(ca);
+        Choix cb = new Choix() { QuestionId = question.Id, Texte = OptionB, EstCorrect = CorrectAnswer.Equals("B") };
+        await ChoixService.CreateAsync(cb);
+        Choix cc = new Choix() { QuestionId = question.Id, Texte = OptionC, EstCorrect = CorrectAnswer.Equals("C") };
+        await ChoixService.CreateAsync(cc);
+        Choix cd = new Choix() { QuestionId = question.Id, Texte = OptionD, EstCorrect = CorrectAnswer.Equals("D") };
+        await ChoixService.CreateAsync(cd);
+    }
+}

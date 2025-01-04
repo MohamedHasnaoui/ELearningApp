@@ -9,6 +9,7 @@ namespace ELearningApp.Data
     {
         public string? imgProfile { get; set; }
         public string? imgCover { get; set; }
+        public string? FormalUserName { get; set; }
         public DateTime joinDate { get; set; } = DateTime.UtcNow;
         public ICollection<CommentaireVideo> CommentairesVideos { get; set; }
         public ICollection<ReponseCommentaire> ReponsesCommentaires { get; set; }
