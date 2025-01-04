@@ -83,18 +83,19 @@ builder.Services.AddSingleton<Cloudinary>(serviceProvider =>
 // cloudinary service
 builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
 //other services
-builder.Services.AddScoped<IVideoService, VideoService>();
-builder.Services.AddScoped<ICategoryCoursService, CategoryCoursService>();
-builder.Services.AddScoped<ICertificatService, CertificatService>();
-builder.Services.AddScoped<IChoixService, ChoixService>();
-builder.Services.AddScoped<ICommentaireVideoService, CommentaireVideoService>();
-builder.Services.AddScoped<ICoursCommenceService, CoursCommenceService>();
-builder.Services.AddScoped<ICoursService, CoursService>();
-builder.Services.AddScoped<IExamenService, ExamenService>();
-builder.Services.AddScoped<IQuestionService, QuestionService>();
-builder.Services.AddScoped<IReponseCommentaireService, ReponseCommentaireService>();
-builder.Services.AddScoped<ISectionService, SectionService>();
-builder.Services.AddScoped<ISoumissionService, SoumissionService>();
+builder.Services.AddTransient<IVideoService, VideoService>();
+builder.Services.AddTransient<ICategoryCoursService, CategoryCoursService>();
+builder.Services.AddTransient<ICertificatService, CertificatService>();
+builder.Services.AddTransient<IChoixService, ChoixService>();
+builder.Services.AddTransient<ICommentaireVideoService, CommentaireVideoService>();
+builder.Services.AddTransient<ICoursCommenceService, CoursCommenceService>();
+builder.Services.AddTransient<ICoursService, CoursService>();
+builder.Services.AddTransient<IExamenService, ExamenService>();
+builder.Services.AddTransient<IQuestionService, QuestionService>();
+builder.Services.AddTransient<IReponseCommentaireService, ReponseCommentaireService>();
+builder.Services.AddTransient<ISectionService, SectionService>();
+builder.Services.AddTransient<ISoumissionService, SoumissionService>();
+builder.Services.AddTransient<IUserService, UserService>();
 //AbonnementService
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAbonnementService, AbonnementService>();
