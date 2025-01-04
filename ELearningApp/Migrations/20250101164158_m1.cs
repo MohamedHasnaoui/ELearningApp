@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ELearningApp.Migrations
 {
     /// <inheritdoc />
@@ -32,6 +34,7 @@ namespace ELearningApp.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     imgProfile = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     imgCover = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FormalUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     joinDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -150,7 +153,7 @@ namespace ELearningApp.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -216,9 +219,13 @@ namespace ELearningApp.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nom = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Evaluation = table.Column<float>(type: "real", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    EnseignantId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Evaluation = table.Column<float>(type: "real", nullable: true),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    EnseignantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Duree = table.Column<double>(type: "float", nullable: false),
+                    CoursImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CoursImgPublicId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Niveau = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -227,14 +234,12 @@ namespace ELearningApp.Migrations
                         name: "FK_Cours_CategoriesCours_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "CategoriesCours",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Cours_Enseignants_EnseignantId",
                         column: x => x.EnseignantId,
                         principalTable: "Enseignants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -301,7 +306,6 @@ namespace ELearningApp.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Titre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     DateCreation = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CoursId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -313,7 +317,7 @@ namespace ELearningApp.Migrations
                         column: x => x.CoursId,
                         principalTable: "Cours",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -324,7 +328,8 @@ namespace ELearningApp.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    CoursId = table.Column<int>(type: "int", nullable: false)
+                    CoursId = table.Column<int>(type: "int", nullable: false),
+                    Duree = table.Column<double>(type: "float", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -334,7 +339,7 @@ namespace ELearningApp.Migrations
                         column: x => x.CoursId,
                         principalTable: "Cours",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -354,7 +359,7 @@ namespace ELearningApp.Migrations
                         column: x => x.ExamenId,
                         principalTable: "Examens",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -394,9 +399,11 @@ namespace ELearningApp.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     VideoUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SectionId = table.Column<int>(type: "int", nullable: false)
+                    VidPublicId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Duree = table.Column<double>(type: "float", nullable: false),
+                    SectionId = table.Column<int>(type: "int", nullable: false),
+                    Thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -484,6 +491,16 @@ namespace ELearningApp.Migrations
                         principalTable: "CommentairesVideo",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.InsertData(
+                table: "CategoriesCours",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Courses related to programming languages and software development.", "Programming" },
+                    { 2, "Courses related to data analysis, machine learning, and statistics.", "Data Science" },
+                    { 3, "Courses related to building websites and web applications.", "Web Development" }
                 });
 
             migrationBuilder.CreateIndex(

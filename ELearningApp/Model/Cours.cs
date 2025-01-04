@@ -8,7 +8,7 @@ namespace ELearningApp.Model
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; } 
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "Le nom du cours est obligatoire.")]
         [StringLength(100, ErrorMessage = "Le nom du cours ne peut pas dépasser 100 caractères.")]
@@ -22,24 +22,46 @@ namespace ELearningApp.Model
 
         [Range(0, 5, ErrorMessage = "L'évaluation doit être comprise entre 0 et 5.")]
         [Display(Name = "Évaluation")]
-        public float Evaluation { get; set; }
+        public float? Evaluation { get; set; }
 
-        [Required(ErrorMessage = "La catégorie est obligatoire.")]
         [ForeignKey("Category")]
         [Display(Name = "Identifiant de la catégorie")]
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
         [Display(Name = "Catégorie")]
         public CategoryCours Category { get; set; }
 
-        [Required(ErrorMessage = "Le créateur du cours est obligatoire.")]
         [ForeignKey("Enseignant")]
-        [Display(Name = "Identifiant de la catégorie")]
-        public string EnseignantId { get; set; }
-
         [Display(Name = "Enseignant")]
+        public string? EnseignantId { get; set; }
+
+        [Display(Name = "Durée")]
+        public double Duree { get; set; }
+
+        [Required(ErrorMessage = "L'image du cours est obligatoire.")]
+        [Display(Name = "CoursImg")]
+        public string CoursImg { get; set; }
+
+        [Required(ErrorMessage = "L'image du cours est obligatoire.")]
+        [Display(Name = "CoursImgPublicId")]
+        public string CoursImgPublicId { get; set; }
+
         public Enseignant Enseignant { get; set; }
 
         public Examen Examen { get; set; }
+
+        // Nouvelle propriété pour le niveau
+        [Required(ErrorMessage = "Le niveau est obligatoire.")]
+        [EnumDataType(typeof(Niveau), ErrorMessage = "Valeur du niveau invalide.")]
+        [Display(Name = "Niveau")]
+        public Niveau Niveau { get; set; }
+    }
+
+    // Déclaration de l'énumération Niveau
+    public enum Niveau
+    {
+        Débutant,
+        Intermédiaire,
+        Avancé
     }
 }

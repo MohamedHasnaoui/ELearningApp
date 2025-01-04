@@ -51,6 +51,26 @@ namespace ELearningApp.Data
            .WithMany(ab => ab.AbonnementsAchetes)
            .HasForeignKey(a => a.IdAbonnement)
            .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<CategoryCours>().HasData(
+               new CategoryCours
+               {
+                   Id = 1,
+                   Name = "Programming",
+                   Description = "Courses related to programming languages and software development."
+               },
+               new CategoryCours
+               {
+                   Id = 2,
+                   Name = "Data Science",
+                   Description = "Courses related to data analysis, machine learning, and statistics."
+               },
+               new CategoryCours
+               {
+                   Id = 3,
+                   Name = "Web Development",
+                   Description = "Courses related to building websites and web applications."
+               }
+           );
         }
     }
 }

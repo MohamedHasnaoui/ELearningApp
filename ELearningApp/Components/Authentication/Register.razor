@@ -1,0 +1,232 @@
+﻿@page "/Register"
+@layout Layout.MainLayoutAuhtentification
+
+@using ELearningApp.Components.Account
+@using System.ComponentModel.DataAnnotations
+
+@rendermode InteractiveServer
+
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+@inject ApplicationDbContext Context
+
+<PageTitle>Register</PageTitle>
+
+<div class="auth-left bg-main-50 flex-center p-24">
+    <img src="assets/images/thumbs/auth-img2.png" alt="">
+</div>
+<div class="auth-right py-40 px-24 flex-center flex-column">
+    <div class="auth-right__inner mx-auto w-100">
+        <a href="index.html" class="auth-right__logo">
+            <img src="assets/images/logo/logo.png" alt="">
+        </a>
+        <h2 class="mb-8">Sign Up</h2>
+        <p class="text-gray-600 text-15 mb-32">Please sign up to your account and start the adventure</p>
+
+        <EditForm Model="Input" OnValidSubmit="RegisterUser">
+            <DataAnnotationsValidator />
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @Message 
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(resultMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @resultMessage
+                </div>
+            }
+            <div class="mb-24">
+                <label for="userType" class="form-label mb-8 h6"> Type d'utilisateur</label>
+                <InputSelect @bind-Value="Input.UserType" class="form-control py-11 ps-40" id="userType">
+                    <option value="Etudiant">Etudiant</option>
+                    <option value="Enseignant">Enseignant</option>
+                </InputSelect>
+                <ValidationMessage For="() => Input.UserType" class="text-danger" />
+            </div>
+            @if (Input.UserType == "Enseignant")
+            {
+                <div class="mb-24">
+                    <label for="Input.Speciality" class="form-label mb-8 h6"> Spécialité</label>
+                    <div class="position-relative">
+                        <InputText @bind-Value="Input.Speciality" id="Input.Speciality" class="form-control py-11 ps-40" placeholder="Spécialité" />
+                        <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-user"></i></span>
+                    </div>
+                    <ValidationMessage For="() => Input.Speciality" class="text-danger" />
+                </div>
+            }
+
+            <div class="mb-24">
+                <label for="Input.UserName" class="form-label mb-8 h6"> Username</label>
+                <div class="position-relative">
+                    <InputText @bind-Value="Input.UserName" id="Input.UserName" class="form-control py-11 ps-40" placeholder="user name" />
+                    <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-user"></i></span>
+                </div>
+                <ValidationMessage For="() => Input.UserName" class="text-danger" />
+            </div>
+            <div class="mb-24">
+                <label for="Input.Email" class="form-label mb-8 h6">Email </label>
+                <div class="position-relative">
+                    <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control py-11 ps-40" placeholder="name@example.com" />
+                    <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-envelope"></i></span>
+                </div>
+                <ValidationMessage For="() => Input.Email" class="text-danger" />
+            </div>
+            <div class="mb-24">
+                <label for="current-password" class="form-label mb-8 h6">Current Password</label>
+                <div class="position-relative">
+                    <InputText type="password" @bind-Value="Input.Password" id="current-password" class="form-control py-11 ps-40" placeholder="password" />
+                    <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#current-password"></span>
+                    <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-lock"></i></span>
+                </div>
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            </div>
+            <div class="mb-24">
+                <label for="Input.ConfirmPassword" class="form-label mb-8 h6">Confirm Password</label>
+                <div class="position-relative">
+                    <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="form-control py-11 ps-40" placeholder="password" />
+                    <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#Input.ConfirmPassword"></span>
+                    <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-lock"></i></span>
+                </div>
+                <span class="text-gray-900 text-15 mt-4">Must be at least 8 characters</span>
+                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-main rounded-pill w-100">Sign Up</button>
+            <p class="mt-32 text-gray-600 text-center">
+                Already have an account?
+                <a href="/Login" class="text-main-600 hover-text-decoration-underline"> Log In</a>
+            </p>
+
+            <div class="divider my-32 position-relative text-center">
+                <span class="divider__text text-gray-600 text-13 fw-medium px-26 bg-white">or</span>
+            </div>
+
+            <ul class="flex-align gap-10 flex-wrap justify-content-center">
+                <li>
+                    <a href="https://www.facebook.com" class="w-38 h-38 flex-center rounded-6 text-facebook-600 bg-facebook-50 hover-bg-facebook-600 hover-text-white text-lg">
+                        <i class="ph-fill ph-facebook-logo"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.twitter.com" class="w-38 h-38 flex-center rounded-6 text-twitter-600 bg-twitter-50 hover-bg-twitter-600 hover-text-white text-lg">
+                        <i class="ph-fill ph-twitter-logo"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.google.com" class="w-38 h-38 flex-center rounded-6 text-google-600 bg-google-50 hover-bg-google-600 hover-text-white text-lg">
+                        <i class="ph ph-google-logo"></i>
+                    </a>
+                </li>
+            </ul>
+
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private IEnumerable<IdentityError>? identityErrors;
+    private InputModel Input { get; set; } = new InputModel();
+    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description)).Replace("_"," ")}";
+    private string? resultMessage="";
+
+    private sealed class InputModel
+    {
+        [Required(ErrorMessage = "Le nom d'utilisateur est obligatoire.")]
+        [StringLength(50, ErrorMessage = "Le nom d'utilisateur doit comporter au moins {2} caractères et au maximum {1} caractères.", MinimumLength = 3)]
+        [Display(Name = "Nom d'utilisateur")]
+        public string UserName { get; set; } = "";
+
+        [Required(ErrorMessage = "L'email est obligatoire.")]
+        [EmailAddress(ErrorMessage = "L'email n'est pas valide.")]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = "";
+
+        [Required(ErrorMessage = "Le mot de passe est obligatoire.")]
+        [StringLength(100, ErrorMessage = "Le mot de passe doit comporter au moins {2} caractères et au maximum {1} caractères.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Mot de passe")]
+        public string Password { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirmer le mot de passe")]
+        [Compare("Password", ErrorMessage = "Le mot de passe et sa confirmation ne correspondent pas.")]
+        public string ConfirmPassword { get; set; } = "";
+
+        [Required(ErrorMessage = "Veuillez sélectionner un type d'utilisateur.")]
+        [Display(Name = "Type d'utilisateur")]
+        public string UserType { get; set; } = "Etudiant";
+
+        [Display(Name = "Spécialité")]
+        public string? Speciality { get; set; }
+    }
+
+    public async Task RegisterUser()
+    {
+        var emailExists = await UserManager.FindByEmailAsync(Input.Email);
+        resultMessage = "";
+        if (emailExists != null)
+        {
+            resultMessage = "Cette adresse e-mail est déjà associée à un autre compte.";
+            return;
+        }
+        ApplicationUser user;
+        if (Input.UserType == "Etudiant")
+        {
+            user = new Etudiant();
+        }
+        else
+        {
+            user = new Enseignant
+                {
+                    speciality = Input.Speciality // Set the speciality for Enseignant
+                };
+        }
+
+        user.FormalUserName = Input.UserName;
+        await UserStore.SetUserNameAsync(user, Input.UserName.Replace(" ","_"), CancellationToken.None);
+        var emailStore = GetEmailStore();
+        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+        var result = await UserManager.CreateAsync(user, Input.Password);
+        if (!result.Succeeded)
+        {
+            identityErrors = result.Errors;
+            return;
+        }
+        string role = Input.UserType == "Etudiant" ? "Etudiant" : "Enseignant";
+        var roleResult = await UserManager.AddToRoleAsync(user, role);
+        if (!roleResult.Succeeded)
+        {
+            foreach (var error in roleResult.Errors)
+            {
+                Console.WriteLine($"Error assigning role: {error.Description}");
+            }
+            return;
+        }
+        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        var emailConfirmResult = await UserManager.ConfirmEmailAsync(user, code);
+
+        if (!emailConfirmResult.Succeeded)
+        {
+            Console.WriteLine("Error confirming email: " + string.Join(", ", emailConfirmResult.Errors.Select(e => e.Description)));
+            return;
+        }
+
+        NavigationManager.NavigateTo("/Login");
+    }
+
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
+}
+

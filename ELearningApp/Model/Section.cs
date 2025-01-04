@@ -26,6 +26,9 @@ namespace ELearningApp.Model
         [Display(Name = "Cours")]
         public int CoursId { get; set; }
 
+        [Display(Name = "Duree")]
+        public double? Duree { get; set; }
+
         // Navigation vers le cours
         public Cours Cours { get; set; }
 

@@ -1,0 +1,79 @@
+﻿@page "/courses/create"
+@inject ICoursService CoursService
+@rendermode InteractiveServer
+
+@* part0 *@
+<div class="@(b[0] ? "" : "d-none") dashboard-body">
+    <Part0 OnContinueButtonClick="nextPage" @ref="refpart0" UpdateNumberSections="UpdateNumberSections" />
+</div>
+
+@* part1 *@
+<div class="@(b[1] ? "" : "d-none") dashboard-body">
+    <Part1 OnContinueButtonClick="nextPage" @ref="refpart1" OnBackButtonClick="priviousPage" numberSections="numberSections" />
+</div>
+
+@* part2 *@
+<div class="@(b[2] ? "" : "d-none") dashboard-body">
+    <Part2 OnContinueButtonClick="nextPage" @ref="refpart2" OnBackButtonClick="priviousPage" numberSections="numberSections" />
+</div>
+
+@* part3 *@
+<div class="@(b[3] ? "" : "d-none") dashboard-body">
+    <AddExam OnContinueButtonClick="nextPage" @ref="refAddExam" OnBackButtonClick="priviousPage" />
+</div>
+
+@* part4 *@
+<div class="@(b[4] ? "" : "d-none") dashboard-body">
+    <Publish coursTitle="@refpart0?.Title" coursLevel="@refpart0?.Level" numberSections="@numberSections" publishCourse="publishCourse" CoursCategoryId="@refpart0?.CategoryId" CoursDescription="@refpart0?.Description" coursImgUrl="@refpart0?.coursImgUrl" OnBackButtonClick="priviousPage" />
+</div>
+
+@code {
+    private const int nbPart = 5;
+    private bool[] b = new bool[nbPart];
+    private Part0 refpart0 { get; set; }
+    private Part1 refpart1 { get; set; }
+    private Part2 refpart2 { get; set; }
+    private AddExam refAddExam { get; set; }
+    private int numberSections = 1;
+
+    protected override void OnInitialized()
+    {
+        b[0] = true;
+        for (int i = 1; i < nbPart; i++) b[i] = false;
+    }
+
+    private void nextPage(int i)
+    {
+        b[i] = false;
+        if (i < nbPart-1) b[i + 1] = true;
+    }
+
+    private void priviousPage(int i)
+    {
+        b[i] = false;
+        if (i > 0) b[i - 1] = true;
+    }
+
+    private void UpdateNumberSections(int newValue)
+    {
+        numberSections = newValue;
+        while(refpart1.sectionForms.Count()>newValue){
+            refpart1.sectionForms.RemoveAt(refpart1.sectionForms.Count() - 1);
+            refpart2.sectionVids.RemoveAt(refpart2.sectionVids.Count() - 1);
+            
+        }
+    }
+    private async Task publishCourse(){
+        double dureetotal = 0;
+        try{
+            Cours cours = await refpart0.SaveToDateBase();
+            var sections = await refpart1.SaveToDateBase(cours.Id);
+            dureetotal = await refpart2.SaveToDateBase(sections);
+            await refAddExam.SaveToDateBase(cours.Id);
+            cours.Duree = dureetotal;
+            await CoursService.UpdateAsync(cours);
+        }catch(Exception ex){
+            Console.WriteLine("error while saving to db ....");
+        }
+    }
+}

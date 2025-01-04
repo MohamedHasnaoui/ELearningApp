@@ -1,0 +1,153 @@
+﻿@page "/Login"
+@layout Layout.MainLayoutAuhtentification
+@using Microsoft.AspNetCore.Mvc;
+@using System.ComponentModel.DataAnnotations
+@using ELearningApp.Components.Account
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using ELearningApp.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Login> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Log in</PageTitle>
+<div class="auth-left bg-main-50 flex-center p-24">
+    <img src="assets/images/thumbs/auth-img1.png" alt="">
+</div>
+<div class="auth-right py-40 px-24 flex-center flex-column">
+    <div class="auth-right__inner mx-auto w-100">
+        <a href="/" class="auth-right__logo">
+            <img src="assets/images/logo/logo.png" alt="">
+        </a>
+        <h2 class="mb-8">Welcome to Back! &#128075;</h2>
+        <p class="text-gray-600 text-15 mb-32">Please sign in to your account and start the adventure</p>
+
+		<EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+            <DataAnnotationsValidator />
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
+            
+            <div class="mb-24">
+                <label for="Input.Email" class="form-label mb-8 h6">Email or Username</label>
+                <div class="position-relative">
+                    <InputText @bind-Value="Input.UserNameOrEmail" id="Input.Email" class="form-control py-11 ps-40" placeholder="name@example.com" />
+                    <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-user"></i></span>
+                </div>
+                <ValidationMessage For="() => Input.UserNameOrEmail" class="text-danger" />
+            </div>
+            <div class="mb-24">
+                <label for="current-password" class="form-label mb-8 h6">Current Password</label>
+                <div class="position-relative">
+                    <InputText type="password" @bind-Value="Input.Password" id="current-password" class="form-control py-11 ps-40" placeholder="password" />
+                    <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#current-password"></span>
+                    <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-lock"></i></span>
+                </div>
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            </div>
+            <div class="mb-32 flex-between flex-wrap gap-8">
+                <div class="form-check mb-0 flex-shrink-0">
+                    <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input flex-shrink-0 rounded-4" id="remember" />
+                    <label class="form-check-label text-15 flex-grow-1" for="remember">Remember Me </label>
+                </div>
+                <a href="forgot-password.html" class="text-main-600 hover-text-decoration-underline text-15 fw-medium">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn btn-main rounded-pill w-100">Sign In</button>
+            <p class="mt-32 text-gray-600 text-center">
+                New on our platform?
+                <a href="/Register" class="text-main-600 hover-text-decoration-underline">Create an account</a>
+            </p>
+
+            <div class="divider my-32 position-relative text-center">
+                <span class="divider__text text-gray-600 text-13 fw-medium px-26 bg-white">or</span>
+            </div>
+
+            <ul class="flex-align gap-10 flex-wrap justify-content-center">
+                <li>
+                    <a href="https://www.facebook.com" class="w-38 h-38 flex-center rounded-6 text-facebook-600 bg-facebook-50 hover-bg-facebook-600 hover-text-white text-lg">
+                        <i class="ph-fill ph-facebook-logo"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.twitter.com" class="w-38 h-38 flex-center rounded-6 text-twitter-600 bg-twitter-50 hover-bg-twitter-600 hover-text-white text-lg">
+                        <i class="ph-fill ph-twitter-logo"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.google.com" class="w-38 h-38 flex-center rounded-6 text-google-600 bg-google-50 hover-bg-google-600 hover-text-white text-lg">
+                        <i class="ph ph-google-logo"></i>
+                    </a>
+                </li>
+            </ul>
+
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private string? errorMessage;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
+    public async Task LoginUser()
+    {
+        ApplicationUser? user = null;
+
+        // Check if the input is an email
+        if (new EmailAddressAttribute().IsValid(Input.UserNameOrEmail))
+        {
+            user = await SignInManager.UserManager.FindByEmailAsync(Input.UserNameOrEmail);
+        }
+        else
+        {
+            // Otherwise, treat it as a username
+            user = await SignInManager.UserManager.FindByNameAsync(Input.UserNameOrEmail.Replace(" ", "_"));
+        }
+
+        if (user != null)
+        {
+            var result = await SignInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                Logger.LogInformation("User logged in.");
+                RedirectManager.RedirectTo("/");
+                return;
+            }
+        }
+        errorMessage = "Error: Invalid login attempt.";
+
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        public string UserNameOrEmail { get; set; } = "";
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+
+        [Display(Name = "Remember me?")]
+        public bool RememberMe { get; set; }
+    }
+}

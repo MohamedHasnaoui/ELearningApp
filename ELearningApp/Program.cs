@@ -50,7 +50,8 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString),
+    ServiceLifetime.Transient);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -80,20 +81,21 @@ builder.Services.AddSingleton<Cloudinary>(serviceProvider =>
     return new Cloudinary(cloudinaryAccount);
 });
 // cloudinary service
-builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
+builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
 //other services
-builder.Services.AddScoped<IVideoService, VideoService>();
-builder.Services.AddScoped<ICategoryCoursService, CategoryCoursService>();
-builder.Services.AddScoped<ICertificatService, CertificatService>();
-builder.Services.AddScoped<IChoixService, ChoixService>();
-builder.Services.AddScoped<ICommentaireVideoService, CommentaireVideoService>();
-builder.Services.AddScoped<ICoursCommenceService, CoursCommenceService>();
-builder.Services.AddScoped<ICoursService, CoursService>();
-builder.Services.AddScoped<IExamenService, ExamenService>();
-builder.Services.AddScoped<IQuestionService, QuestionService>();
-builder.Services.AddScoped<IReponseCommentaireService, ReponseCommentaireService>();
-builder.Services.AddScoped<ISectionService, SectionService>();
-builder.Services.AddScoped<ISoumissionService, SoumissionService>();
+builder.Services.AddTransient<IVideoService, VideoService>();
+builder.Services.AddTransient<ICategoryCoursService, CategoryCoursService>();
+builder.Services.AddTransient<ICertificatService, CertificatService>();
+builder.Services.AddTransient<IChoixService, ChoixService>();
+builder.Services.AddTransient<ICommentaireVideoService, CommentaireVideoService>();
+builder.Services.AddTransient<ICoursCommenceService, CoursCommenceService>();
+builder.Services.AddTransient<ICoursService, CoursService>();
+builder.Services.AddTransient<IExamenService, ExamenService>();
+builder.Services.AddTransient<IQuestionService, QuestionService>();
+builder.Services.AddTransient<IReponseCommentaireService, ReponseCommentaireService>();
+builder.Services.AddTransient<ISectionService, SectionService>();
+builder.Services.AddTransient<ISoumissionService, SoumissionService>();
+builder.Services.AddTransient<IUserService, UserService>();
 //AbonnementService
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAbonnementService, AbonnementService>();
@@ -128,6 +130,7 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
+    .DisableAntiforgery()
     .AddInteractiveServerRenderMode();
 
 // Add additional endpoints required by the Identity /Account Razor components.
@@ -137,7 +140,6 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await InitializeRoles(services);
 }
-// cloudinary setup
 
 
 app.Run();
