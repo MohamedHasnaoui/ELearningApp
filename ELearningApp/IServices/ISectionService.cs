@@ -7,6 +7,8 @@ namespace ELearningApp.IServices
         Task<IEnumerable<Section>> GetSectionsByCoursIdAsync(int coursId); 
         Task<bool> CreateAsync(Section section); 
         Task<Section> UpdateAsync(Section section); 
-        Task<bool> DeleteAsync(int id); 
+        Task<bool> DeleteAsync(int id);
+        Task<int> CountSectionsByCourseIdAsync(int coursId);
+        Task<bool> DeleteAllByCourseIdAsync(int coursId);
     }
 }

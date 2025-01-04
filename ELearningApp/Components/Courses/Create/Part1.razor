@@ -1,0 +1,124 @@
+﻿@rendermode InteractiveServer
+@inject ICoursService coursService
+@inject ISectionService sectionService
+<div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb mb-24">
+        <ul class="flex-align gap-4">
+            <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+            <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+            <li><span class="text-main-600 fw-normal text-15">Create Account</span></li>
+        </ul>
+    </div>
+    <!-- Breadcrumb End -->
+</div>
+
+<!-- Create Course Step List Start -->
+<ul class="step-list mb-24">
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7 done">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Course Details
+        <span class="line position-relative"></span>
+    </li>
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7 active">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Section Details
+        <span class="line position-relative"></span>
+    </li>
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Upload Videos
+        <span class="line position-relative"></span>
+    </li>
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Create Quiz
+        <span class="line position-relative"></span>
+    </li>
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Publish Course
+        <span class="line position-relative"></span>
+    </li>
+</ul>
+<!-- Create Course Step List End -->
+<!-- Course Tab Start -->
+<div class="card">
+    <div class="card-header border-bottom border-gray-100 flex-align gap-8">
+        <h5 class="mb-0">Sections Details</h5>
+        <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Course Details">
+            <i class="ph-fill ph-question"></i>
+        </button>
+    </div>
+    <div class="card-body">
+        <form action="#">
+            <div class="row gy-20">
+                <div class="row">
+                    @for (int i = 1; i <= numberSections; i++)
+                    {
+                        <Section_Form @ref="sectionRef" SectionNumber="i" />
+                    }
+                </div>
+                <div class="flex-align justify-content-end gap-8">
+                    <button type="button" @onclick="handleBackClique" @onclick:preventDefault class="btn btn-outline-main rounded-pill py-9">Back</button>
+                    <button @onclick="handleContinueClique" @onclick:preventDefault class="btn btn-main rounded-pill py-9">Continue</button>
+                </div>
+                @if (!string.IsNullOrEmpty(errorSaving))
+                {
+                    <div class="text-danger text-sm text-end">@errorSaving</div>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> OnContinueButtonClick { get; set; }
+    [Parameter]
+    public EventCallback<int> OnBackButtonClick { get; set; }
+    private string errorSaving;
+    public List<Section_Form> sectionForms = new List<Section_Form>();
+    private bool[] sectionSaveResults;
+
+    [Parameter] public int numberSections { get; set; }
+    Section_Form sectionRef
+    {
+        set { sectionForms.Add(value); }
+    }
+
+    private async Task handleContinueClique()
+    {
+        errorSaving = null;
+        int sectionsSavedCount = 0;
+        sectionSaveResults = new bool[sectionForms.Count()];
+        foreach (var sectionForm in sectionForms)
+        {
+            var result = await sectionForm.HandleSave();
+            sectionSaveResults[sectionsSavedCount] = result;
+            sectionsSavedCount++;
+        }
+
+        if (sectionSaveResults.All(r => r))
+        {
+            await OnContinueButtonClick.InvokeAsync(1);
+        }
+        else
+        {
+            errorSaving = "Please correct the errors in the sections before continuing.";
+        }
+    }
+    private async Task handleBackClique(){
+        await OnBackButtonClick.InvokeAsync(1);
+    }
+    public async Task<List<Section>> SaveToDateBase(int coursId)
+    {
+        List<Section> sectionsList = new();
+        foreach (var s in sectionForms){
+            var res = await s.SaveToDataBase(coursId);
+            sectionsList.Add(res);
+        }
+        return sectionsList;
+    }
+
+}

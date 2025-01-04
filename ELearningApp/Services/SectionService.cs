@@ -53,5 +53,22 @@ namespace ELearningApp.Services
             await _context.SaveChangesAsync();
             return section;
         }
+        public async Task<int> CountSectionsByCourseIdAsync(int coursId)
+        {
+            return await _context.Sections.CountAsync(s => s.CoursId == coursId);
+        }
+
+        // Implementation of the new method
+        public async Task<bool> DeleteAllByCourseIdAsync(int coursId)
+        {
+            var sections = await _context.Sections.Where(s => s.CoursId == coursId).ToListAsync();
+            if (sections.Any())
+            {
+                _context.Sections.RemoveRange(sections);
+                var result = await _context.SaveChangesAsync();
+                return result > 0;
+            }
+            return false;
+        }
     }
 }
