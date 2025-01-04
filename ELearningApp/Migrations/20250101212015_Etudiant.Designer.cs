@@ -4,6 +4,7 @@ using ELearningApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250101212015_Etudiant")]
+    partial class Etudiant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,11 +136,11 @@ namespace ELearningApp.Migrations
 
             modelBuilder.Entity("ELearningApp.Model.AbonnementAchete", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("IdEtudiant")
+                        .HasColumnType("nvarchar(450)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("IdAbonnement")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateDebutAchat")
                         .HasColumnType("datetime2");
@@ -145,36 +148,11 @@ namespace ELearningApp.Migrations
                     b.Property<DateTime>("DateExpiration")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IdAbonnement")
-                        .HasColumnType("int");
-
-                    b.Property<string>("IdEtudiant")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
+                    b.HasKey("IdEtudiant", "IdAbonnement");
 
                     b.HasIndex("IdAbonnement");
 
-                    b.HasIndex("IdEtudiant");
-
                     b.ToTable("AbonnementAchetes", (string)null);
-                });
-
-            modelBuilder.Entity("ELearningApp.Model.AbonnementTemp", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("IdAbonnement")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AbonnementTemps", (string)null);
                 });
 
             modelBuilder.Entity("ELearningApp.Model.CategoryCours", b =>
