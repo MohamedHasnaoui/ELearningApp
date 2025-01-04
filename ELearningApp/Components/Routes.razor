@@ -1,4 +1,5 @@
 ﻿@using ELearningApp.Components.Account.Shared
+
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
@@ -9,3 +10,6 @@
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
 </Router>
+
+@* <Routes @rendermode=RenderMode.InteractiveServer />
+<script src="_framework/blazor.web.js"></script> *@
