@@ -1,0 +1,179 @@
+﻿@page "/RegisterConfirmation"
+
+@layout Layout.MainLayoutAuhtentification
+
+@using System.Text
+@using ELearningApp.Components.Account
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.AspNetCore.Identity.UI.Services
+
+
+@using ELearningApp.Data
+@using System.Text.Encodings.Web
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IEmailSender EmailSender
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Register confirmation</PageTitle>
+<div class="auth-left bg-main-50 flex-center p-24">
+    <img src="assets/images/thumbs/auth-img4.png" alt="">
+</div>
+<div class="auth-right py-40 px-24 flex-center flex-column">
+    <div class="auth-right__inner mx-auto w-100">
+        <a href="index.html" class="auth-right__logo">
+            <img src="assets/images/logo/logo.png" alt="">
+        </a>
+        @if (!string.IsNullOrEmpty(statusMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @statusMessage
+            </div>
+        }
+        else{
+            <h2 class="mb-8">Verify your mail</h2>
+            <p class="text-gray-600 text-15 mb-32">
+                Account activation link sent to your email address:  <span class="fw-medium"> @Email</span> Please follow the link inside
+                to continue.
+            </p>
+
+            <a href="/Login" class="btn btn-main rounded-pill w-100">Go To Login</a>
+
+            <p class="mt-32 text-gray-600 text-center">
+                Didn't get the mail?
+                <button @onclick="ResendEmail" class="text-main-600 hover-text-decoration-underline"> Resend</button>
+            </p>
+        }
+
+
+    </div>
+</div>
+
+@code {
+    private string? emailConfirmationLink;
+    private string? statusMessage;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? Email { get; set; }
+
+
+    private string? ReturnUrl { get; set; } = "/";
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("I'im here");
+
+        if (Email is null)
+        {
+            Console.WriteLine("null email");
+
+            RedirectManager.RedirectTo("/Register");
+        }
+
+        var user = await UserManager.FindByEmailAsync(Email);
+
+        if (user is null)
+        {
+            Console.WriteLine("null user");
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            statusMessage = "Error finding user for unspecified email";
+        }
+    }
+    private async void ResendEmail(MouseEventArgs e)
+    {
+        var user = await UserManager.FindByEmailAsync(Email);
+        var userId = await UserManager.GetUserIdAsync(user);
+        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+            NavigationManager.ToAbsoluteUri("ConfirmEmail").AbsoluteUri,
+            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+
+        var email = Email;
+        var subject = "Verification email";
+        var htmlMessage = GenerateEmailConfirmationMessage(HtmlEncoder.Default.Encode(callbackUrl), user.UserName);
+        await EmailSender.SendEmailAsync(email, subject, htmlMessage);
+    }
+    public string GenerateEmailConfirmationMessage(string confirmationLink, string userName)
+    {
+        return $@"
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: 'Arial', sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background-color: #f4f7fc;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }}
+            .container {{
+                max-width: 500px;
+                background: #ffffff;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }}
+            .header {{
+                font-size: 24px;
+                font-weight: bold;
+                color: #1a73e8;
+                margin-bottom: 15px;
+            }}
+            .description {{
+                font-size: 16px;
+                color: #555;
+                margin-bottom: 20px;
+            }}
+            .button {{
+                display: inline-block;
+                padding: 12px 20px;
+                font-size: 16px;
+                color: #fff;
+                background-color: #1a73e8;
+                text-decoration: none;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+                margin-bottom: 15px;
+            }}
+            .button:hover {{
+                background-color: #135ab4;
+            }}
+            .footer {{
+                margin-top: 20px;
+                font-size: 14px;
+                color: #888;
+            }}
+            .footer a {{
+                color: #1a73e8;
+                text-decoration: none;
+            }}
+            .footer a:hover {{
+                text-decoration: underline;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>Welcome to Our App, {userName}! &#128075;</div>
+            <div class='description'>Thank you for registering with us. Please confirm your email address by clicking the button below:</div>
+            <a href='{confirmationLink}' class='button'>Confirm Email</a>
+            <div class='description'>If the button above doesn't work, copy and paste the following URL into your browser:</div>
+            <div class='footer'>
+                <a href='{confirmationLink}'>{confirmationLink}</a>
+                <p>If you didn't create an account, please ignore this email.</p>
+            </div>
+        </div>
+    </body>
+</html>";
+    }
+}

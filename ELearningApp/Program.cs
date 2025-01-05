@@ -6,6 +6,7 @@ using ELearningApp.IServices;
 using ELearningApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -13,7 +14,7 @@ async Task InitializeRoles(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    // Définissez les rôles requis
+    // DÃ©finissez les rÃ´les requis
     string[] roleNames = { "Etudiant", "Enseignant" };
 
     foreach (var roleName in roleNames)
@@ -76,26 +77,28 @@ var cloudinaryAccount = new Account(
     builder.Configuration.GetValue<string>("Cloudinary:ApiKey"),
     builder.Configuration.GetValue<string>("Cloudinary:ApiSecret")
 );
-builder.Services.AddSingleton<Cloudinary>(serviceProvider =>
+builder.Services.AddTransient<Cloudinary>(serviceProvider =>
 {
     return new Cloudinary(cloudinaryAccount);
 });
 // cloudinary service
 builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
 //other services
-builder.Services.AddTransient<IVideoService, VideoService>();
-builder.Services.AddTransient<ICategoryCoursService, CategoryCoursService>();
-builder.Services.AddTransient<ICertificatService, CertificatService>();
-builder.Services.AddTransient<IChoixService, ChoixService>();
-builder.Services.AddTransient<ICommentaireVideoService, CommentaireVideoService>();
-builder.Services.AddTransient<ICoursCommenceService, CoursCommenceService>();
-builder.Services.AddTransient<ICoursService, CoursService>();
-builder.Services.AddTransient<IExamenService, ExamenService>();
-builder.Services.AddTransient<IQuestionService, QuestionService>();
-builder.Services.AddTransient<IReponseCommentaireService, ReponseCommentaireService>();
-builder.Services.AddTransient<ISectionService, SectionService>();
-builder.Services.AddTransient<ISoumissionService, SoumissionService>();
-builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddScoped<IVideoService, VideoService>();
+builder.Services.AddScoped<ICategoryCoursService, CategoryCoursService>();
+builder.Services.AddScoped<ICertificatService, CertificatService>();
+builder.Services.AddScoped<IChoixService, ChoixService>();
+builder.Services.AddScoped<ICommentaireVideoService, CommentaireVideoService>();
+builder.Services.AddScoped<ICoursCommenceService, CoursCommenceService>();
+builder.Services.AddScoped<ICoursService, CoursService>();
+builder.Services.AddScoped<IExamenService, ExamenService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IReponseCommentaireService, ReponseCommentaireService>();
+builder.Services.AddScoped<ISectionService, SectionService>();
+builder.Services.AddScoped<ISoumissionService, SoumissionService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
 //AbonnementService
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAbonnementService, AbonnementService>();
@@ -124,13 +127,12 @@ else
 }
 
 app.UseHttpsRedirection();
-
-
+app.UseAuthorization();
 app.UseAntiforgery();
+
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .DisableAntiforgery()
     .AddInteractiveServerRenderMode();
 
 // Add additional endpoints required by the Identity /Account Razor components.

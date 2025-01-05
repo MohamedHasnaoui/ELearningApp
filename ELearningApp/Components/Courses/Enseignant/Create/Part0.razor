@@ -2,7 +2,8 @@
 @inject ICoursService coursService
 @inject ICategoryCoursService CategoryCoursService
 @inject ICloudinaryService CloudinaryService
-
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
     <!-- Breadcrumb Start -->
     <div class="breadcrumb mb-24">
@@ -161,7 +162,6 @@
 </div>
 
 @code {
-
     [Parameter]
     public EventCallback<int> OnContinueButtonClick { get; set; }
     [Parameter]
@@ -172,7 +172,7 @@
     // Form fields
     private IBrowserFile ThumbnailImage;
     public string Title;
-    public int CategoryId;
+    public int? CategoryId = null;
     public string Level;
     public string Description;
     public int TotalSections = 1;
@@ -264,8 +264,17 @@
     }
     public async Task<Cours> SaveToDateBase()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        string EnseignatId = "";
+        if (user.Identity.IsAuthenticated)
+        {
+            EnseignatId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+        Console.WriteLine("part01 :{0}", EnseignatId);
         Cours cours = new Cours()
             {
+                EnseignantId = EnseignatId,
                 CategoryId = CategoryId,
                 Description = Description,
                 Nom = Title,

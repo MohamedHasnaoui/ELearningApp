@@ -3,8 +3,12 @@
 
 @using ELearningApp.Components.Account
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity.UI.Services
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Text
+@using System.Text.Encodings.Web
 
-@rendermode InteractiveServer
+@rendermode InteractiveServer 
 
 
 @inject UserManager<ApplicationUser> UserManager
@@ -12,6 +16,9 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject NavigationManager NavigationManager
 @inject ApplicationDbContext Context
+@inject IEmailSender EmailSender
+@inject IdentityRedirectManager RedirectManager
+
 
 <PageTitle>Register</PageTitle>
 
@@ -56,6 +63,10 @@
                         <InputText @bind-Value="Input.Speciality" id="Input.Speciality" class="form-control py-11 ps-40" placeholder="Spécialité" />
                         <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-user"></i></span>
                     </div>
+                @if (formSubmitted && string.IsNullOrWhiteSpace(Input.Speciality))
+                    {
+                        <span class="text-danger">La spécialité est obligatoire pour les enseignants.</span>
+                    }
                     <ValidationMessage For="() => Input.Speciality" class="text-danger" />
                 </div>
             }
@@ -80,22 +91,15 @@
                 <label for="current-password" class="form-label mb-8 h6">Current Password</label>
                 <div class="position-relative">
                     <InputText type="password" @bind-Value="Input.Password" id="current-password" class="form-control py-11 ps-40" placeholder="password" />
-                    <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#current-password"></span>
-                    <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-lock"></i></span>
-                </div>
-                <ValidationMessage For="() => Input.Password" class="text-danger" />
-            </div>
-            <div class="mb-24">
-                <label for="Input.ConfirmPassword" class="form-label mb-8 h6">Confirm Password</label>
-                <div class="position-relative">
-                    <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="form-control py-11 ps-40" placeholder="password" />
-                    <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#Input.ConfirmPassword"></span>
+                    <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash"
+                          id="toggle-password-current"
+                          onclick="togglePasswordVisibility('current-password', 'toggle-password-current')"></span>
                     <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-lock"></i></span>
                 </div>
                 <span class="text-gray-900 text-15 mt-4">Must be at least 8 characters</span>
-                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
-            <button type="submit" class="btn btn-main rounded-pill w-100">Sign Up</button>
+            <button type="submit" @onclick="()=>formSubmitted=string.IsNullOrWhiteSpace(Input.Speciality)" class="btn btn-main rounded-pill w-100">Sign Up</button>
             <p class="mt-32 text-gray-600 text-center">
                 Already have an account?
                 <a href="/Login" class="text-main-600 hover-text-decoration-underline"> Log In</a>
@@ -127,12 +131,31 @@
     </div>
 </div>
 
+<script>
+    function togglePasswordVisibility(inputId, spanId) {
+        const input = document.getElementById(inputId);
+        const span = document.getElementById(spanId);
+
+        if (input && span) {
+            if (input.type === "password") {
+                input.type = "text";
+                span.classList.add("active");
+            } else {
+                input.type = "password";
+                span.classList.remove("active");
+            }
+        }
+    }
+</script>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
     private InputModel Input { get; set; } = new InputModel();
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description)).Replace("_"," ")}";
     private string? resultMessage="";
+    private string? ReturnUrl { get; set; } = "/";
+    private bool formSubmitted = false;
+
 
     private sealed class InputModel
     {
@@ -152,10 +175,6 @@
         [Display(Name = "Mot de passe")]
         public string Password { get; set; } = "";
 
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirmer le mot de passe")]
-        [Compare("Password", ErrorMessage = "Le mot de passe et sa confirmation ne correspondent pas.")]
-        public string ConfirmPassword { get; set; } = "";
 
         [Required(ErrorMessage = "Veuillez sélectionner un type d'utilisateur.")]
         [Display(Name = "Type d'utilisateur")]
@@ -175,6 +194,7 @@
             return;
         }
         ApplicationUser user;
+        Console.WriteLine(Input.UserType);
         if (Input.UserType == "Etudiant")
         {
             user = new Etudiant();
@@ -208,17 +228,106 @@
             }
             return;
         }
+        var userId = await UserManager.GetUserIdAsync(user);
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-        var emailConfirmResult = await UserManager.ConfirmEmailAsync(user, code);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+            NavigationManager.ToAbsoluteUri("ConfirmEmail").AbsoluteUri,
+            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
 
-        if (!emailConfirmResult.Succeeded)
-        {
-            Console.WriteLine("Error confirming email: " + string.Join(", ", emailConfirmResult.Errors.Select(e => e.Description)));
-            return;
-        }
+        var email = Input.Email;
+        var subject = "Verification email";
+        var htmlMessage = GenerateEmailConfirmationMessage(HtmlEncoder.Default.Encode(callbackUrl), Input.UserName);
+        await EmailSender.SendEmailAsync(email, subject, htmlMessage);
 
-        NavigationManager.NavigateTo("/Login");
+        // if (UserManager.Options.SignIn.RequireConfirmedAccount)
+        // {
+        //     Console.WriteLine("here");
+
+        // }
+
+        // await SignInManager.SignInAsync(user, isPersistent: false);
+        NavigationManager.NavigateTo($"RegisterConfirmation?email={Uri.EscapeDataString(Input.Email)}&returnUrl={Uri.EscapeDataString(ReturnUrl)}");
+
     }
+    public string GenerateEmailConfirmationMessage(string confirmationLink, string userName)
+    {
+        return $@"
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: 'Arial', sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background-color: #f4f7fc;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }}
+            .container {{
+                max-width: 500px;
+                background: #ffffff;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }}
+            .header {{
+                font-size: 24px;
+                font-weight: bold;
+                color: #1a73e8;
+                margin-bottom: 15px;
+            }}
+            .description {{
+                font-size: 16px;
+                color: #555;
+                margin-bottom: 20px;
+            }}
+            .button {{
+                display: inline-block;
+                padding: 12px 20px;
+                font-size: 16px;
+                color: #fff;
+                background-color: #1a73e8;
+                text-decoration: none;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+                margin-bottom: 15px;
+            }}
+            .button:hover {{
+                background-color: #135ab4;
+            }}
+            .footer {{
+                margin-top: 20px;
+                font-size: 14px;
+                color: #888;
+            }}
+            .footer a {{
+                color: #1a73e8;
+                text-decoration: none;
+            }}
+            .footer a:hover {{
+                text-decoration: underline;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>Welcome to Our App, {userName}! &#128075;</div>
+            <div class='description'>Thank you for registering with us. Please confirm your email address by clicking the button below:</div>
+            <a href='{confirmationLink}' class='button'>Confirm Email</a>
+            <div class='description'>If the button above doesn't work, <a href='{confirmationLink}'>Click here</a></div>
+            <div class='footer'>
+                <p>If you didn't create an account, please ignore this email.</p>
+            </div>
+        </div>
+    </body>
+</html>";
+    }
+
 
     private IUserEmailStore<ApplicationUser> GetEmailStore()
     {

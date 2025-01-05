@@ -1,4 +1,5 @@
 ﻿@inject ICategoryCoursService CategoryCoursService
+@inject NavigationManager Navigation
 <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
     <!-- Breadcrumb Start -->
     <div class="breadcrumb mb-24">
@@ -18,12 +19,12 @@
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
         Course Details
         <span class="line position-relative"></span>
-	</li>
-	<li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
-		<span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+    </li>
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
         Sections Details
-		<span class="line position-relative"></span>
-	</li>
+        <span class="line position-relative"></span>
+    </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
         Upload Videos
@@ -67,7 +68,7 @@
                 </div>
                 <div class="flex-align gap-8">
                     <span class="text-gray-200 d-flex text-16"><i class="ph-fill ph-clock"></i></span>
-                    <span class="text-gray-200 d-flex text-15">@coursLevel </span>
+                    <span class="text-gray-200 d-flex text-15">@coursLevel</span>
                 </div>
             </div>
             <div class="my-24">
@@ -107,6 +108,7 @@
         buttonPublish = "Wait ...";
         await publishCourse.InvokeAsync();
         buttonPublish = "Done";
+        Navigation.NavigateTo("/courses/enseignant/mycourses");
     }
 
 }
