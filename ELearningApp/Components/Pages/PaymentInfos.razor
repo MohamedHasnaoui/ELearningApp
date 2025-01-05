@@ -1,0 +1,28 @@
+﻿@page "/paymentStripe"
+@inject IPayment StripeService
+
+<h3>Résumé des paiements</h3>
+
+@if (paymentSummary == null)
+{
+    <p>Chargement des paiements...</p>
+}
+else if (paymentSummary.HasValue)
+{
+    <p>Total des paiements : @paymentSummary.Value.totalAmount MAD</p>
+    <p>Dernier paiement : @paymentSummary.Value.lastAmount MAD (le @paymentSummary.Value.lastPaymentDate.ToString("dd/MM/yyyy"))</p>
+}
+else
+{
+    <p>Aucun paiement trouvé.</p>
+}
+
+
+@code {
+    private (decimal totalAmount, decimal lastAmount, DateTime lastPaymentDate)? paymentSummary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        paymentSummary = await StripeService.GetPaymentSummaryAsync();
+    }
+}

@@ -1,10 +1,11 @@
 ﻿@page "/success"
 @rendermode InteractiveServer
-
+@inject IAbonnementAchete AbonnementAcheteService
+@inject IAbonnementService AbonnementService
 @layout ELearningApp.Components.Layout.EmptyLayout
 @inject HttpClient Http
 @inject NavigationManager Navigation
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <div class="alert alert-success text-center">
     <p><strong>Merci Pour Votre Confiance</strong></p>
 </div>
@@ -15,11 +16,38 @@
 </div>
 
 @code {
-    // Récupérer l'ID et le prix de la chaîne de requête
     private int abonnementId;
+    private string? EtudiantId = "";
+    private bool estAchete = true;
+    private List<Abonnement>? abonnements;
 
-    protected override  void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        // Récupérer l'état d'authentification
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            EtudiantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(EtudiantId))
+            {
+                abonnements = await AbonnementService.GetAllAbonnementsAsync();
+                foreach (var abonnement in abonnements)
+                {
+                    var test = await AbonnementAcheteService.IsAbonnementAchete(abonnement.Id, EtudiantId);
+                    if (test)
+                    {
+                        estAchete = true; 
+                        Navigation.NavigateTo("/notification?Message=Vous avez déjà acheté un abonnement&Status=Success");
+                        return;
+                    }
+
+                }
+                estAchete = true;
+            }
+        }
+
         // Récupérer l'URL actuelle
         var uri = Navigation.Uri;
 
@@ -34,46 +62,36 @@
         }
         else
         {
-            // Gérer le cas où l'id n'est pas valide ou inexistant
             Console.WriteLine("Paramètre abonnementId manquant ou invalide.");
         }
-
-        //await CallWebhook();
-
-
     }
-
-
-
 
     private async Task CallWebhook()
     {
         try
         {
-            if(abonnementId>0){
-                // Utiliser l'Id récupéré pour envoyer au webhook
+            if (abonnementId > 0)
+            {
                 var requestData = new
                 {
-                    IdEtudiant = "04b58e25-73df-4c34-a75b-330641bc2ffc", // Remplacer par l'id réel
-                    IdAbonnement = abonnementId // Utiliser l'ID récupéré de la requête
+                    IdEtudiant = EtudiantId,
+                    IdAbonnement = abonnementId
                 };
 
-                // Effectuer la requête HTTP POST
                 var response = await Http.PostAsJsonAsync("https://localhost:7134/api/payment/webhook", requestData);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Traitez la réponse si nécessaire
                     Console.WriteLine("Payment processed successfully.");
-                    Navigation.NavigateTo("/");
+                    Navigation.NavigateTo($"/notification?Message=Paiment est validé&Status=Success");
                 }
                 else
                 {
-                    //Console.WriteLine("Failed to process payment.");
-                    throw new Exception();
+                    Console.WriteLine("Failed to process payment.");
+                    Navigation.NavigateTo($"/notification?Message=Erreur lors de paiment&Status=Error");
+
                 }
             }
-            
         }
         catch (Exception ex)
         {

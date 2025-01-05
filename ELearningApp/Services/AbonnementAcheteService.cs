@@ -64,11 +64,15 @@ namespace ELearningApp.Services
         }
 
         // Vérifier si l'abonnement a déjà été acheté par l'étudiant
-public async Task<bool> IsAbonnementAchete( int idAbonnement)
-{
-    return await _context.AbonnementsAchetes
-        .AnyAsync(a => a.IdAbonnement == idAbonnement);
-}
+        public async Task<bool> IsAbonnementAchete(int idAbonnement, string etudiantId)
+        {
+            return await _context.AbonnementsAchetes
+                .AnyAsync(a =>
+                    a.IdAbonnement == idAbonnement &&
+                    a.IdEtudiant == etudiantId &&
+                    a.DateExpiration > DateTime.Now); // Vérifie que la date d'expiration n'est pas atteinte
+        }
+
 
     }
 
