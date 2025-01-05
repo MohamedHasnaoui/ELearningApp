@@ -79,18 +79,17 @@ namespace ELearningApp.Services
                 if (etudiant == null)
                     return false; // L'étudiant n'existe pas
 
-                // Vérifier si l'AbonnementAchete existe déjà
+                // Vérifier si un abonnement existant satisfait les critères
                 var existingAbonnement = await _context.AbonnementsAchetes
-                    .FirstOrDefaultAsync(a => a.IdEtudiant == idEtudiant && a.IdAbonnement == idAbonnement);
+                    .FirstOrDefaultAsync(a =>
+                        a.IdEtudiant == idEtudiant &&
+                        a.IdAbonnement == idAbonnement &&
+                        a.DateExpiration > DateTime.Now);
 
                 if (existingAbonnement != null)
                 {
-                    // Si l'abonnement existe déjà, vérifier si la date d'expiration est passée
-                    if (DateTime.Now < existingAbonnement.DateExpiration)
-                    {
-                        // L'abonnement est encore valide, on ne crée pas de nouveau
-                        return false;
-                    }
+                    // L'abonnement existe déjà et est encore valide
+                    return false;
                 }
 
                 // Calculer la date d'expiration en fonction de la durée de l'abonnement
@@ -129,6 +128,52 @@ namespace ELearningApp.Services
                 // Log l'exception si nécessaire
                 Console.WriteLine($"Erreur lors du traitement du paiement : {ex.Message}");
                 return false;
+            }
+
+        }
+        public async Task<(decimal totalAmount, decimal lastAmount, DateTime lastPaymentDate)> GetPaymentSummaryAsync()
+        {
+            try
+            {
+                // Initialiser le service Stripe
+                var paymentIntentService = new PaymentIntentService();
+
+                // Récupérer les paiements (limité ici à 100 pour des raisons de performance)
+                var paymentIntents = await paymentIntentService.ListAsync(new PaymentIntentListOptions
+                {
+                    Limit = 100 // Ajustez selon vos besoins
+                });
+
+                if (paymentIntents == null || paymentIntents.Data.Count == 0)
+                {
+                    // Aucun paiement trouvé
+                    return (0, 0, DateTime.MinValue);
+                }
+
+                // Calculer la somme totale et trouver le dernier paiement
+                decimal totalAmount = 0;
+                decimal lastAmount = 0;
+                DateTime lastPaymentDate = DateTime.MinValue;
+
+                foreach (var paymentIntent in paymentIntents.Data)
+                {
+                    if (paymentIntent.Status == "succeeded") // Vérifier si le paiement a réussi
+                    {
+                        totalAmount += paymentIntent.Amount / 100m; // Montant en unités de base (MAD)
+                        if (paymentIntent.Created > lastPaymentDate)
+                        {
+                            lastPaymentDate = paymentIntent.Created;
+                            lastAmount = paymentIntent.Amount / 100m;
+                        }
+                    }
+                }
+
+                return (totalAmount, lastAmount, lastPaymentDate);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la récupération des paiements : {ex.Message}");
+                return (0, 0, DateTime.MinValue);
             }
         }
 

@@ -8,11 +8,42 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ELearningApp.Migrations
 {
     /// <inheritdoc />
-    public partial class m1 : Migration
+    public partial class Merge : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Abonnements",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Duree = table.Column<int>(type: "int", nullable: false),
+                    Prix = table.Column<int>(type: "int", nullable: false),
+                    IsRecommanded = table.Column<bool>(type: "bit", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Caracteristiques = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Abonnements", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AbonnementTemps",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdAbonnement = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbonnementTemps", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -33,6 +64,9 @@ namespace ELearningApp.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     imgProfile = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     imgCover = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FormalUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     joinDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -153,7 +187,7 @@ namespace ELearningApp.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -225,6 +259,7 @@ namespace ELearningApp.Migrations
                     Duree = table.Column<double>(type: "float", nullable: false),
                     CoursImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CoursImgPublicId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    nbVids = table.Column<int>(type: "int", nullable: false),
                     Niveau = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -240,6 +275,34 @@ namespace ELearningApp.Migrations
                         column: x => x.EnseignantId,
                         principalTable: "Enseignants",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AbonnementAchetes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdEtudiant = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IdAbonnement = table.Column<int>(type: "int", nullable: false),
+                    DateDebutAchat = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateExpiration = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbonnementAchetes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AbonnementAchetes_Abonnements_IdAbonnement",
+                        column: x => x.IdAbonnement,
+                        principalTable: "Abonnements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AbonnementAchetes_Etudiants_IdEtudiant",
+                        column: x => x.IdEtudiant,
+                        principalTable: "Etudiants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -268,7 +331,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -280,7 +343,8 @@ namespace ELearningApp.Migrations
                     CoursId = table.Column<int>(type: "int", nullable: false),
                     EtudiantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateDebut = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Progression = table.Column<float>(type: "real", nullable: false),
+                    Progres = table.Column<int>(type: "int", nullable: false),
+                    nbWatchedVid = table.Column<int>(type: "int", nullable: false),
                     DateFin = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -297,7 +361,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -317,7 +381,7 @@ namespace ELearningApp.Migrations
                         column: x => x.CoursId,
                         principalTable: "Cours",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -339,7 +403,7 @@ namespace ELearningApp.Migrations
                         column: x => x.CoursId,
                         principalTable: "Cours",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -359,7 +423,7 @@ namespace ELearningApp.Migrations
                         column: x => x.ExamenId,
                         principalTable: "Examens",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -389,7 +453,7 @@ namespace ELearningApp.Migrations
                         column: x => x.ExamenId,
                         principalTable: "Examens",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -462,7 +526,7 @@ namespace ELearningApp.Migrations
                         column: x => x.VideoId,
                         principalTable: "Videos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -502,6 +566,16 @@ namespace ELearningApp.Migrations
                     { 2, "Courses related to data analysis, machine learning, and statistics.", "Data Science" },
                     { 3, "Courses related to building websites and web applications.", "Web Development" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbonnementAchetes_IdAbonnement",
+                table: "AbonnementAchetes",
+                column: "IdAbonnement");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbonnementAchetes_IdEtudiant",
+                table: "AbonnementAchetes",
+                column: "IdEtudiant");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -633,6 +707,12 @@ namespace ELearningApp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AbonnementAchetes");
+
+            migrationBuilder.DropTable(
+                name: "AbonnementTemps");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -661,6 +741,9 @@ namespace ELearningApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "Soumissions");
+
+            migrationBuilder.DropTable(
+                name: "Abonnements");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
