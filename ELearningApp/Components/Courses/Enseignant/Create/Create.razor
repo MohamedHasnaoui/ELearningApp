@@ -1,10 +1,10 @@
-﻿@page "/courses/create"
+﻿@page "/courses/Enseignant/create"
 @inject ICoursService CoursService
 @rendermode InteractiveServer
 
 @* part0 *@
 <div class="@(b[0] ? "" : "d-none") dashboard-body">
-    <Part0 OnContinueButtonClick="nextPage" @ref="refpart0" UpdateNumberSections="UpdateNumberSections" />
+    <Part0  OnContinueButtonClick="nextPage" @ref="refpart0" UpdateNumberSections="UpdateNumberSections" />
 </div>
 
 @* part1 *@
@@ -28,6 +28,8 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    public ApplicationUser AuthenticatedUser { get; set; }
     private const int nbPart = 5;
     private bool[] b = new bool[nbPart];
     private Part0 refpart0 { get; set; }
@@ -60,17 +62,21 @@
         while(refpart1.sectionForms.Count()>newValue){
             refpart1.sectionForms.RemoveAt(refpart1.sectionForms.Count() - 1);
             refpart2.sectionVids.RemoveAt(refpart2.sectionVids.Count() - 1);
-            
+
         }
     }
     private async Task publishCourse(){
         double dureetotal = 0;
+        int nbVid = 0;
         try{
             Cours cours = await refpart0.SaveToDateBase();
             var sections = await refpart1.SaveToDateBase(cours.Id);
-            dureetotal = await refpart2.SaveToDateBase(sections);
+            var res = await refpart2.SaveToDateBase(sections);
+            dureetotal = res.dureeTotal;
+            nbVid = res.nbVid;
             await refAddExam.SaveToDateBase(cours.Id);
             cours.Duree = dureetotal;
+            cours.nbVids = nbVid;
             await CoursService.UpdateAsync(cours);
         }catch(Exception ex){
             Console.WriteLine("error while saving to db ....");

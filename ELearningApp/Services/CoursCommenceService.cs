@@ -22,10 +22,14 @@ namespace ELearningApp.Services
                 .ToListAsync();
         }
 
-        public async Task<CoursCommence> GetByIdAsync(int id)
+        public async Task<CoursCommence?> GetByIdAsync(int id)
         {
             return await _context.CoursCommences
                 .Include(cc => cc.Cours)
+                .ThenInclude(c=>c.sections)
+                .ThenInclude(s => s.Videos)
+                .Include(cc => cc.Cours)
+                .ThenInclude(c=>c.Enseignant)
                 .Include(cc => cc.Etudiant)
                 .FirstOrDefaultAsync(cc => cc.Id == id);
         }
@@ -37,12 +41,42 @@ namespace ELearningApp.Services
                 .Where(cc => cc.CoursId == coursId)
                 .ToListAsync();
         }
-
+        public async Task<int> CountByCoursIdAsync(int coursId)
+        {
+            return await _context.CoursCommences
+                .Where(cc => cc.CoursId == coursId)
+                .CountAsync();
+        }
         public async Task<IEnumerable<CoursCommence>> GetByEtudiantIdAsync(string etudiantId)
         {
             return await _context.CoursCommences
                 .Include(cc => cc.Cours)
+                .ThenInclude(c => c.Enseignant)
+                .Include(cc => cc.Cours)
+                .ThenInclude(c => c.Category)
                 .Where(cc => cc.EtudiantId == etudiantId)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<CoursCommence>> GetByEtudiantIdCompletedAsync(string etudiantId)
+        {
+            return await _context.CoursCommences
+                .Include(cc => cc.Cours)
+                .ThenInclude(c => c.Enseignant)
+                .Include(cc => cc.Cours)
+                .ThenInclude(c => c.Category)
+                .Where(cc => cc.EtudiantId == etudiantId)
+                .Where(cc=>cc.Progres==100)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<CoursCommence>> GetByEtudiantIdOnGoingAsync(string etudiantId)
+        {
+            return await _context.CoursCommences
+                .Include(cc => cc.Cours)
+                .ThenInclude(c => c.Enseignant)
+                .Include(cc => cc.Cours)
+                .ThenInclude(c => c.Category)
+                .Where(cc => cc.EtudiantId == etudiantId)
+                .Where(cc => cc.Progres < 100)
                 .ToListAsync();
         }
         public async Task<CoursCommence> GetByEtudiantAndCoursAsync(string etudiantId, int coursId)

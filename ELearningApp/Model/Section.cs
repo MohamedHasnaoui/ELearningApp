@@ -34,5 +34,15 @@ namespace ELearningApp.Model
 
         // Relation avec les vidéos
         public ICollection<Video> Videos { get; set; }
+
+        public string FormatDuration()
+        {
+            int minutes = (int)(this.Duree / 60);
+            int remainingSeconds = (int)(Duree % 60);
+            return $"{minutes:D2} : {remainingSeconds:D2}"; // Format as mm:ss
+        }
+        public Section() {
+            Videos = new List<Video>();
+        }
     }
 }

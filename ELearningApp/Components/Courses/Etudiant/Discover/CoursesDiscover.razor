@@ -1,0 +1,110 @@
+﻿@page "/courses/etudiant/decouvrir"
+@inject ICoursService CourService
+@inject ICategoryCoursService CategoryCoursService
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+<div class="dashboard-body">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-20 flex-between flex-wrap gap-8">
+                <h4 class="mb-0">Latest Courses</h4>
+                <div class="flex-align gap-8 flex-wrap">
+                    <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-8 focus-border-main-600">
+                        <span class="text-lg"><i class="ph ph-layout"></i></span>
+                        <select @oninput="OnCategoryChanged" class="form-control px-8 py-12 border-0 text-inherit rounded-4 text-center">
+                            <option value="" disabled>Category</option>
+                            <option value="0" >All</option>
+                            @foreach(var c in categories){
+                                <option value="@c.Id">@c.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-20">
+                @foreach(var c in Courses){
+                    <DiscCoursCard ensName="@c.Enseignant.UserName" ensImage="@c.Enseignant.imgProfile" categoryStyle="@categoryStyle[count++%5]" coursimg="@c.CoursImg" coursId="@c.Id" Category="@c.Category.Name" CoursTitle="@c.Nom" Duree="@c.FormatDuration()" Rating="@c.Evaluation" />
+                }
+            </div>
+            <div class="flex-between flex-wrap gap-8 mt-20">
+                <button @onclick="async()=>await move(-1)" disabled="@(pageNumber == 1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
+                    <span class="d-flex text-xl"><i class="ph ph-arrow-left"></i></span>
+                    Previous
+                </button>
+                <ul class="pagination flex-align flex-wrap">
+                    <li class="page-item active">
+                        <button class="page-link h-44 w-44 flex-center text-15 rounded-8 fw-medium">@pageNumber</button>
+                    </li>
+                </ul>
+                <button @onclick="async()=>await move(1)" disabled="@(pageNumber == nbPages)" class="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
+                    Next <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    IEnumerable<Cours> Courses = new List<Cours>();
+    IEnumerable<CategoryCours> categories = new List<CategoryCours>();
+    private int nbPages;
+    private int pageNumber = 1;
+    private uint count = 0;
+    private int categId = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        Courses = await CourService.GetAllAsync(pageNumber,9);
+        nbPages = await CourService.CountCourses();
+        nbPages = (nbPages - 1) / 9 + 1;
+        categories = await CategoryCoursService.GetAllCategoriesAsync();
+    }
+    private string[] categoryStyle = { "bg-purple-50 text-purple-600",
+                                       "bg-success-50 text-success-600",
+                                       "bg-warning-50 text-warning-600",
+                                       "bg-info-50 text-info-600",
+                                       "bg-danger-50 text-danger-600",
+                                  };
+    private async Task move(int i)
+    {
+        Console.WriteLine("clicked");
+        if ((i == 1 && pageNumber < nbPages) || (i == -1 && pageNumber > 1))
+        {
+            pageNumber += i;
+            if (categId != 0)
+            {
+                Courses = await CourService.GetCoursByCategoryIdAsync(categId, pageNumber, 9);
+            }
+            else
+            {
+                Courses = await CourService.GetAllAsync(pageNumber, 9);
+            }
+            await JSRuntime.InvokeVoidAsync("scrollToTop");
+        }
+    }
+
+    private async Task OnCategoryChanged(ChangeEventArgs e)
+    {
+        Console.WriteLine("changed");
+        pageNumber = 1;
+        if (int.TryParse(e.Value?.ToString(), out int selectedCategoryId))
+        {
+            categId = selectedCategoryId;
+            Console.WriteLine(categId);
+            if (categId != 0)
+            {
+            Courses = await CourService.GetCoursByCategoryIdAsync(categId, pageNumber, 9);
+            nbPages = await CourService.CountByCategoryIdAsync(categId);
+            nbPages = (nbPages - 1) / 9 + 1;
+            }else {
+                Courses = await CourService.GetAllAsync(pageNumber, 9);
+                nbPages = await CourService.CountCourses();
+                nbPages = (nbPages - 1) / 9 + 1;
+            }
+            await JSRuntime.InvokeVoidAsync("scrollToTop");
+            }
+    }
+}
+<script>
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Smooth scroll to top
+    }
+</script>

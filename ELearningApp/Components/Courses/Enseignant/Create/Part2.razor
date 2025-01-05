@@ -90,16 +90,19 @@
     {
         await OnBackButtonClick.InvokeAsync(2);
     }
-    public async Task<double> SaveToDateBase(List<Section> sections)
+    public async Task<(double dureeTotal, int nbVid)> SaveToDateBase(List<Section> sections)
     {
         int i = 0;
         double dureeTotal = 0;
+        int nbVid = 0;
         foreach(var section in sections){
             try{
                 dureeTotal+=await sectionVids[i].SaveToDataBase(section.Id);
+                nbVid += sectionVids[i].Videos.Count();
+                i++;
             }catch(Exception e){
             }
         }
-        return dureeTotal;
+        return (dureeTotal,nbVid);
     }
 }
