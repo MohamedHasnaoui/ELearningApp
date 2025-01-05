@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250103190552_m3")]
-    partial class m3
+    [Migration("20250105133619_Merge")]
+    partial class Merge
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,12 @@ namespace ELearningApp.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("Adress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -65,6 +71,9 @@ namespace ELearningApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumberCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -102,6 +111,85 @@ namespace ELearningApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
 
                     b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.Abonnement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Caracteristiques")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Duree")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRecommanded")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Prix")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Abonnements", (string)null);
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.AbonnementAchete", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateDebutAchat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateExpiration")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdAbonnement")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdEtudiant")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAbonnement");
+
+                    b.HasIndex("IdEtudiant");
+
+                    b.ToTable("AbonnementAchetes", (string)null);
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.AbonnementTemp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdAbonnement")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AbonnementTemps", (string)null);
                 });
 
             modelBuilder.Entity("ELearningApp.Model.CategoryCours", b =>
@@ -316,6 +404,9 @@ namespace ELearningApp.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Progres")
+                        .HasColumnType("int");
+
+                    b.Property<int>("nbWatchedVid")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -662,6 +753,25 @@ namespace ELearningApp.Migrations
                     b.ToTable("Etudiants", (string)null);
                 });
 
+            modelBuilder.Entity("ELearningApp.Model.AbonnementAchete", b =>
+                {
+                    b.HasOne("ELearningApp.Model.Abonnement", "Abonnement")
+                        .WithMany("AbonnementsAchetes")
+                        .HasForeignKey("IdAbonnement")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ELearningApp.Model.Etudiant", "Etudiant")
+                        .WithMany("AbonnementsAchetes")
+                        .HasForeignKey("IdEtudiant")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Abonnement");
+
+                    b.Navigation("Etudiant");
+                });
+
             modelBuilder.Entity("ELearningApp.Model.Certificat", b =>
                 {
                     b.HasOne("ELearningApp.Model.Cours", "Cours")
@@ -903,6 +1013,11 @@ namespace ELearningApp.Migrations
                     b.Navigation("ReponsesCommentaires");
                 });
 
+            modelBuilder.Entity("ELearningApp.Model.Abonnement", b =>
+                {
+                    b.Navigation("AbonnementsAchetes");
+                });
+
             modelBuilder.Entity("ELearningApp.Model.CategoryCours", b =>
                 {
                     b.Navigation("Courses");
@@ -948,6 +1063,8 @@ namespace ELearningApp.Migrations
 
             modelBuilder.Entity("ELearningApp.Model.Etudiant", b =>
                 {
+                    b.Navigation("AbonnementsAchetes");
+
                     b.Navigation("Certificats");
 
                     b.Navigation("CoursCommences");

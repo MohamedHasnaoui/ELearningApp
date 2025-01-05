@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ELearningApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Merge : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,6 +64,9 @@ namespace ELearningApp.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     imgProfile = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     imgCover = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FormalUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     joinDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -184,7 +187,7 @@ namespace ELearningApp.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -256,6 +259,7 @@ namespace ELearningApp.Migrations
                     Duree = table.Column<double>(type: "float", nullable: false),
                     CoursImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CoursImgPublicId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    nbVids = table.Column<int>(type: "int", nullable: false),
                     Niveau = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -327,7 +331,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -339,7 +343,8 @@ namespace ELearningApp.Migrations
                     CoursId = table.Column<int>(type: "int", nullable: false),
                     EtudiantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateDebut = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Progression = table.Column<float>(type: "real", nullable: false),
+                    Progres = table.Column<int>(type: "int", nullable: false),
+                    nbWatchedVid = table.Column<int>(type: "int", nullable: false),
                     DateFin = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -356,7 +361,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -448,7 +453,7 @@ namespace ELearningApp.Migrations
                         column: x => x.ExamenId,
                         principalTable: "Examens",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -521,7 +526,7 @@ namespace ELearningApp.Migrations
                         column: x => x.VideoId,
                         principalTable: "Videos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
