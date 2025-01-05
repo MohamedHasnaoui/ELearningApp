@@ -25,6 +25,7 @@ namespace ELearningApp.Data
         public DbSet<AbonnementTemp> AbonnementTemps { get; set; }
         public DbSet<AbonnementAchete> AbonnementsAchetes { get; set; }
 
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

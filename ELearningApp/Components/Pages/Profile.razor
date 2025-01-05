@@ -2,12 +2,13 @@
 @using ELearningApp.Components.Account
 @using ELearningApp.Components.Authentication.Shared
 @using System.ComponentModel.DataAnnotations
-
+@using Microsoft.JSInterop;
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject IJSRuntime JSRuntime
+@inject ICloudinaryService CloudinaryService
 
 <PageTitle>Home</PageTitle>
 
@@ -41,7 +42,7 @@
                 <div class="setting-profile px-24">
                     <div class="flex-between">
                         <div class="d-flex align-items-end flex-wrap mb-32 gap-24">
-                            <img src="assets/images/thumbs/setting-profile-img.jpg" alt="" class="w-120 h-120 rounded-circle border border-white">
+                            <img src='@(AuthenticatedUser?.imgProfile ?? "assets/images/thumbs/setting-profile-img.jpg")' alt="" class="w-120 h-120 rounded-circle border border-white">
                             <div>
                                 <h4 class="mb-8">@AuthenticatedUser.FormalUserName</h4>
                                 <div class="setting-profile__infos flex-align flex-wrap gap-16">
@@ -139,9 +140,11 @@
                                     <label for="imageUpload" class="form-label mb-8 h6">Your Photo</label>
                                     <div class="flex-align gap-22">
                                         <div class="avatar-upload flex-shrink-0">
-                                            <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg">
+                                            @* <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg"> *@
+                                            <input type="file" id="imageUpload" onchange="handleFileChange()" accept=".png,.jpg,.jpeg" />
+
                                             <div class="avatar-preview">
-                                                <div id="profileImagePreview" style="background-image: url('assets/images/thumbs/setting-profile-img.jpg');">
+                                                <div id="profileImagePreview" style="background-image: url('@(AuthenticatedUser?.imgProfile ?? "assets/images/thumbs/setting-profile-img.jpg")');">
                                                 </div>
                                             </div>
                                         </div>
@@ -268,10 +271,14 @@ else{
     localStorage.setItem('activeTab', tabId);
 
     }
+    
 </script>
 @code {
     private string? profileMessage;
     private string? passwordMessage;
+    public string coursImgUrl ;
+    private string imgPublicId;
+    private IBrowserFile ThumbnailImage;
     private bool hasPassword;
     [CascadingParameter]
     public ApplicationUser? AuthenticatedUser { get; set; }
@@ -306,12 +313,16 @@ else{
     private string? originalDate { get; set; }
     private string? formattedDate { get; set; }
 
-
-
+    [JSInvokable("HandleThumbnailImageChange")]
+    public async Task HandleThumbnailImageChange(string e)
+    {
+        Console.WriteLine($"File selected: {e}");
+        
+    }
     protected override async Task OnInitializedAsync()
     {
+
         await Task.Delay(500);
-        Console.WriteLine("11111111111111111111111111");
 
         hasPassword = await UserManager.HasPasswordAsync(AuthenticatedUser);
         if (!hasPassword)
@@ -494,4 +505,12 @@ else{
         }
     });
     window.history.replaceState({}, document.title, window.location.pathname);
+    function handleFileChange() {
+        console.log("111111111111111111111111111111111111111");
+        const input = document.getElementById('imageUpload');
+        const file = input.files[0];
+        if (file) {
+            DotNet.invokeMethodAsync('ELearningApp', 'HandleThumbnailImageChange', file.name);
+        }
+    }
 </script>
