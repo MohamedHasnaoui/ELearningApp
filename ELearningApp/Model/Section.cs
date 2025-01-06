@@ -16,6 +16,7 @@ namespace ELearningApp.Model
         [Display(Name = "Titre de la section")]
         public string Title { get; set; }
 
+        [Required(ErrorMessage = "Le description est obligatoire.")]
         [StringLength(500, ErrorMessage = "La description de la section ne peut pas dépasser 500 caractères.")]
         [Display(Name = "Description de la section")]
         public string Description { get; set; }
@@ -27,7 +28,7 @@ namespace ELearningApp.Model
         public int CoursId { get; set; }
 
         [Display(Name = "Duree")]
-        public double? Duree { get; set; }
+        public double Duree { get; set; }
 
         // Navigation vers le cours
         public Cours Cours { get; set; }

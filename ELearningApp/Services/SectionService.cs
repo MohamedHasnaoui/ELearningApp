@@ -22,9 +22,10 @@ namespace ELearningApp.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var section = await _context.Sections.FindAsync(id);
+            var section = await _context.Sections.Include(s=>s.Videos).Where(s=>s.Id==id).FirstAsync();
             if (section != null)
             {
+                _context.Videos.RemoveRange(section.Videos);
                 _context.Sections.Remove(section);
                 await _context.SaveChangesAsync();
                 return true;
@@ -41,9 +42,9 @@ namespace ELearningApp.Services
 
         public async Task<IEnumerable<Section>> GetSectionsByCoursIdAsync(int coursId)
         {
-            return await _context.Sections
-                .Where(s => s.CoursId == coursId)
-                .Include(s => s.Videos) // Eagerly load related Videos
+            return await _context.Sections.AsNoTracking()
+                .Where(s => s.CoursId == coursId).AsNoTracking()
+                .Include(s => s.Videos).AsNoTracking() // Eagerly load related Videos
                 .ToListAsync();
         }
 
