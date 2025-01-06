@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ELearningApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Merge : Migration
+    public partial class Merge2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -187,7 +187,7 @@ namespace ELearningApp.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -253,7 +253,7 @@ namespace ELearningApp.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nom = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Evaluation = table.Column<float>(type: "real", nullable: true),
+                    Evaluation = table.Column<double>(type: "float", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
                     EnseignantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Duree = table.Column<double>(type: "float", nullable: false),
@@ -331,7 +331,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -361,7 +361,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -382,6 +382,33 @@ namespace ELearningApp.Migrations
                         principalTable: "Cours",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ratings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Valeur = table.Column<int>(type: "int", nullable: false),
+                    CoursId = table.Column<int>(type: "int", nullable: false),
+                    EtudiantId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ratings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Cours_CoursId",
+                        column: x => x.CoursId,
+                        principalTable: "Cours",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Etudiants_EtudiantId",
+                        column: x => x.EtudiantId,
+                        principalTable: "Etudiants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -453,7 +480,7 @@ namespace ELearningApp.Migrations
                         column: x => x.ExamenId,
                         principalTable: "Examens",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -526,7 +553,7 @@ namespace ELearningApp.Migrations
                         column: x => x.VideoId,
                         principalTable: "Videos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -673,6 +700,17 @@ namespace ELearningApp.Migrations
                 column: "ExamenId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Ratings_CoursId_EtudiantId",
+                table: "Ratings",
+                columns: new[] { "CoursId", "EtudiantId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_EtudiantId",
+                table: "Ratings",
+                column: "EtudiantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReponsesCommentaire_CommentaireId",
                 table: "ReponsesCommentaire",
                 column: "CommentaireId");
@@ -735,6 +773,9 @@ namespace ELearningApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "CoursCommences");
+
+            migrationBuilder.DropTable(
+                name: "Ratings");
 
             migrationBuilder.DropTable(
                 name: "ReponsesCommentaire");

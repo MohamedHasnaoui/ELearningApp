@@ -16,5 +16,6 @@ namespace ELearningApp.IServices
         Task<int> CountByEnseignantId(string enseignantId);
         Task<int> CountByCategoryIdAsync(int categoryId);
         Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsAsync(string enseignantId);
+        Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsFiltrésParStatutAsync(string enseignantId, string statut);
     }
 }

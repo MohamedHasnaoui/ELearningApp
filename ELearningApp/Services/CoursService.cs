@@ -103,6 +103,40 @@ namespace ELearningApp.Services
         {
             return await _context.CoursCommences
                 .Where(cc => cc.Cours.EnseignantId == enseignantId)
+                .OrderByDescending(cc => cc.DateDebut)  // Trie les étudiants par date d'inscription, du plus récent au plus ancien
+                .Select(cc => new EtudiantCoursInfo
+                {
+                    EtudiantId = cc.EtudiantId,
+                    NomCours = cc.Cours.Nom,
+                    DateInscription = cc.DateDebut,
+                    Statut = cc.Progres == 100 ? "Completé" : "En cours",
+                    ImgProfile = cc.Etudiant.imgProfile,
+                    NomEtudiant = cc.Etudiant.UserName // Récupération du nom de l'étudiant
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsFiltrésParStatutAsync(string enseignantId, string statut)
+        {
+            var query = _context.CoursCommences
+                .Where(cc => cc.Cours.EnseignantId == enseignantId);
+
+            // Ajouter le filtre sur le statut
+            if (!string.IsNullOrEmpty(statut))
+            {
+                if (statut.ToLower() == "completé")
+                {
+                    query = query.Where(cc => cc.Progres == 100);  // Filtrer pour les étudiants dont le progrès est à 100
+                }
+                else if (statut.ToLower() == "en cours")
+                {
+                    query = query.Where(cc => cc.Progres < 100);  // Filtrer pour les étudiants dont le progrès est inférieur à 100
+                }
+            }
+
+            // Tri par date d'inscription, du plus récent au plus ancien
+            return await query
+                .OrderByDescending(cc => cc.DateDebut)
                 .Select(cc => new EtudiantCoursInfo
                 {
                     EtudiantId = cc.EtudiantId,
