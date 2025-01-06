@@ -1,0 +1,348 @@
+﻿@inject ICoursService CoursService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
+
+@page "/mesEtudiants"
+
+<!--==================== Preloader Start ====================-->
+<div class="preloader">
+    <div class="loader"></div>
+</div>
+<!--==================== Preloader End ====================-->
+<!--==================== Sidebar Overlay End ====================-->
+<div class="side-overlay"></div>
+<!--==================== Sidebar Overlay End ====================-->
+<!-- ============================ Sidebar Start ============================ -->
+
+<!-- ============================ Sidebar End  ============================ -->
+
+<div>
+    <div class="dashboard-body">
+        <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
+            <!-- Breadcrumb Start -->
+            <div class="breadcrumb mb-24">
+                <ul class="flex-align gap-4">
+                    <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                    <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+                    <li><span class="text-main-600 fw-normal text-15">Mes Etudiants</span></li>
+                </ul>
+            </div>
+            <!-- Breadcrumb End -->
+            <!-- Breadcrumb Right Start -->
+            <div class="flex-align gap-8 flex-wrap">
+                <div class="position-relative text-gray-500 flex-align gap-4 text-13">
+                    <span class="text-inherit">Filtrer par statut: </span>
+                    <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
+                        <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
+                        <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnStatusChanged">
+                            <option value="all">Tous</option>
+                            <option value="completé">Completé</option>
+                            <option value="en cours">En cours</option>
+                        </select>
+
+                    </div>
+                </div>
+                <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
+                    <span class="text-lg"><i class="ph ph-layout"></i></span>
+                    <select class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" id="exportOptions">
+                        <option value="" selected disabled>Export</option>
+                        <option value="csv">CSV</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+            </div>
+           
+
+
+           
+            <!-- Breadcrumb Right End -->
+        </div>
+
+
+        @if (isLoading)
+        {
+            <p>Chargement en cours...</p>
+        }
+        else if ((etudiants.Any()))
+        {
+
+
+            <div class="card overflow-hidden">
+                <div class="card-body p-0">
+                    <table id="assignmentTable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%; text-align: center;">Étudiant</th>
+                                <th style="width: 25%; text-align: center;">Cours</th>
+                                <th style="width: 25%; text-align: center;">Date d'inscription</th>
+                                <th style="width: 25%; text-align: center;">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var etudiant in  FilteredEtudiants())
+                            {
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <div class="flex-align gap-8">
+                                            <img class="rounded-circle"
+                                                 src="@(!string.IsNullOrEmpty(etudiant.ImgProfile) ? etudiant.ImgProfile : "assets/images/thumbs/student-img1.png")"
+                                                 alt="Profil"
+                                                 style="width: 50px; height: 50px;" />
+                                            <span class="h6 mb-0 fw-medium text-gray-300">@etudiant.NomEtudiant</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="h6 mb-0 fw-medium text-gray-300">@etudiant.NomCours</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="h6 mb-0 fw-medium text-gray-300">@etudiant.DateInscription.ToString("dd/MM/yyyy")</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
+                                            <span class="w-6 h-6 bg-teal-600 rounded-circle flex-shrink-0"></span>
+                                            @etudiant.Statut
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        }
+        <div class="card-footer flex-between flex-wrap"
+             style="background-color: white; border-radius: 8px; padding: 10px; margin-top: 20px;">
+            <button class="btn btn-primary"
+                    style="margin-right: 10px; border-radius: 6px; padding: 8px 16px;"
+                    @onclick="PreviousPage" disabled="@(currentPage == 1)">
+                Précédent
+            </button>
+            <span style="margin: 0 10px;">Page @currentPage sur @totalPages</span>
+            <button class="btn btn-primary"
+                    style="margin-left: 10px; border-radius: 6px; padding: 8px 16px;"
+                    @onclick="NextPage" disabled="@(currentPage == totalPages)">
+                Suivant
+            </button>
+        </div>
+
+
+    </div>
+
+</div>
+
+<!-- Jquery js -->
+<script src="assets/js/jquery-3.7.1.min.js"></script>
+<!-- Bootstrap Bundle Js -->
+<script src="assets/js/boostrap.bundle.min.js"></script>
+<!-- Phosphor Js -->
+<script src="assets/js/phosphor-icon.js"></script>
+<!-- file upload -->
+<script src="assets/js/file-upload.js"></script>
+<!-- file upload -->
+<script src="assets/js/plyr.js"></script>
+<!-- dataTables -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+<!-- full calendar -->
+<script src="assets/js/full-calendar.js"></script>
+<!-- jQuery UI -->
+<script src="assets/js/jquery-ui.js"></script>
+<!-- jQuery UI -->
+<script src="assets/js/editor-quill.js"></script>
+<!-- apex charts -->
+<script src="assets/js/apexcharts.min.js"></script>
+<!-- Calendar Js -->
+<script src="assets/js/calendar.js"></script>
+<!-- jvectormap Js -->
+<script src="assets/js/jquery-jvectormap-2.0.5.min.js"></script>
+<!-- jvectormap world Js -->
+<script src="assets/js/jquery-jvectormap-world-mill-en.js"></script>
+
+<!-- main js -->
+<script src="assets/js/main.js"></script>
+
+
+
+<script>
+
+    document.getElementById('exportOptions').addEventListener('change', function () {
+        const format = this.value;
+        const table = document.getElementById('assignmentTable');
+        let data = [];
+        const headers = [];
+
+        // Ajouter l'en-tête pour le numéro de page
+        headers.push('Page');
+
+        // Récupérer les en-têtes de table
+        table.querySelectorAll('thead th').forEach(th => {
+            headers.push(th.innerText.trim());
+        });
+
+        // Déterminer la page actuelle (à adapter selon votre pagination)
+        const currentPage = document.getElementById('currentPage')?.innerText.trim() || '1';
+
+        // Récupérer les données des lignes
+        table.querySelectorAll('tbody tr').forEach(tr => {
+            const row = { Page: currentPage }; // Ajouter le numéro de page à chaque ligne
+            tr.querySelectorAll('td').forEach((td, index) => {
+                row[headers[index + 1]] = td.innerText.trim(); // Décalage pour inclure 'Page'
+            });
+            data.push(row);
+        });
+
+        if (format === 'csv') {
+            downloadCSV(data, headers);
+        } else if (format === 'json') {
+            downloadJSON(data);
+        }
+    });
+
+    function downloadCSV(data, headers) {
+        const csv = [headers.join(',')]; // Ajouter les en-têtes
+        data.forEach(row => {
+            csv.push(headers.map(header => JSON.stringify(row[header] || '')).join(',')); // Remplir les valeurs
+        });
+        const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'students.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function downloadJSON(data) {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'students.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+
+
+        $(document).ready(function() {
+        // Initialisation de DataTables
+        var table = new DataTable('#assignmentTable', {
+            searching: false,
+            lengthChange: false,
+            info: false,   // Bottom Left Text => Showing 1 to 10 of 12 entries
+            paging: false,
+            "columnDefs": [
+                { "orderable": false, "targets": [0, 6] } // Disables sorting on the 7th column (index 6)
+            ]
+        });
+
+        // Écouteur d'événements pour le changement du filtre de statut
+        $('#statusFilter').on('change', function() {
+            var statut = $(this).val();
+
+            // Si "Tous" est sélectionné, montrer toutes les lignes
+            if (statut === 'all') {
+                table.columns(3).search('').draw();
+            } else {
+                // Appliquer un filtre pour le statut sélectionné
+                table.columns(3).search(statut).draw();
+            }
+        });
+    });
+
+
+</script>
+
+
+
+@code {
+    private List<EtudiantCoursInfo>? etudiants = new();
+    private bool isLoading = true;
+    private string? EnseignantId;
+    private int currentPage = 1;
+    private int itemsPerPage = 5; // Nombre d'étudiants par page
+    private int totalPages => (int)Math.Ceiling((double)etudiants.Count / itemsPerPage);
+    private string selectedStatus = "all"; // Valeur initiale du filtre
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Récupérer l'état d'authentification et extraire l'ID de l'enseignant
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                EnseignantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                // Si l'ID de l'enseignant est récupéré, charger les étudiants inscrits
+                if (!string.IsNullOrEmpty(EnseignantId))
+                {
+                    etudiants = await CoursService.GetEtudiantsInscritsAsync(EnseignantId);
+                }
+                else
+                {
+                    Console.WriteLine("ID de l'enseignant introuvable.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Utilisateur non authentifié.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors du chargement : {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private IEnumerable<EtudiantCoursInfo> GetPagedEtudiants()
+    {
+        return etudiants.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage);
+    }
+
+    private IEnumerable<EtudiantCoursInfo> FilteredEtudiants()
+    {
+        if (selectedStatus == "all")
+        {
+            return etudiants; // Aucun filtre, retourner tous les étudiants
+        }
+
+        // Filtrer les étudiants par statut
+        return etudiants.Where(e => e?.Statut?.ToLower() == selectedStatus.ToLower());
+    }
+    private void OnStatusChanged(ChangeEventArgs e)
+    {
+        selectedStatus = e.Value.ToString(); // Mettre à jour le statut sélectionné
+        currentPage = 1; // Réinitialiser à la première page
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+        }
+    }
+
+}
+
