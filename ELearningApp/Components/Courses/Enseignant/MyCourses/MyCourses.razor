@@ -25,7 +25,7 @@
             </div>
             <div class="row g-20">
                 @foreach(var c in courses){
-                    <CourseCard categoryStyle="@categoryStyle[count++%5]" coursimg="@c.CoursImg" coursId="@c.Id" Category="@c.Category.Name" CoursTitle="@c.Nom" Duree="@c.FormatDuration()" Rating="@c.Evaluation" />
+                    <CourseCard Refrech="Refrech" categoryStyle="@categoryStyle[count++%5]" coursimg="@c.CoursImg" coursId="@c.Id" Category="@c.Category.Name" CoursTitle="@c.Nom" Duree="@c.FormatDuration()" Rating="@c.Evaluation" />
                 }
             </div>
 
@@ -89,7 +89,12 @@
                                        "bg-warning-50 text-warning-600",
                                        "bg-info-50 text-info-600",
                                        "bg-danger-50 text-danger-600",
-                                                                      };
+                                                              };
+    private async Task Refrech(){
+        courses = await CoursService.GetCoursByEnseignantIdAsync(AuthenticatedUser.Id, currentnbPage, 9);
+        Console.WriteLine(courses.Count());
+        StateHasChanged();
+    }
 
 }
 <script>
