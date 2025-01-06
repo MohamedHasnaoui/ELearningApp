@@ -22,7 +22,7 @@ namespace ELearningApp.Model
 
         [Range(0, 5, ErrorMessage = "L'évaluation doit être comprise entre 0 et 5.")]
         [Display(Name = "Évaluation")]
-        public float? Evaluation { get; set; }
+        public double Evaluation { get; set; }
 
         [ForeignKey("Category")]
         [Display(Name = "Identifiant de la catégorie")]
@@ -63,9 +63,9 @@ namespace ELearningApp.Model
 
         public string FormatDuration()
         {
-            int minutes = (int)(this.Duree / 60);
-            int remainingSeconds = (int)(Duree % 60);
-            return $"{minutes:D2} : {remainingSeconds:D2}"; // Format as mm:ss
+            int hours = (int)(this.Duree / 3600);
+            int minutes = (int)((this.Duree%3600) / 60);
+            return $"{hours:D2} : {minutes:D2}"; 
         }
 
         public Cours()

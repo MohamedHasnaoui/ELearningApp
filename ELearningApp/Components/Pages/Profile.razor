@@ -333,9 +333,13 @@ else{
         Input.Address ??= AuthenticatedUser.Adress;
         Input.Bio ??= AuthenticatedUser.Bio;
         Input.CountryCode ??= AuthenticatedUser.PhoneNumberCode;
-        parsedDate = DateTime.ParseExact(AuthenticatedUser.joinDate.ToString(), "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-        originalDate = parsedDate.ToString("MM/dd/yyyy HH:mm:ss");
-        formattedDate = parsedDate.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture);
+
+        string[] formats = { "M/d/yyyy h:mm:ss tt", "MM/dd/yyyy HH:mm:ss" };
+        parsedDate = DateTime.ParseExact(AuthenticatedUser.joinDate.ToString(), formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None);
+
+        // Store the original and formatted dates
+        originalDate = parsedDate.ToString("MM/dd/yyyy hh:mm:ss tt", System.Globalization.CultureInfo.InvariantCulture);
+        formattedDate = parsedDate.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture); // Display in "Month Year" format
 
     }
     private async Task OnValidSubmitAsync()

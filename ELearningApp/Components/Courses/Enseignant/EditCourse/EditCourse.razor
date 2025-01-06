@@ -35,7 +35,7 @@
                                 <div id="fileUpload" class="fileUpload image-upload">
                                     <label for="coursImg" class="file-upload image-upload__box w-100 d-flex justify-content-center align-items-center">
                                         <div class="image-upload__boxInner align-items-center">
-                                            <img src="@coursImgUrl" alt="${fileName}" class="image-upload__image" height="30">
+                                            <img src="@coursImgUrl" alt="image cours" class="image-upload__image" height="30">
                                         </div>
                                         <InputFile type="file" id="coursImg" onchange="HandleThumbnailImageChange" accept=".png,.jpg,.jpeg" hidden />
                                     </label>
@@ -472,6 +472,11 @@
             EnseignatId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
         cours = await CoursService.GetByIdAsync(coursId);
+
+        if (EnseignatId == null || EnseignatId != cours.EnseignantId)
+        {
+            NavigationManager.NavigateTo("/");
+        }
         sections = (await SectionService.GetSectionsByCoursIdAsync(coursId)).ToList();
         foreach (var s in sections)
         {

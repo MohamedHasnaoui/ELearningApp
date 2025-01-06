@@ -298,7 +298,7 @@
             var fileSize = (file.size / 1024).toFixed(2) + " KB";
             var fileType = file.type;
             var preview = fileType.startsWith("image")
-                ? <img src="${URL.createObjectURL(file)}" alt="${fileName}" class="image-upload__image" height="30">
+                ? `<img src="${URL.createObjectURL(file)}" alt="${fileName}" class="image-upload__image" height="30">`
                 : ` <span class="image-upload__anotherFileIcon"> <i class="fas fa-file"></i></span>`;
 
             // Update the content of the file upload area
@@ -306,7 +306,7 @@
                 ${preview}
             `);
         }
-         $(#coursImg).change(function () {
+         $(`#coursImg`).change(function () {
             console.log("changed");
             handleFiles(this.files);
         });
