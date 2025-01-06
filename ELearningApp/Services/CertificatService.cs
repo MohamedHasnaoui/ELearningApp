@@ -22,7 +22,7 @@ namespace ELearningApp.Services
                 .ToListAsync();
         }
 
-        public async Task<Certificat> GetByIdAsync(int id)
+        public async Task<Certificat?> GetByIdAsync(int id)
         {
             return await _context.Certificats
                 .Include(c => c.Cours)
@@ -36,6 +36,14 @@ namespace ELearningApp.Services
                 .Include(c => c.Cours)
                 .Where(c => c.EtudiantId == etudiantId)
                 .ToListAsync();
+        }
+        public async Task<Certificat?> GetByEtudiantIdCoursIdAsync(string etudiantId, int coursId)
+        {
+            return await _context.Certificats
+                .Include(c => c.Cours)
+                .Where(c => c.EtudiantId == etudiantId)
+                .Where(c=>c.CoursId==coursId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Certificat> AddAsync(Certificat certificat)

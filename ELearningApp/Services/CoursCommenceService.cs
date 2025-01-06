@@ -31,6 +31,9 @@ namespace ELearningApp.Services
                 .Include(cc => cc.Cours)
                 .ThenInclude(c=>c.Enseignant)
                 .Include(cc => cc.Etudiant)
+                .Include(cc => cc.Cours)
+                .ThenInclude(c => c.Examen)
+                .OrderByDescending(c=>c.DateDebut)
                 .FirstOrDefaultAsync(cc => cc.Id == id);
         }
 
@@ -55,6 +58,7 @@ namespace ELearningApp.Services
                 .Include(cc => cc.Cours)
                 .ThenInclude(c => c.Category)
                 .Where(cc => cc.EtudiantId == etudiantId)
+                .OrderByDescending(c => c.DateDebut)
                 .ToListAsync();
         }
         public async Task<IEnumerable<CoursCommence>> GetByEtudiantIdCompletedAsync(string etudiantId)

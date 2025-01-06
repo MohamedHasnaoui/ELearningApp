@@ -30,15 +30,9 @@ namespace ELearningApp.Model
         [Display(Name = "Date de soumission")]
         public DateTime DateSoumission { get; set; }
 
-        [Display(Name = "Lien de la soumission")]
-        public string LienSoumission { get; set; } // Lien vers un fichier ou une réponse sous forme de texte.
-
         [Display(Name = "Note obtenue")]
         [Range(0, 100, ErrorMessage = "La note doit être entre 0 et 100.")]
-        public float? Note { get; set; } // Note donnée par le correcteur, facultative à la soumission.
+        public int Note { get; set; } // Note donnée par le correcteur, facultative à la soumission.
 
-        [Display(Name = "Commentaire du correcteur")]
-        [StringLength(500, ErrorMessage = "Le commentaire ne peut pas dépasser 500 caractères.")]
-        public string CommentaireCorrecteur { get; set; }
     }
 }

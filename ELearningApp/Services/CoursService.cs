@@ -29,7 +29,7 @@ namespace ELearningApp.Services
             return await _context.Cours
                 .Include(c => c.Category) 
                 .Include(c => c.Enseignant)
-                .OrderBy(c => c.Id)
+                .OrderByDescending(course => course.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -41,7 +41,7 @@ namespace ELearningApp.Services
                 .Where(c => c.CategoryId == categoryId)
                 .Include(c => c.Category) 
                 .Include(c => c.Enseignant)
-                .OrderBy(c => c.Id)
+                .OrderByDescending(course => course.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -53,14 +53,54 @@ namespace ELearningApp.Services
             return await _context.Cours
                 .Where(c => c.EnseignantId == enseignantId) // Filter by EnseignantId (CreateurId)
                 .Include(c => c.Category)
-                .OrderBy(c => c.Id)
+                .OrderByDescending(course => course.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+        public async Task<List<Cours>> SearchCoursesByTitleAsync(string partialTitle, int pageNumber, int pageSize)
+        {
+ 
+            return await _context.Cours
+                .Where(c => c.Nom.ToLower().Contains(partialTitle.ToLower()))
+                .Include(c => c.Category)
+                .OrderByDescending(course => course.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+        public async Task<int> CountCoursesByTitleAsync(string partialTitle)
+        {
+
+            return await _context.Cours
+                .Where(c => c.Nom.ToLower().Contains(partialTitle.ToLower()))
+                .CountAsync();
+        }
+        public async Task<List<Cours>> SearchCoursesByTitleAndCategoryIdAsync(string partialTitle, int categoryId, int pageNumber, int pageSize)
+        {
+
+            return await _context.Cours
+                .Where(c => c.Nom.ToLower().Contains(partialTitle.ToLower()))
+                .Where(c => c.CategoryId== categoryId)
+                .Include(c => c.Category)
+                .OrderByDescending(course => course.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
 
+        public async Task<int> CountCoursesByTitleAndCategoryIdAsync(string partialTitle, int categoryId)
+        {
+
+            return await _context.Cours
+                .Where(c => c.Nom.ToLower().Contains(partialTitle.ToLower()))
+                .Where(c => c.CategoryId == categoryId)
+                .CountAsync();
+        }
+
         public async Task<Cours> CreateAsync(Cours cours)
         {
+            cours.CreatedAt = DateTime.Now;
             _context.Cours.Add(cours);
             await _context.SaveChangesAsync();
             return cours;

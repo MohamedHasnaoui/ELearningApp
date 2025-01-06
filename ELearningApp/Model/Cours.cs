@@ -51,6 +51,8 @@ namespace ELearningApp.Model
 
         public Enseignant Enseignant { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
         public ICollection<Section> sections { get; set; }
 
         public Examen Examen { get; set; }

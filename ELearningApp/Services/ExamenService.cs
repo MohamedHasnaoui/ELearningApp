@@ -29,12 +29,14 @@ namespace ELearningApp.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Examen>> GetByCoursIdAsync(int coursId)
+        public async Task<Examen> GetByCoursIdAsync(int coursId)
         {
             return await _context.Examens
                 .Where(e => e.CoursId == coursId)
                 .Include(e => e.Questions)
-                .ToListAsync();
+                .ThenInclude(Q=>Q.Choix)
+                .Include(e => e.Cours)
+                .FirstAsync();
         }
 
         public async Task<Examen> CreateAsync(Examen examen)

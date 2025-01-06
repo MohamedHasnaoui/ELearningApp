@@ -8,6 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject IRatingService RatingService
 @inject ICoursService CoursService
+@inject ICertificatService CertificatService
 <style>
     .star {
     font-size: 2rem;
@@ -32,7 +33,7 @@
     }
 </style>
 
-@if(coursCommence != null){
+@if(coursCommence != null && commentairesVideo!=null){
     <div class="dashboard-body">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
@@ -141,14 +142,14 @@
                             @foreach(var s in coursCommence.Cours.sections){
                                 @foreach (var vid in s.Videos){
                                     double k = i+vid.Duree;
-                                    <li class="lesson-list__item d-flex align-items-start gap-16 @(k<=lastVidDur ? "active":"")">
+                                    <li class="lesson-list__item d-flex align-items-start gap-16 @((int)k<=(int)lastVidDur ? "active":"")">
                                         <span class="circle w-16 h-16 flex-center rounded-circle text-main-100 text-13 flex-shrink-0">
                                             <i class="ph-fill ph-check-circle"></i>
                                         </span>
                                         <div>
-                                            @if (k <= lastVidDur || k - vid.Duree <= lastVidDur)
+                                            @if ((int)k <= (int)lastVidDur || (int)(k - vid.Duree) <= (int)lastVidDur)
                                             {
-                                                <button @onclick="()=>startVideo(vid,k)" class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">
+                                                <button @onclick="()=>startVideo(vid,k)" class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600 ">
                                                     @s.Title : @vid.Title.Replace(".mp4","")
                                                 </button>
                                             }else {
@@ -159,9 +160,30 @@
                                             }
                                         </div>
                                     </li>
-                                    i+=k;
+                                    i=k;
                                 }
                             }
+                            <li class="lesson-list__item d-flex align-items-center gap-16 @(certificat!=null ? "active":"")">
+                                <span class="circle w-16 h-16 flex-center rounded-circle text-main-100 text-13 flex-shrink-0">
+                                    <i class="ph-fill ph-check-circle"></i>
+                                </span>
+                                <div>
+                                    @if (coursCommence.Progres == 100)
+                                    {
+                                        <button @onclick="NavigateToExam" class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">
+                                            Examen Final
+                                        </button>
+                                        <button @onclick="NavigateToSubnissions" class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">Voir historique de soumission</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">
+                                            Examen Final
+                                            <span class="text-13 text-heading text-start d-block text-gray-600 fw-medium">Locked</span>
+                                        </button>
+                                    }
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -191,8 +213,10 @@
     IEnumerable<CommentaireVideo> commentairesVideo = new List<CommentaireVideo>();
     private bool seeAll = false;
     public int CurrentRating = 0;
+    Certificat? certificat;
     protected override async Task OnInitializedAsync()
     {
+        await Task.Delay(100);
         if (coursCommenceId != null)
         {
             coursCommence = await CoursCommenceService.GetByIdAsync(coursCommenceId.Value);
@@ -230,6 +254,8 @@
         {
             CurrentRating = (await RatingService.ObtenirRatingAsync(coursCommence.Cours.Id, EtudiantId)).Valeur;
         }
+        certificat =  await CertificatService.GetByEtudiantIdCoursIdAsync(EtudiantId, coursCommence!.Cours.Id);
+
     }
     private async Task startVideo(Video vid, double i)
     {
@@ -246,6 +272,7 @@
         {
             lastVidDur = currentVidDur;
             coursCommence!.Progres = (int)((lastVidDur * 100) / coursCommence.Cours.Duree);
+            if (coursCommence!.Progres > 97) coursCommence!.Progres = 100;
             coursCommence!.nbWatchedVid++;
             await CoursCommenceService.UpdateAsync(coursCommence);
         }
@@ -272,7 +299,7 @@
     private async Task SetRating(int rating)
     {
         CurrentRating = rating;
-        if (await RatingService.RatingExisteAsync(coursCommence.Cours.Id, EtudiantId))
+        if (await RatingService.RatingExisteAsync(coursCommence!.Cours.Id, EtudiantId))
         {
             await RatingService.MettreAJourRatingAsync(coursCommence.Cours.Id, EtudiantId, CurrentRating);
         }else {
@@ -284,4 +311,16 @@
         StateHasChanged();
     }
 
+    private async Task NavigateToExam(){
+        string link = NavigationManager.GetUriWithQueryParameters(
+           NavigationManager.ToAbsoluteUri("cours/etudiant/exam").AbsoluteUri,
+           new Dictionary<string, object?> { ["coursId"] = coursCommence?.Cours.Id });
+        NavigationManager.NavigateTo(link);
+    }
+    private async Task NavigateToSubnissions(){
+        string link = NavigationManager.GetUriWithQueryParameters(
+        NavigationManager.ToAbsoluteUri("/etudiant/examen/soumission").AbsoluteUri,
+        new Dictionary<string, object?> { ["examId"] = coursCommence.Cours.Examen.Id });
+        NavigationManager.NavigateTo(link);
+    }
 }
