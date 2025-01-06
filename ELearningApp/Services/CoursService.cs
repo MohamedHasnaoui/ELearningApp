@@ -146,37 +146,26 @@ namespace ELearningApp.Services
                 .ToListAsync();
         }
 
-        public async Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsFiltrésParStatutAsync(string enseignantId, string statut)
+        public async Task<List<TopCoursDto>> GetTop5CoursByEnseignantAsync(string enseignantId)
         {
-            var query = _context.CoursCommences
-                .Where(cc => cc.Cours.EnseignantId == enseignantId);
-
-            // Ajouter le filtre sur le statut
-            if (!string.IsNullOrEmpty(statut))
-            {
-                if (statut.ToLower() == "completé")
+            var topCours = await _context.Cours
+                .Where(c => c.EnseignantId == enseignantId) // Filtrer par enseignant
+                .Include(c => c.Enseignant) // Inclure les informations sur l'enseignant
+                .Select(c => new TopCoursDto
                 {
-                    query = query.Where(cc => cc.Progres == 100);  // Filtrer pour les étudiants dont le progrès est à 100
-                }
-                else if (statut.ToLower() == "en cours")
-                {
-                    query = query.Where(cc => cc.Progres < 100);  // Filtrer pour les étudiants dont le progrès est inférieur à 100
-                }
-            }
-
-            // Tri par date d'inscription, du plus récent au plus ancien
-            return await query
-                .OrderByDescending(cc => cc.DateDebut)
-                .Select(cc => new EtudiantCoursInfo
-                {
-                    EtudiantId = cc.EtudiantId,
-                    NomCours = cc.Cours.Nom,
-                    DateInscription = cc.DateDebut,
-                    Statut = cc.Progres == 100 ? "Completé" : "En cours",
-                    ImgProfile = cc.Etudiant.imgProfile,
-                    NomEtudiant = cc.Etudiant.UserName // Récupération du nom de l'étudiant
+                    Id = c.Id,
+                    Nom = c.Nom,
+                    Description = c.Description,
+                    Evaluation = c.Evaluation,
+                    NombreEtudiants = _context.CoursCommences.Count(cc => cc.CoursId == c.Id),
+                    EnseignantNom = c.Enseignant.UserName // Nom de l'enseignant
                 })
+                .OrderByDescending(c => c.Evaluation) // Trier par évaluation
+                .ThenByDescending(c => c.NombreEtudiants) // Puis par nombre d'étudiants
+                .Take(5) // Prendre les 5 premiers
                 .ToListAsync();
+
+            return topCours;
         }
 
 
@@ -189,6 +178,15 @@ namespace ELearningApp.Services
         public string? Statut { get; set; }
         public string? ImgProfile { get; set; }
         public string? NomEtudiant { get; set; } // Nouvelle propriété
+    }
+    public class TopCoursDto
+    {
+        public int Id { get; set; }
+        public string Nom { get; set; }
+        public string? Description { get; set; }
+        public double Evaluation { get; set; }
+        public int NombreEtudiants { get; set; }
+        public string? EnseignantNom { get; set; }
     }
 
 }
