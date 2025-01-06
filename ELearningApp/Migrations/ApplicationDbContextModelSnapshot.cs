@@ -508,7 +508,7 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("Duree")
+                    b.Property<double>("Duree")
                         .HasColumnType("float");
 
                     b.Property<string>("Title")

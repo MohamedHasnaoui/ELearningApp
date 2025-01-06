@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250104213612_m1")]
-    partial class m1
+    [Migration("20250106102024_Merge")]
+    partial class Merge
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -511,7 +511,7 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("Duree")
+                    b.Property<double>("Duree")
                         .HasColumnType("float");
 
                     b.Property<string>("Title")

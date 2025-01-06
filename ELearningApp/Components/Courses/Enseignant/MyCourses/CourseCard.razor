@@ -51,7 +51,7 @@
     [Parameter] public string coursimg { get; set; }
     [Parameter] public string categoryStyle { get; set; }
     private int studentnb;
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         if(coursId != null)
             studentnb = await CoursCommenceService.CountByCoursIdAsync(coursId.Value);

@@ -393,7 +393,7 @@ namespace ELearningApp.Migrations
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     CoursId = table.Column<int>(type: "int", nullable: false),
-                    Duree = table.Column<double>(type: "float", nullable: true)
+                    Duree = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {

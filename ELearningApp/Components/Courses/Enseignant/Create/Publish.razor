@@ -97,7 +97,7 @@
     [Parameter] public int numberSections { get; set; }
     private string buttonPublish = "Publish Now";
     public string CategoryName;
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         if (CoursCategoryId !=null){
             var c = await CategoryCoursService.GetCategoryByIdAsync(CoursCategoryId.Value);
