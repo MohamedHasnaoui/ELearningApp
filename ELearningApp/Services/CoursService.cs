@@ -88,11 +88,41 @@ namespace ELearningApp.Services
         }
         public async Task<bool> DeleteAsync(int id)
         {
-            var cours = await _context.Cours.FindAsync(id);
+            var cours = await _context.Cours
+                .Include(c => c.sections)  // Load associated sections
+                .ThenInclude(s => s.Videos)
+                .ThenInclude(v=>v.Commentaires)// Load associated videos
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (cours != null)
             {
+                foreach (var section in cours.sections)
+                {
+                    foreach (var video in section.Videos)
+                    {
+                        foreach(var comment in video.Commentaires)
+                        {
+                            _context.CommentairesVideo.Remove(comment);
+                        }
+                    }
+                }
+
+                foreach (var section in cours.sections)
+                {
+                    foreach (var video in section.Videos)
+                    {
+                        _context.Videos.Remove(video);
+                    }
+                }
+
+                foreach (var section in cours.sections)
+                {
+                    _context.Sections.Remove(section);
+                }
+
                 _context.Cours.Remove(cours);
                 await _context.SaveChangesAsync();
+
                 return true;
             }
             return false;

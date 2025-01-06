@@ -1,6 +1,8 @@
 ﻿@inject ICoursCommenceService CoursCommenceService
+@inject ICoursService CoursService
 @inject ICloudinaryService CloudinaryService
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 <div class="col-xxl-3 col-lg-4 col-sm-6">
     <div class="card border border-gray-100">
         <div class="card-body p-8">
@@ -36,12 +38,34 @@
                         <span class="text-13 fw-bold text-gray-600">@(Rating==null? 0:Rating.Value) </span>
                     </div>
                 </div>
-
-                <button @onclick="NavigateEdit" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Edit</button>
+                <div class="flex-align w-100">
+                    <button @onclick="NavigateEdit" class="btn btn-outline-main rounded-pill py-9 m-8 flex-grow-1">Edit</button>
+                    <button @onclick="OpenDeleteCoursModal" class="btn border-danger-500 text-danger-500 rounded-pill py-9 m-8">Delete</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+@if (IsDeleteCourseModalOpen)
+{
+    <div class="modal show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDeleteCoursModal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the course "<strong>@CoursTitle</strong>"?
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseDeleteCoursModal">Cancel</button>
+                    <button class="btn btn-danger" @onclick="DeleteCours">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @code {
     [Parameter] public string? CoursTitle { get; set; }
     [Parameter] public string? Category { get; set; }
@@ -50,9 +74,12 @@
     [Parameter] public int? coursId { get; set; }
     [Parameter] public string coursimg { get; set; }
     [Parameter] public string categoryStyle { get; set; }
+    [Parameter] public EventCallback Refrech { get; set; }
     private int studentnb;
+    private bool IsDeleteCourseModalOpen = false;
     protected override async Task OnInitializedAsync()
     {
+        await Task.Delay(100);
         if(coursId != null)
             studentnb = await CoursCommenceService.CountByCoursIdAsync(coursId.Value);
     }
@@ -62,5 +89,17 @@
         NavigationManager.ToAbsoluteUri("/cours/modifier").AbsoluteUri,
         new Dictionary<string, object?> { ["coursId"] = coursId});
         NavigationManager.NavigateTo(link);
+    }
+    private async Task OpenDeleteCoursModal()
+    {
+        IsDeleteCourseModalOpen = true;
+    }
+    private async Task CloseDeleteCoursModal(){
+        IsDeleteCourseModalOpen = false;
+    }
+    private async Task DeleteCours(){
+        await CoursService.DeleteAsync(coursId.Value);
+        IsDeleteCourseModalOpen = false;
+        await Refrech.InvokeAsync();
     }
 }

@@ -75,6 +75,19 @@ namespace ELearningApp.Data
             builder.Entity<Rating>()
             .HasIndex(r => new { r.CoursId, r.EtudiantId })
             .IsUnique();
+
+            builder.Entity<Section>()
+            .HasOne(s => s.Cours)
+            .WithMany(c => c.sections)
+            .HasForeignKey(s => s.CoursId)
+            .OnDelete(DeleteBehavior.Cascade);  // Cascade delete for sections
+
+            // Configure cascade delete for Videos when Section is deleted
+            builder.Entity<Video>()
+                .HasOne(v => v.Section)
+                .WithMany(s => s.Videos)
+                .HasForeignKey(v => v.SectionId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

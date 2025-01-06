@@ -57,6 +57,10 @@ namespace ELearningApp.Services
             {
                 return;
             }
+            foreach (var comment in video.Commentaires)
+            {
+                _context.CommentairesVideo.Remove(comment);
+            }
 
             _context.Videos.Remove(video);
             await _context.SaveChangesAsync();
