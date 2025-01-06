@@ -97,5 +97,34 @@ namespace ELearningApp.Services
             }
             return false;
         }
+
+
+        public async Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsAsync(string enseignantId)
+        {
+            return await _context.CoursCommences
+                .Where(cc => cc.Cours.EnseignantId == enseignantId)
+                .Select(cc => new EtudiantCoursInfo
+                {
+                    EtudiantId = cc.EtudiantId,
+                    NomCours = cc.Cours.Nom,
+                    DateInscription = cc.DateDebut,
+                    Statut = cc.Progres == 100 ? "Completé" : "En cours",
+                    ImgProfile = cc.Etudiant.imgProfile,
+                    NomEtudiant = cc.Etudiant.UserName // Récupération du nom de l'étudiant
+                })
+                .ToListAsync();
+        }
+
+
     }
+    public class EtudiantCoursInfo
+    {
+        public string? EtudiantId { get; set; }
+        public string? NomCours { get; set; }
+        public DateTime DateInscription { get; set; }
+        public string? Statut { get; set; }
+        public string? ImgProfile { get; set; }
+        public string? NomEtudiant { get; set; } // Nouvelle propriété
+    }
+
 }

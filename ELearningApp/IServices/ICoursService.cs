@@ -1,4 +1,5 @@
 ﻿using ELearningApp.Model;
+using ELearningApp.Services;
 
 namespace ELearningApp.IServices
 {
@@ -14,5 +15,6 @@ namespace ELearningApp.IServices
         Task<int> CountCourses();
         Task<int> CountByEnseignantId(string enseignantId);
         Task<int> CountByCategoryIdAsync(int categoryId);
+        Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsAsync(string enseignantId);
     }
 }

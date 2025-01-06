@@ -1,0 +1,89 @@
+﻿@inject ICoursService CoursService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@page "/liste-etudiants/"
+
+
+@if (isLoading)
+{
+    <p>Chargement en cours...</p>
+}
+else if (etudiants.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Profil</th>
+                <th>Nom de l'Étudiant</th>
+                <th>Nom du Cours</th>
+                <th>Date d'Inscription</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var etudiant in etudiants)
+            {
+                <tr>
+                    <td>
+                        <img src="@(!string.IsNullOrEmpty(etudiant.ImgProfile) ? etudiant.ImgProfile : "images/default-profile.png")"
+                             alt="Profil"
+                             style="width: 50px; height: 50px; border-radius: 50%;" />
+                    </td>
+                    <td>@etudiant.NomEtudiant</td> <!-- Ajout du nom -->
+                    <td>@etudiant.NomCours</td>
+                    <td>@etudiant.DateInscription.ToString("dd/MM/yyyy")</td>
+                    <td>@etudiant.Statut</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Aucun étudiant trouvé.</p>
+}
+
+
+@code {
+    private List<EtudiantCoursInfo> etudiants = new();
+    private bool isLoading = true;
+    private string? EnseignantId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Récupérer l'état d'authentification et extraire l'ID de l'enseignant
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                EnseignantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                // Si l'ID de l'enseignant est récupéré, charger les étudiants inscrits
+                if (!string.IsNullOrEmpty(EnseignantId))
+                {
+                    etudiants = await CoursService.GetEtudiantsInscritsAsync(EnseignantId);
+                }
+                else
+                {
+                    Console.WriteLine("ID de l'enseignant introuvable.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Utilisateur non authentifié.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors du chargement : {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
