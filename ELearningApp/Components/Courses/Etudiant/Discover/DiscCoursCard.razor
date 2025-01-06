@@ -43,7 +43,7 @@
 @code {
     [Parameter] public string? CoursTitle { get; set; }
     [Parameter] public string? Category { get; set; }
-    [Parameter] public float? Rating { get; set; }
+    [Parameter] public double? Rating { get; set; }
     [Parameter] public string? Duree { get; set; }
     [Parameter] public int? coursId { get; set; }
     [Parameter] public string coursimg { get; set; }
@@ -52,8 +52,9 @@
     [Parameter] public string ensImage { get; set; }
     public int nbsection;
     private string coursUrl ;
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        await Task.Delay(100);
         nbsection = await SectionService.CountSectionsByCourseIdAsync(coursId.Value);
         coursUrl = NavigationManager.GetUriWithQueryParameters(
        NavigationManager.ToAbsoluteUri("cours/details").AbsoluteUri,

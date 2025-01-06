@@ -24,6 +24,7 @@ namespace ELearningApp.Data
         public DbSet<Abonnement> Abonnements { get; set; }
         public DbSet<AbonnementTemp> AbonnementTemps { get; set; }
         public DbSet<AbonnementAchete> AbonnementsAchetes { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -71,6 +72,9 @@ namespace ELearningApp.Data
                    Description = "Courses related to building websites and web applications."
                }
            );
+            builder.Entity<Rating>()
+            .HasIndex(r => new { r.CoursId, r.EtudiantId })
+            .IsUnique();
         }
     }
 }

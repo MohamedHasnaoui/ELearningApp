@@ -38,9 +38,9 @@ namespace ELearningApp.Model
 
         public string FormatDuration()
         {
-            int minutes = (int)(this.Duree / 60);
-            int remainingSeconds = (int)(Duree % 60);
-            return $"{minutes:D2} : {remainingSeconds:D2}"; // Format as mm:ss
+            int hours = (int)(this.Duree / 3600);
+            int minutes = (int)((this.Duree % 3600) / 60);
+            return $"{hours:D2} : {minutes:D2}";
         }
         public Section() {
             Videos = new List<Video>();

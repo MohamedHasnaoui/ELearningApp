@@ -48,7 +48,6 @@
     <!-- Recommended Course End -->
 </div>
 @code {
-    [CascadingParameter]
     public ApplicationUser? AuthenticatedUser { get; set; }
     private IEnumerable<Cours> courses = new List<Cours>();
     private int currentnbPage = 1;

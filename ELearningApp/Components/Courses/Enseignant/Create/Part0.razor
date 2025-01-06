@@ -286,3 +286,29 @@
         return cours;
     }
 }
+<script>
+    $(function() {
+        function handleFiles(files) { // Assuming only one file is selected
+            var file = files[0];
+            var fileName = files.name;
+            var fileSize = (file.size / 1024).toFixed(2) + " KB";
+            var fileType = file.type;
+            var preview = fileType.startsWith("image")
+                ? `<img src="${URL.createObjectURL(file)}" alt="${fileName}" class="image-upload__image" height="30">`
+                : ` <span class="image-upload__anotherFileIcon"> <i class="fas fa-file"></i></span>`;
+
+            // Update the content of the file upload area
+            $('.image-upload__boxInner').html(`
+                ${preview}
+            `);
+        }
+         $(`#coursImg`).change(function () {
+            console.log("changed");
+            handleFiles(this.files);
+        });
+            console.log("changed1");
+
+    });
+
+
+</script>

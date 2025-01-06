@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250104213612_m1")]
-    partial class m1
+    [Migration("20250106100313_m12")]
+    partial class m12
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -359,8 +359,8 @@ namespace ELearningApp.Migrations
                     b.Property<string>("EnseignantId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<float?>("Evaluation")
-                        .HasColumnType("real");
+                    b.Property<double>("Evaluation")
+                        .HasColumnType("float");
 
                     b.Property<int>("Niveau")
                         .HasColumnType("int");
@@ -463,6 +463,34 @@ namespace ELearningApp.Migrations
                     b.ToTable("Questions");
                 });
 
+            modelBuilder.Entity("ELearningApp.Model.Rating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoursId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EtudiantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Valeur")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtudiantId");
+
+                    b.HasIndex("CoursId", "EtudiantId")
+                        .IsUnique();
+
+                    b.ToTable("Ratings");
+                });
+
             modelBuilder.Entity("ELearningApp.Model.ReponseCommentaire", b =>
                 {
                     b.Property<int>("Id")
@@ -511,7 +539,7 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("Duree")
+                    b.Property<double>("Duree")
                         .HasColumnType("float");
 
                     b.Property<string>("Title")
@@ -875,6 +903,25 @@ namespace ELearningApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Examen");
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.Rating", b =>
+                {
+                    b.HasOne("ELearningApp.Model.Cours", "Cours")
+                        .WithMany()
+                        .HasForeignKey("CoursId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ELearningApp.Model.Etudiant", "Etudiant")
+                        .WithMany()
+                        .HasForeignKey("EtudiantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cours");
+
+                    b.Navigation("Etudiant");
                 });
 
             modelBuilder.Entity("ELearningApp.Model.ReponseCommentaire", b =>
