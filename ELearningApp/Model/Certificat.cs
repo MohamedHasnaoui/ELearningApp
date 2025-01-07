@@ -12,11 +12,6 @@ namespace ELearningApp.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-incrément
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Le titre du certificat est obligatoire.")]
-        [StringLength(200, ErrorMessage = "Le titre ne peut pas dépasser 200 caractères.")]
-        [Display(Name = "Titre")]
-        public string Titre { get; set; }
-
         [Required(ErrorMessage = "La date d'obtention est obligatoire.")]
         [Display(Name = "Date d'obtention")]
         public DateTime DateObtention { get; set; }
@@ -34,8 +29,5 @@ namespace ELearningApp.Model
         public string EtudiantId { get; set; }
 
         public Etudiant Etudiant { get; set; }
-
-        [Display(Name = "Lien de téléchargement")]
-        public string LienTelechargement { get; set; } // Par exemple, un lien vers un PDF généré
     }
 }

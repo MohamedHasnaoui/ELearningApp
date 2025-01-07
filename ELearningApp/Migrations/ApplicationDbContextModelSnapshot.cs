@@ -30,6 +30,12 @@ namespace ELearningApp.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Adress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -62,6 +68,9 @@ namespace ELearningApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumberCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -241,15 +250,6 @@ namespace ELearningApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("LienTelechargement")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Titre")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CoursId");
@@ -336,6 +336,9 @@ namespace ELearningApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -347,8 +350,8 @@ namespace ELearningApp.Migrations
                     b.Property<string>("EnseignantId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<float?>("Evaluation")
-                        .HasColumnType("real");
+                    b.Property<double>("Evaluation")
+                        .HasColumnType("float");
 
                     b.Property<int>("Niveau")
                         .HasColumnType("int");
@@ -357,6 +360,9 @@ namespace ELearningApp.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("nbVids")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -388,8 +394,11 @@ namespace ELearningApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<float>("Progression")
-                        .HasColumnType("real");
+                    b.Property<int>("Progres")
+                        .HasColumnType("int");
+
+                    b.Property<int>("nbWatchedVid")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -445,6 +454,34 @@ namespace ELearningApp.Migrations
                     b.ToTable("Questions");
                 });
 
+            modelBuilder.Entity("ELearningApp.Model.Rating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoursId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EtudiantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Valeur")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtudiantId");
+
+                    b.HasIndex("CoursId", "EtudiantId")
+                        .IsUnique();
+
+                    b.ToTable("Ratings");
+                });
+
             modelBuilder.Entity("ELearningApp.Model.ReponseCommentaire", b =>
                 {
                     b.Property<int>("Id")
@@ -493,7 +530,7 @@ namespace ELearningApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("Duree")
+                    b.Property<double>("Duree")
                         .HasColumnType("float");
 
                     b.Property<string>("Title")
@@ -516,11 +553,6 @@ namespace ELearningApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CommentaireCorrecteur")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<DateTime>("DateSoumission")
                         .HasColumnType("datetime2");
 
@@ -531,12 +563,8 @@ namespace ELearningApp.Migrations
                     b.Property<int>("ExamenId")
                         .HasColumnType("int");
 
-                    b.Property<string>("LienSoumission")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float?>("Note")
-                        .HasColumnType("real");
+                    b.Property<int>("Note")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -859,6 +887,25 @@ namespace ELearningApp.Migrations
                     b.Navigation("Examen");
                 });
 
+            modelBuilder.Entity("ELearningApp.Model.Rating", b =>
+                {
+                    b.HasOne("ELearningApp.Model.Cours", "Cours")
+                        .WithMany()
+                        .HasForeignKey("CoursId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ELearningApp.Model.Etudiant", "Etudiant")
+                        .WithMany()
+                        .HasForeignKey("EtudiantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cours");
+
+                    b.Navigation("Etudiant");
+                });
+
             modelBuilder.Entity("ELearningApp.Model.ReponseCommentaire", b =>
                 {
                     b.HasOne("ELearningApp.Model.CommentaireVideo", "Commentaire")
@@ -881,7 +928,7 @@ namespace ELearningApp.Migrations
             modelBuilder.Entity("ELearningApp.Model.Section", b =>
                 {
                     b.HasOne("ELearningApp.Model.Cours", "Cours")
-                        .WithMany()
+                        .WithMany("sections")
                         .HasForeignKey("CoursId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1014,6 +1061,8 @@ namespace ELearningApp.Migrations
                 {
                     b.Navigation("Examen")
                         .IsRequired();
+
+                    b.Navigation("sections");
                 });
 
             modelBuilder.Entity("ELearningApp.Model.Examen", b =>

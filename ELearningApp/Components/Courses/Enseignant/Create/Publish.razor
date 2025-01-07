@@ -1,0 +1,116 @@
+﻿@inject ICategoryCoursService CategoryCoursService
+@inject NavigationManager Navigation
+<div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb mb-24">
+        <ul class="flex-align gap-4">
+            <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+            <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+            <li><span class="text-main-600 fw-normal text-15">Course Overview</span></li>
+        </ul>
+    </div>
+    <!-- Breadcrumb End -->
+
+</div>
+
+<!-- Create Course Step List Start -->
+<ul class="step-list mb-24">
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Course Details
+        <span class="line position-relative"></span>
+    </li>
+
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Section Details
+        <span class="line position-relative"></span>
+    </li>
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Upload Videos
+        <span class="line position-relative"></span>
+    </li>
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6  done">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Create Quiz
+        <span class="line position-relative"></span>
+    </li>
+    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6  active">
+        <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
+        Publish Course
+        <span class="line position-relative"></span>
+    </li>
+</ul>
+<!-- Create Course Step List End -->
+<!-- Course Tab Start -->
+<div class="card">
+    <div class="card-header border-0 flex-align gap-8">
+        <h5 class="mb-0">Course Overview</h5>
+        <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Course Overview">
+            <i class="ph-fill ph-question"></i>
+        </button>
+    </div>
+    <div class="card-body pt-0">
+
+        <div class="border border-gray-100 p-20 rounded-12">
+            <div class="flex-between">
+                <span class="py-6 px-16 bg-success-50 text-success-600 rounded-pill  text-15">@CoursCategory</span>
+                <div class="flex-align gap-8">
+                    <span class="text-main-600 d-flex text-xl"><i class="ph-fill ph-check-circle"></i></span>
+                </div>
+            </div>
+            <h3 class="my-8">@coursTitle</h3>
+
+            <div class="flex-align gap-24">
+                <div class="flex-align gap-8">
+                    <span class="text-gray-200 d-flex text-16"><i class="ph-fill ph-video-camera"></i></span>
+                    <span class="text-gray-200 d-flex text-15">@numberSections Sections </span>
+                </div>
+                <div class="flex-align gap-8">
+                    <span class="text-gray-200 d-flex text-16"><i class="ph-fill ph-clock"></i></span>
+                    <span class="text-gray-200 d-flex text-15">@coursLevel</span>
+                </div>
+            </div>
+            <div class="my-24">
+                <img width="1052" height="469" src="@coursImgUrl" alt="" class="rounded-16 cover-img">
+            </div>
+            <h5 class="mb-16 fw-bold">Course Description</h5>
+            <p class="text-gray-300 text-15 max-w-845">@CoursDescription</p>
+        </div>
+
+
+        <div class="flex-align justify-content-end gap-8 mt-24">
+            <button @onclick="async ()=> await OnBackButtonClick.InvokeAsync(4)" class="btn btn-outline-main rounded-pill py-9">Back</button>
+            <button  @onclick="handlePublish" class="btn btn-main rounded-pill py-9">@buttonPublish</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback<int> OnBackButtonClick { get; set; }
+    [Parameter] public string CoursDescription { get; set; }
+    [Parameter] public string coursImgUrl { get; set; }
+    [Parameter] public string CoursCategory { get; set; }
+    [Parameter] public EventCallback publishCourse { get; set; }
+    [Parameter] public string coursTitle { get; set; }
+    [Parameter] public string coursLevel { get; set; }
+    [Parameter] public int numberSections { get; set; }
+    private string buttonPublish = "Publish Now";
+    public string CategoryName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(100);
+        if (coursLevel == "0") coursLevel = "Debutant";
+        else if (coursLevel == "1") coursLevel = "Intermidiare";
+        else if (coursLevel == "2") coursLevel = "Avance";
+    }
+    private async Task handlePublish(){
+        buttonPublish = "Wait ...";
+        await publishCourse.InvokeAsync();
+        buttonPublish = "Done";
+        Navigation.NavigateTo("/courses/enseignant/mycourses");
+    }
+
+}

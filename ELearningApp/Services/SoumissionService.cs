@@ -43,13 +43,16 @@ namespace ELearningApp.Services
             return await _context.Soumissions
                 .Include(s => s.Etudiant)
                 .Where(s => s.ExamenId == assignementId)
+                .OrderByDescending(s => s.DateSoumission) 
                 .ToListAsync();
         }
-        public async Task<IEnumerable<Soumission>> GetByEtudiantAndExamenIdAsync(string etudiantId, int examId)
+        public async Task<List<Soumission>> GetByEtudiantAndExamenIdAsync(string etudiantId, int examId)
         {
             return await _context.Soumissions
                 .Include(s => s.Examen)
                 .Where(s => s.EtudiantId == etudiantId && s.ExamenId == examId)
+                .OrderByDescending(s => s.DateSoumission)
+                .Take(15)
                 .ToListAsync();
         }
         public async Task<Soumission> AddAsync(Soumission soumission)

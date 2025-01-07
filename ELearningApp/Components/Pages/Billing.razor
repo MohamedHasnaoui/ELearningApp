@@ -1,0 +1,335 @@
+﻿<div class="tab-pane fade" id="pills-billing" role="tabpanel" aria-labelledby="pills-billing-tab" tabindex="0">
+    <!-- Payment Method Start -->
+    <div class="card mt-24">
+        <div class="card-header border-bottom">
+            <h4 class="mb-4">Payment Method</h4>
+            <p class="text-gray-600 text-15">Update your billing details and address</p>
+        </div>
+        <div class="card-body">
+            <div class="row gy-4">
+                <div class="col-lg-5">
+                    <div class="card border border-gray-100">
+                        <div class="card-header border-bottom border-gray-100">
+                            <h6 class="mb-0">Contact Email</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="payment-method payment-method-one form-check form-radio d-flex align-items-center justify-content-between mb-16 rounded-16 bg-main-50 p-20 cursor-pointer position-relative transition-2">
+                                <div>
+                                    <h6 class="title mb-14">Send to my email account</h6>
+                                    <span class="d-block">exampleinfo@mail.com</span>
+                                </div>
+                                <label class="position-absolute inset-block-start-0 inset-inline-start-0 w-100 h-100 cursor-pointer" for="emailOne"></label>
+                                <input class="form-check-input payment-method-one" type="radio" name="emailCheck" id="emailOne">
+                            </div>
+                            <div class="payment-method payment-method-one form-check form-radio d-block rounded-16 bg-main-50 p-20 cursor-pointer position-relative transition-2 mt-24">
+                                <div class="flex-between  mb-14 gap-4">
+                                    <h6 class="title mb-0">Send to an alternative email</h6>
+                                    <input class="form-check-input payment-method-one" type="radio" name="emailCheck" id="emailTwo">
+                                </div>
+                                <label class="position-absolute inset-block-start-0 inset-inline-start-0 w-100 h-100 cursor-pointer" for="emailTwo"></label>
+                                <span class="border-text d-block bg-white border border-main-200 px-20 py-8 rounded-8">exampleinfo@mail.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card border border-gray-100">
+                        <div class="card-header border-bottom border-gray-100 flex-between gap-8">
+                            <h6 class="mb-0">Card Details</h6>
+                            <a href="#" class="btn btn-outline-main rounded-pill py-6">Add New Card</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="payment-method payment-method-two form-check form-radio d-flex align-items-center justify-content-between mb-16 rounded-16 bg-main-50 p-20 cursor-pointer position-relative transition-2">
+                                <div class="flex-align align-items-start gap-16">
+                                    <div>
+                                        <img src="assets/images/thumbs/payment-method1.png" alt="" class="w-54 h-40 rounded-8">
+                                    </div>
+                                    <div>
+                                        <h6 class="title mb-0">Visa **** **** 5890</h6>
+                                        <span class="d-block">Up to 60 User and 100GB team data</span>
+                                        <div class="text-13 flex-align gap-8 mt-12 pt-12 border-top border-gray-100">
+                                            <span>Set as default</span>
+                                            <a href="#" class="fw-bold">Edit</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="position-absolute inset-block-start-0 inset-inline-start-0 w-100 h-100 cursor-pointer" for="visaCard"></label>
+                                <input class="form-check-input payment-method-two" type="radio" name="cardDetails" id="visaCard">
+                            </div>
+                            <div class="payment-method payment-method-two form-check form-radio d-flex align-items-center justify-content-between rounded-16 bg-main-50 p-20 cursor-pointer position-relative transition-2">
+                                <div class="flex-align align-items-start gap-16">
+                                    <div>
+                                        <img src="assets/images/thumbs/payment-method2.png" alt="" class="w-54 h-40 rounded-8">
+                                    </div>
+                                    <div>
+                                        <h6 class="title mb-0">Mastercard **** **** 1895</h6>
+                                        <span class="d-block">Up to 60 User and 100GB team data</span>
+                                    </div>
+                                </div>
+                                <label class="position-absolute inset-block-start-0 inset-inline-start-0 w-100 h-100 cursor-pointer" for="masterCard"></label>
+                                <input class="form-check-input payment-method-two" type="radio" name="cardDetails" id="masterCard">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Payment Method End -->
+    <!-- Billing history Start -->
+    <div class="card mt-24">
+        <div class="card-header border-bottom">
+            <div class="flex-between flex-wrap  gap-16">
+                <div>
+                    <h4 class="mb-4">Billing History</h4>
+                    <p class="text-gray-600 text-15">See the transaction you made</p>
+                </div>
+                <div class="flex-align flex-wrap justify-content-end gap-8">
+                    <button type="button" class="toggle-search-btn btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-9">Add Filter</button>
+                    <button type="button" class="btn btn-main rounded-pill py-9">Download All</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card toggle-search-box border-bottom border-gray-100 rounded-0">
+            <div class="card-body">
+                <form action="#" class="search-input-form">
+                    <div class="search-input">
+                        <select class="form-control form-select h6 rounded-4 mb-0 py-6 px-8">
+                            <option value="" selected disabled>Invoice Type</option>
+                            <option value="">Credit Invoice</option>
+                            <option value="">Debit Invoice</option>
+                            <option value="">Mixed Invoice</option>
+                            <option value="">Commercial Invoice</option>
+                        </select>
+                    </div>
+                    <div class="search-input">
+                        <select class="form-control form-select h6 rounded-4 mb-0 py-6 px-8">
+                            <option value="" selected disabled>amount</option>
+                            <option value="">1</option>
+                            <option value="">2</option>
+                            <option value="">3</option>
+                        </select>
+                    </div>
+                    <div class="search-input">
+                        <input type="date" class="form-control form-select h6 rounded-4 mb-0 py-6 px-8">
+                    </div>
+                    <div class="search-input">
+                        <select class="form-control form-select h6 rounded-4 mb-0 py-6 px-8">
+                            <option value="" selected disabled>plan</option>
+                            <option value="">Basic Plan</option>
+                            <option value="">Standard Plan</option>
+                            <option value="">Premium Plan </option>
+                        </select>
+                    </div>
+                    <div class="search-input">
+                        <button type="submit" class="btn btn-main rounded-pill py-9 w-100">Apply Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card-body p-0 overflow-x-auto">
+            <table id="studentTable" class="table table-lg table-striped w-100">
+                <thead>
+                    <tr>
+                        <th class="fixed-width w-40 h-40 ps-20">
+                            <div class="form-check">
+                                <input class="form-check-input border-gray-200 rounded-4" type="checkbox" id="selectAll">
+                            </div>
+                        </th>
+                        <th class="h6 text-gray-600">
+                            <span class="position-relative">
+                                Invoices
+                            </span>
+                        </th>
+                        <th class="h6 text-gray-600 text-center">Amount</th>
+                        <th class="h6 text-gray-600 text-center">Dates</th>
+                        <th class="h6 text-gray-600 text-center">Status</th>
+                        <th class="h6 text-gray-600 text-center">Plan</th>
+                        <th class="h6 text-gray-600 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fixed-width w-40 h-40">
+                            <div class="form-check">
+                                <input class="form-check-input border-gray-200 rounded-4" type="checkbox">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-align gap-10">
+                                <div class="w-32 h-32 bg-gray-50 flex-center rounded-circle p-2">
+                                    <img src="assets/images/thumbs/invoice-logo1.png" alt="" class="">
+                                </div>
+                                <div class="">
+                                    <h6 class="mb-0">Design Accesibility</h6>
+                                    <span class="text-13 fw-medium text-gray-200">Edmate - #012500</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">$180</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">06/22/2024</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-success-600 bg-success-100 py-2 px-10 rounded-pill">Paid</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">Basic</span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-12">Download</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fixed-width w-40 h-40">
+                            <div class="form-check">
+                                <input class="form-check-input border-gray-200 rounded-4" type="checkbox">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-align gap-10">
+                                <div class="w-32 h-32 bg-gray-50 flex-center rounded-circle p-2">
+                                    <img src="assets/images/thumbs/invoice-logo2.png" alt="" class="">
+                                </div>
+                                <div class="">
+                                    <h6 class="mb-0">Design System</h6>
+                                    <span class="text-13 fw-medium text-gray-200">Edmate - #012500</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">$250</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">06/22/2024</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-info-600 bg-info-100 py-2 px-10 rounded-pill">Unpaid</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">Professional</span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-12">Download</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fixed-width w-40 h-40">
+                            <div class="form-check">
+                                <input class="form-check-input border-gray-200 rounded-4" type="checkbox">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-align gap-10">
+                                <div class="w-32 h-32 bg-gray-50 flex-center rounded-circle p-2">
+                                    <img src="assets/images/thumbs/invoice-logo1.png" alt="" class="">
+                                </div>
+                                <div class="">
+                                    <h6 class="mb-0">Frondend Develop</h6>
+                                    <span class="text-13 fw-medium text-gray-200">Edmate - #012500</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">$128</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">06/22/2024</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-success-600 bg-success-100 py-2 px-10 rounded-pill">Paid</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">Basic</span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-12">Download</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fixed-width w-40 h-40">
+                            <div class="form-check">
+                                <input class="form-check-input border-gray-200 rounded-4" type="checkbox">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-align gap-10">
+                                <div class="w-32 h-32 bg-gray-50 flex-center rounded-circle p-2">
+                                    <img src="assets/images/thumbs/invoice-logo1.png" alt="" class="">
+                                </div>
+                                <div class="">
+                                    <h6 class="mb-0">Design Usability</h6>
+                                    <span class="text-13 fw-medium text-gray-200">Edmate - #012500</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">$132</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">06/22/2024</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-info-600 bg-info-100 py-2 px-10 rounded-pill">Unpaid</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">Basic</span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-12">Download</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fixed-width w-40 h-40">
+                            <div class="form-check">
+                                <input class="form-check-input border-gray-200 rounded-4" type="checkbox">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-align gap-10">
+                                <div class="w-32 h-32 bg-gray-50 flex-center rounded-circle p-2">
+                                    <img src="assets/images/thumbs/invoice-logo4.png" alt="" class="">
+                                </div>
+                                <div class="">
+                                    <h6 class="mb-0">Digital Marketing</h6>
+                                    <span class="text-13 fw-medium text-gray-200">Edmate - #012500</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">$186</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">06/22/2024</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-success-600 bg-success-100 py-2 px-10 rounded-pill">Paid</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-gray-600">Advance</span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-12">Download</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer border-top border-gray-100">
+            <div class="flex-align justify-content-end gap-8">
+                <button type="reset" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-9">Cancel</button>
+                <button type="submit" class="btn btn-main rounded-pill py-9">Save  Changes</button>
+            </div>
+        </div>
+    </div>
+    <!-- Billing history End -->
+</div>
+
+
+@code {
+
+}

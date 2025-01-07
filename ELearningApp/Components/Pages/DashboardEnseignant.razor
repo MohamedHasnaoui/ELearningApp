@@ -1,4 +1,9 @@
-﻿
+﻿@inject ICoursService CoursService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
+
+
 <div class="dashboard-body">
 
     <div class="row gy-4">
@@ -56,7 +61,7 @@
             </div>
             <!-- Widgets End -->
             <!-- Top Course Start -->
-            <div class="card mt-24">
+            @*             <div class="card mt-24">
                 <div class="card-body">
                     <div class="mb-20 flex-between flex-wrap gap-8">
                         <h4 class="mb-0">Study Statistics</h4>
@@ -84,136 +89,99 @@
 
                 </div>
             </div>
+
+
+ *@         
+
+            <!--Mes Top Cours-->
+
+            <div class="dashboard-body bg-white card border  mt-24 ">
+                <!-- Titre ajouté au-dessus du champ de filtre -->
+                <div class="flex-between align-items-center mb-24">
+                    <h4 class="mb-4">Top 5 Cours</h4>
+                    <div class="breadcrumb-with-buttons flex-between flex-wrap gap-8">
+                        <div class="flex-align gap-8 flex-wrap">
+                            <div class="position-relative text-gray-500 flex-align gap-4 text-13">
+                                <span class="text-inherit">Selon: </span>
+                                <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
+                                    <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
+                                    <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnSortOptionChanged">
+                                        <option selected value="evaluation">Evaluation</option>
+                                        <option value="etudiants">Etudiants</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (isLoading)
+                {
+                    <p>Chargement en cours...</p>
+                }
+                else if (topCours != null && topCours.Any())
+                {
+                    <div class="card overflow-hidden">
+                        <div class="card-body p-0">
+
+
+                            <!-- Table avec bordure ajoutée -->
+                            <table id="assignmentTable" class="table table-striped border border-gray-100 rounded-4  ">
+                                <thead class="border border-gray-100 rounded-4">
+                                    <tr>
+                                        <th style="width: 25%; text-align: center;">Cours</th>
+                                        <th style="width: 25%; text-align: center;">Description</th>
+                                        <th style="width: 25%; text-align: center;">Evaluations</th>
+                                        <th style="width: 25%; text-align: center;">Etudiants Inscrits</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="border border-gray-100 rounded-4">
+                                    @foreach (var cours in topCours)
+                                    {
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <span class="h6 mb-0 fw-medium text-gray-300">@cours.Nom</span>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span class="h6 mb-0 fw-medium text-gray-300">@cours.Description</span>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
+                                                    <i class="ph-fill ph-star"></i>
+                                                    @cours.Evaluation
+                                                </span>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
+                                                    <span class="w-6 h-6 bg-teal-600 rounded-circle flex-shrink-0"></span>
+                                                    @cours.NombreEtudiants
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>Aucun cours trouvé pour cet enseignant.</p>
+                }
+            </div>
+
             <!-- Top Course End -->
             <!-- Top Course Start -->
             <div class="card mt-24">
                 <div class="card-body">
                     <div class="mb-20 flex-between flex-wrap gap-8">
-                        <h4 class="mb-0">Top Courses Pick for You</h4>
-                        <a href="student-courses.html" class="text-13 fw-medium text-main-600 hover-text-decoration-underline">See All</a>
+                        <h4 class="mb-0">Your Top 3 Rated courses</h4>
+                        <NavLink href="/courses/enseignant/mycourses" class="text-13 fw-medium text-main-600 hover-text-decoration-underline">See All</NavLink>
                     </div>
 
                     <div class="row g-20">
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="card border border-gray-100">
-                                <div class="card-body p-8">
-                                    <a href="course-details.html" class="bg-main-100 rounded-8 overflow-hidden text-center mb-8 h-164 flex-center p-8">
-                                        <img src="assets/images/thumbs/course-img1.png" alt="Course Image">
-                                    </a>
-                                    <div class="p-8">
-                                        <span class="text-13 py-2 px-10 rounded-pill bg-success-50 text-success-600 mb-16">Development</span>
-                                        <h5 class="mb-0"><a href="course-details.html" class="hover-text-main-600">Full Stack Web Development</a></h5>
-
-                                        <div class="flex-align gap-8 flex-wrap mt-16">
-                                            <img src="assets/images/thumbs/user-img1.png" class="w-28 h-28 rounded-circle object-fit-cover" alt="User Image">
-                                            <div>
-                                                <span class="text-gray-600 text-13">Created by <a href="profile.html" class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">Albert James</a> </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex-align gap-8 mt-12 pt-12 border-top border-gray-100">
-                                            <div class="flex-align gap-4">
-                                                <span class="text-sm text-main-600 d-flex"><i class="ph ph-video-camera"></i></span>
-                                                <span class="text-13 text-gray-600">24 Lesson</span>
-                                            </div>
-                                            <div class="flex-align gap-4">
-                                                <span class="text-sm text-main-600 d-flex"><i class="ph ph-clock"></i></span>
-                                                <span class="text-13 text-gray-600">40 Hours</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex-between gap-4 flex-wrap mt-24">
-                                            <div class="flex-align gap-4">
-                                                <span class="text-15 fw-bold text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                                                <span class="text-13 fw-bold text-gray-600">4.9</span>
-                                                <span class="text-13 fw-bold text-gray-600">(12k)</span>
-                                            </div>
-                                            <a href="course-details.html" class="btn btn-outline-main rounded-pill py-9">View Details</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="card border border-gray-100">
-                                <div class="card-body p-8">
-                                    <a href="course-details.html" class="bg-main-100 rounded-8 overflow-hidden text-center mb-8 h-164 flex-center p-8">
-                                        <img src="assets/images/thumbs/course-img5.png" alt="Course Image">
-                                    </a>
-                                    <div class="p-8">
-                                        <span class="text-13 py-2 px-10 rounded-pill bg-warning-50 text-warning-600 mb-16">Design</span>
-                                        <h5 class="mb-0"><a href="course-details.html" class="hover-text-main-600">Design System</a></h5>
-
-                                        <div class="flex-align gap-8 flex-wrap mt-16">
-                                            <img src="assets/images/thumbs/user-img5.png" class="w-28 h-28 rounded-circle object-fit-cover" alt="User Image">
-                                            <div>
-                                                <span class="text-gray-600 text-13">Created by <a href="profile.html" class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">Albert James</a> </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex-align gap-8 mt-12 pt-12 border-top border-gray-100">
-                                            <div class="flex-align gap-4">
-                                                <span class="text-sm text-main-600 d-flex"><i class="ph ph-video-camera"></i></span>
-                                                <span class="text-13 text-gray-600">24 Lesson</span>
-                                            </div>
-                                            <div class="flex-align gap-4">
-                                                <span class="text-sm text-main-600 d-flex"><i class="ph ph-clock"></i></span>
-                                                <span class="text-13 text-gray-600">40 Hours</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex-between gap-4 flex-wrap mt-24">
-                                            <div class="flex-align gap-4">
-                                                <span class="text-15 fw-bold text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                                                <span class="text-13 fw-bold text-gray-600">4.9</span>
-                                                <span class="text-13 fw-bold text-gray-600">(12k)</span>
-                                            </div>
-                                            <a href="course-details.html" class="btn btn-outline-main rounded-pill py-9">View Details</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="card border border-gray-100">
-                                <div class="card-body p-8">
-                                    <a href="course-details.html" class="bg-main-100 rounded-8 overflow-hidden text-center mb-8 h-164 flex-center p-8">
-                                        <img src="assets/images/thumbs/course-img6.png" alt="Course Image">
-                                    </a>
-                                    <div class="p-8">
-                                        <span class="text-13 py-2 px-10 rounded-pill bg-danger-50 text-danger-600 mb-16">Frontend</span>
-                                        <h5 class="mb-0"><a href="course-details.html" class="hover-text-main-600">React Native Courese</a></h5>
-
-                                        <div class="flex-align gap-8 flex-wrap mt-16">
-                                            <img src="assets/images/thumbs/user-img6.png" class="w-28 h-28 rounded-circle object-fit-cover" alt="User Image">
-                                            <div>
-                                                <span class="text-gray-600 text-13">Created by <a href="profile.html" class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">Albert James</a> </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex-align gap-8 mt-12 pt-12 border-top border-gray-100">
-                                            <div class="flex-align gap-4">
-                                                <span class="text-sm text-main-600 d-flex"><i class="ph ph-video-camera"></i></span>
-                                                <span class="text-13 text-gray-600">24 Lesson</span>
-                                            </div>
-                                            <div class="flex-align gap-4">
-                                                <span class="text-sm text-main-600 d-flex"><i class="ph ph-clock"></i></span>
-                                                <span class="text-13 text-gray-600">40 Hours</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex-between gap-4 flex-wrap mt-24">
-                                            <div class="flex-align gap-4">
-                                                <span class="text-15 fw-bold text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                                                <span class="text-13 fw-bold text-gray-600">4.9</span>
-                                                <span class="text-13 fw-bold text-gray-600">(12k)</span>
-                                            </div>
-                                            <a href="course-details.html" class="btn btn-outline-main rounded-pill py-9">View Details</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        @foreach (var c in Top3cours){
+                            <Top_3_course_card categoryStyle="@categoryStyle[count++%5]" coursimg="@c.CoursImg" coursId="@c.Id" Category="@c.Category.Name" CoursTitle="@c.Nom" Duree="@c.FormatDuration()" Rating="@c.Evaluation" />
+                        }
                     </div>
                 </div>
             </div>
@@ -322,12 +290,83 @@
 </div>
 
 @code {
-    
+
+    private string? EnseignantId;
+    private List<TopCoursDto>? topCours;
+    List<Cours> Top3cours = new();
+    private bool isLoading = true;
+    private string sortOption = "evaluation"; // Variable to hold the selected sorting option
 
     protected override async Task OnInitializedAsync()
     {
-        
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                EnseignantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (!string.IsNullOrEmpty(EnseignantId))
+                {
+                    isLoading = true;
+                    topCours = await CoursService.GetTop5EvaluationCoursByEnseignantAsync(EnseignantId);
+                    Top3cours = await CoursService.GetTop3RatedCoursByEnseignantIdAsync(EnseignantId);
+                }
+                else
+                {
+                    Console.WriteLine("ID de l'enseignant introuvable.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Utilisateur non authentifié.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur : {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // Method to handle the sorting option change
+    private async Task OnSortOptionChanged(ChangeEventArgs e)
+    {
+        sortOption = e.Value.ToString();
+        await SortCours();
+    }
+
+
+    // Method to sort the courses based on the selected option
+    private async Task SortCours()
+    {
+        if (topCours != null)
+        {
+            if (sortOption == "evaluation")
+            {
+                topCours = await CoursService.GetTop5EvaluationCoursByEnseignantAsync(EnseignantId);
+            }
+            else if (sortOption == "etudiants")
+            {
+                topCours = await CoursService.GetTop5NbEtudinatCoursByEnseignantAsync(EnseignantId);
+            }
+
+            StateHasChanged(); // Forcer la mise à jour de l'interface après le tri
+        }
 
     }
+    int count = 0;
+    private string[] categoryStyle = { "bg-purple-50 text-purple-600",
+                                       "bg-success-50 text-success-600",
+                                       "bg-warning-50 text-warning-600",
+                                       "bg-info-50 text-info-600",
+                                       "bg-danger-50 text-danger-600",
+                                                          };
+
 
 }

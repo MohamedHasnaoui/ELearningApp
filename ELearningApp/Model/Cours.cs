@@ -22,7 +22,7 @@ namespace ELearningApp.Model
 
         [Range(0, 5, ErrorMessage = "L'évaluation doit être comprise entre 0 et 5.")]
         [Display(Name = "Évaluation")]
-        public float? Evaluation { get; set; }
+        public double Evaluation { get; set; }
 
         [ForeignKey("Category")]
         [Display(Name = "Identifiant de la catégorie")]
@@ -46,7 +46,14 @@ namespace ELearningApp.Model
         [Display(Name = "CoursImgPublicId")]
         public string CoursImgPublicId { get; set; }
 
+        [Display(Name = "NombreVideos")]
+        public int nbVids { get; set; }
+
         public Enseignant Enseignant { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public ICollection<Section> sections { get; set; }
 
         public Examen Examen { get; set; }
 
@@ -55,6 +62,18 @@ namespace ELearningApp.Model
         [EnumDataType(typeof(Niveau), ErrorMessage = "Valeur du niveau invalide.")]
         [Display(Name = "Niveau")]
         public Niveau Niveau { get; set; }
+
+        public string FormatDuration()
+        {
+            int hours = (int)(this.Duree / 3600);
+            int minutes = (int)((this.Duree%3600) / 60);
+            return $"{hours:D2} : {minutes:D2}"; 
+        }
+
+        public Cours()
+        {
+            sections = new List<Section>();
+        }
     }
 
     // Déclaration de l'énumération Niveau

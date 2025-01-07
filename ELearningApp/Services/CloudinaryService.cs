@@ -4,7 +4,7 @@ using ELearningApp.IServices;
 
 namespace ELearningApp.Services
 {
-    public class CloudinaryService:ICloudinaryService
+    public class CloudinaryService : ICloudinaryService
     {
         private readonly Cloudinary _cloudinary;
         public CloudinaryService(Cloudinary cloudinary)
@@ -24,7 +24,7 @@ namespace ELearningApp.Services
                 NotificationUrl = notificationUrl
             };
 
-            var uploadResult = await _cloudinary.UploadAsync(uploadParams); 
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
             if (uploadResult.StatusCode != System.Net.HttpStatusCode.OK)
                 throw new Exception($"Video upload failed: {uploadResult.Error.Message}");
 
@@ -69,6 +69,17 @@ namespace ELearningApp.Services
             }
             return false;
         }
-
+        public async Task<string> TransformImg(string publicId, int width, int height)
+        {
+            return _cloudinary.Api.UrlImgUp.Transform(
+            new Transformation().Width(width).Height(height).Crop("fill")
+            ).BuildUrl(publicId) + ".png";
+        }
+        public async Task<string> TransformVid(string publicId, int width, int hieght)
+        {
+            return _cloudinary.Api.UrlVideoUp.Transform(new Transformation()
+        .Height(hieght).Width(width).Crop("pad")).Secure()
+        .BuildUrl(publicId) + ".mp4";
+        }
     }
 }

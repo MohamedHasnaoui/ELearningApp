@@ -1,0 +1,178 @@
+﻿@inject ICoursService CoursService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
+
+@page "/MesTests"
+
+<div>
+    <div class="dashboard-body">
+        <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
+            <div class="flex-align gap-8 flex-wrap">
+                <div class="position-relative text-gray-500 flex-align gap-4 text-13">
+                    <span class="text-inherit">Ordonner par: </span>
+                    <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
+                        <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
+                        <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnSortOptionChanged">
+                            <option value="all">Tous</option>
+                            <option value="evaluation">Evaluation</option>
+                            <option value="etudiants">Etudiants</option>
+                        </select>
+                    </div>
+                </div>
+              
+            </div>
+        </div>
+
+        @if (isLoading)
+        {
+            <p>Chargement en cours...</p>
+        }
+        else if (topCours != null && topCours.Any())
+        {
+            <div class="card overflow-hidden">
+                <div class="card-body p-0">
+                    <table id="assignmentTable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%; text-align: center;">Cours</th>
+                                <th style="width: 25%; text-align: center;">Description</th>
+                                <th style="width: 25%; text-align: center;">Evaluations</th>
+                                <th style="width: 25%; text-align: center;">Etudiants</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cours in topCours)
+                            {
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <span class="h6 mb-0 fw-medium text-gray-300">@cours.Nom</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="h6 mb-0 fw-medium text-gray-300">@cours.Description</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
+                                            <i class="ph-fill ph-star"></i>
+                                            @cours.Evaluation
+                                        </span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
+                                            <span class="w-6 h-6 bg-teal-600 rounded-circle flex-shrink-0"></span>
+                                            @cours.NombreEtudiants
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>Aucun cours trouvé pour cet enseignant.</p>
+        }
+    </div>
+</div>
+
+
+
+
+
+@code {
+    private string? EnseignantId;
+    private List<TopCoursDto>? topCours;
+    private bool isLoading = true;
+    private string sortOption = "all"; // Variable to hold the selected sorting option
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                EnseignantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (!string.IsNullOrEmpty(EnseignantId))
+                {
+                    isLoading = true;
+                    topCours = await CoursService.GetTop5NbEtudinatCoursByEnseignantAsync(EnseignantId);
+                }
+                else
+                {
+                    Console.WriteLine("ID de l'enseignant introuvable.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Utilisateur non authentifié.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur : {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // Method to handle the sorting option change
+    private void OnSortOptionChanged(ChangeEventArgs e)
+    {
+        sortOption = e.Value?.ToString() ?? "all"; // Get the selected option
+        Console.WriteLine($"Option de tri choisie: {sortOption}"); // Log the selected option
+        SortCours();
+    }
+
+
+    // Method to sort the courses based on the selected option
+    private void SortCours()
+    {
+        Console.WriteLine("Avant le tri:");
+        PrintCours(topCours); // Log the courses before sorting
+
+        if (topCours != null)
+        {
+            if (sortOption == "evaluation")
+            {
+                topCours = topCours.OrderByDescending(c => c.Evaluation).ToList();
+            }
+            else if (sortOption == "etudiants")
+            {
+                topCours = topCours.OrderByDescending(c => c.NombreEtudiants).ToList();
+            }
+            else
+            {
+                topCours = topCours.OrderBy(c => c.Nom).ToList(); // Default sorting by course name
+            }
+
+            StateHasChanged(); // Forcer la mise à jour de l'interface après le tri
+        }
+
+        Console.WriteLine("Après le tri:");
+        PrintCours(topCours); // Log the courses after sorting
+    }
+
+    // Helper method to print the courses (for debugging purposes)
+    private void PrintCours(List<TopCoursDto>? cours)
+    {
+        if (cours != null)
+        {
+            foreach (var c in cours)
+            {
+                Console.WriteLine($"Cours: {c.Nom}, Evaluation: {c.Evaluation}, Etudiants: {c.NombreEtudiants}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("La liste des cours est vide.");
+        }
+    }
+}

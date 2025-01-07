@@ -3,6 +3,8 @@
 
 @inject IAbonnementService AbonnementService
 @inject IAbonnementAchete AbonnementAcheteService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 @inject NavigationManager NavManager
 
 
@@ -40,7 +42,7 @@
             <!-- Breadcrumb End -->
 
             <div class="card mt-24">
-               
+
                 <div class="card-body">
 
 
@@ -58,7 +60,6 @@
                             <div class="row gy-4">
                                 @foreach (var abonnement in abonnements)
                                 {
-                                    var estAchete = abonnementsAchetes.ContainsKey(abonnement.Id) && abonnementsAchetes[abonnement.Id];
 
                                     <div class="col-md-4 col-sm-6">
                                         <div class="plan-item rounded-16 border border-gray-100 transition-2 position-relative @((abonnement.IsRecommanded ? "active" : "")) ">
@@ -73,7 +74,7 @@
                                                     @abonnement.Id
                                                 </p>
                                             </div>
-                                            
+
                                             <h3 class="mb-4">
                                                 Plan @abonnement.Type.ToString()
                                             </h3>
@@ -98,13 +99,13 @@
                                                 }
                                             </ul>
 
-                                            @if (!estAchete)
+                                            @if (estAchete)
                                             {
                                                 <button class="btn btn-outline-main w-100 rounded-pill py-16 border-main-300 text-17 fw-medium mt-32" @onclick="() => Checkout(abonnement.Id, abonnement.Type.ToString(), abonnement.Prix)">
                                                     Get Started
                                                 </button>
                                             }
-                                            
+
                                         </div>
                                     </div>
                                 }
@@ -112,71 +113,74 @@
                         </div>
                     }
 
-                       
 
-                        <div class="col-12">
-                            <label class="form-label mb-8 h6 mt-32">Terms & Policy</label>
-                            <ul class="list-inside">
-                                <li class="text-gray-600 mb-4">1. Set up multiple pricing levels with different features and functionalities to maximize revenue</li>
-                                <li class="text-gray-600 mb-4">2. Continuously test different price points and discounts to find the sweet spot that resonates with your target audience</li>
-                                <li class="text-gray-600 mb-4">3. Price your course based on the perceived value it provides to students, considering factors</li>
-                            </ul>
-                            <p>@message</p>
-                            @if (isFormVisible)
-                            {
 
-                                <EditForm Model="@abonnement" OnValidSubmit="HandleValidSubmit">
-                                    <DataAnnotationsValidator />
-                                    <ValidationSummary />
+                    <div class="col-12">
+                        <label class="form-label mb-8 h6 mt-32">Terms & Policy</label>
+                        <ul class="list-inside">
+                            <li class="text-gray-600 mb-4">1. Set up multiple pricing levels with different features and functionalities to maximize revenue</li>
+                            <li class="text-gray-600 mb-4">2. Continuously test different price points and discounts to find the sweet spot that resonates with your target audience</li>
+                            <li class="text-gray-600 mb-4">3. Price your course based on the perceived value it provides to students, considering factors</li>
+                        </ul>
 
-                                    <div class="form-group mt-32 ">
-                                        <label for="Type">Type</label>
-                                        <select id="Type" class="form-control" @bind="abonnement.Type">
-                                            <option value="Basique">Basique</option>
-                                            <option value="Standard">Standard</option>
-                                            <option value="Premium">Premium</option>
-                                        </select>
-                                    </div>
+                        @if (isFormVisible)
+                        {
+
+                            <EditForm Model="@abonnement" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+
+                                <div class="form-group mt-32 ">
+                                    <label for="Type">Type</label>
+                                    <select id="Type" class="form-control" @bind="abonnement.Type">
+                                        <option value="Basique">Basique</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Premium">Premium</option>
+                                    </select>
+                                </div>
                                 <div class="form-group mt-32  ">
-                                        <label for="Duree">Durée</label>
-                                        <select id="Duree" class="form-control" @bind="abonnement.Duree">
-                                            <option value="moi">Mois</option>
-                                            <option value="an">An</option>
-                                        </select>
-                                    </div>
+                                    <label for="Duree">Durée</label>
+                                    <select id="Duree" class="form-control" @bind="abonnement.Duree">
+                                        <option value="moi">Mois</option>
+                                        <option value="an">An</option>
+                                    </select>
+                                </div>
                                 <div class="form-group mt-32  ">
-                                        <label for="Prix">Prix</label>
-                                        <input id="Prix" type="number" class="form-control" @bind="abonnement.Prix" />
-                                    </div>
+                                    <label for="Prix">Prix</label>
+                                    <input id="Prix" type="number" class="form-control" @bind="abonnement.Prix" />
+                                </div>
                                 <div class="form-group mt-32  ">
-                                        <label for="Caracteristiques">Caracteristiques</label>
-                                        <input id="Caracteristiques" type="text" class="form-control" @bind="abonnement.Caracteristiques" />
-                                    </div>
+                                    <label for="Caracteristiques">Caracteristiques</label>
+                                    <input id="Caracteristiques" type="text" class="form-control" @bind="abonnement.Caracteristiques" />
+                                </div>
                                 <div class="form-group mt-32  ">
-                                        <label for="Description">Description</label>
-                                        <input id="Description" type="text" class="form-control" @bind="abonnement.Description" />
-                                    </div>
+                                    <label for="Description">Description</label>
+                                    <input id="Description" type="text" class="form-control" @bind="abonnement.Description" />
+                                </div>
                                 <div class="form-group mt-32  ">
                                     <input type="checkbox" id="IsRecomand" class="form-check-input" @bind="abonnement.IsRecommanded" />
                                     <label for="IsRecomand">Recommandé</label>
 
                                 </div>
-                                    <div class="mt-32 ">
-                                        <button type="submit" class="btn btn-primary me-4 ">Save</button>
-                                        <button type="button" class="btn btn-primary me-4 " @onclick="CloseForm">Close</button>
-                                    </div>
-                                </EditForm>
-                            }
-                            else
-                            {
-                                <button type="button" class="btn btn-primary me-4 mt-32" @onclick="ShowForm">
-                                    <i class="ph ph-plus me-4"></i>
-                                    Add New Plan
-                                </button>
-                            }
+                                <p>@message</p>
 
-                            @if (isDeleteFormVisible)
-                            {
+                                <div class="mt-32 ">
+                                    <button type="submit" class="btn btn-primary me-4 ">Save</button>
+                                    <button type="button" class="btn btn-primary me-4 " @onclick="CloseForm">Close</button>
+                                </div>
+                            </EditForm>
+
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary me-4 mt-32" @onclick="ShowForm">
+                                <i class="ph ph-plus me-4"></i>
+                                Add New Plan
+                            </button>
+                        }
+
+                        @if (isDeleteFormVisible)
+                        {
                             <EditForm Model="@planId" OnValidSubmit="HandleDeleteSubmit">
                                 <DataAnnotationsValidator />
                                 <ValidationSummary />
@@ -185,41 +189,33 @@
                                     <label for="PlanId">Plan ID</label>
                                     <input id="PlanId" type="number" class="form-control" @bind="planId" placeholder="Enter Plan ID" />
                                 </div>
+                                <p>@message</p>
 
                                 <div class="mt-32 ">
                                     <button type="submit" class="btn btn-primary me-4 ">Delete</button>
                                     <button type="button" class="btn btn-primary me-4 " @onclick="CloseDeleteForm">Close</button>
                                 </div>
                             </EditForm>
-                            }
-                            else
-                            {
-                                <button type="button" class="btn btn-primary me-4 mt-32" @onclick="ShowDeleteForm">
+
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary me-4 mt-32" @onclick="ShowDeleteForm">
                                 <i class="ph ph-minus me-4"></i>
                                 Delete a Plan
-                                </button>
-                            }
+                            </button>
+                        }
 
 
 
-                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-        </div>
-        <div class="dashboard-footer">
-            <div class="flex-between flex-wrap gap-16">
-                <p class="text-gray-300 text-13 fw-normal"> &copy; Copyright Edmate 2024, All Right Reserverd</p>
-                <div class="flex-align flex-wrap gap-16">
-                    <a href="#" class="text-gray-300 text-13 fw-normal hover-text-main-600 hover-text-decoration-underline">License</a>
-                    <a href="#" class="text-gray-300 text-13 fw-normal hover-text-main-600 hover-text-decoration-underline">More Themes</a>
-                    <a href="#" class="text-gray-300 text-13 fw-normal hover-text-main-600 hover-text-decoration-underline">Documentation</a>
-                    <a href="#" class="text-gray-300 text-13 fw-normal hover-text-main-600 hover-text-decoration-underline">Support</a>
-                </div>
-            </div>
-        </div>
     </div>
+    
+</div>
 
 
 
@@ -238,35 +234,35 @@
 
 
 
-    <!-- Jquery js -->
-    <script src="assets/js/jquery-3.7.1.min.js"></script>
-    <!-- Bootstrap Bundle Js -->
-    <script src="assets/js/boostrap.bundle.min.js"></script>
-    <!-- Phosphor Js -->
-    <script src="assets/js/phosphor-icon.js"></script>
-    <!-- file upload -->
-    <script src="assets/js/file-upload.js"></script>
-    <!-- file upload -->
-    <script src="assets/js/plyr.js"></script>
-    <!-- dataTables -->
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-    <!-- full calendar -->
-    <script src="assets/js/full-calendar.js"></script>
-    <!-- jQuery UI -->
-    <script src="assets/js/jquery-ui.js"></script>
-    <!-- jQuery UI -->
-    <script src="assets/js/editor-quill.js"></script>
-    <!-- apex charts -->
-    <script src="assets/js/apexcharts.min.js"></script>
-    <!-- Calendar Js -->
-    <script src="assets/js/calendar.js"></script>
-    <!-- jvectormap Js -->
-    <script src="assets/js/jquery-jvectormap-2.0.5.min.js"></script>
-    <!-- jvectormap world Js -->
-    <script src="assets/js/jquery-jvectormap-world-mill-en.js"></script>
+<!-- Jquery js -->
+<script src="assets/js/jquery-3.7.1.min.js"></script>
+<!-- Bootstrap Bundle Js -->
+<script src="assets/js/boostrap.bundle.min.js"></script>
+<!-- Phosphor Js -->
+<script src="assets/js/phosphor-icon.js"></script>
+<!-- file upload -->
+<script src="assets/js/file-upload.js"></script>
+<!-- file upload -->
+<script src="assets/js/plyr.js"></script>
+<!-- dataTables -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+<!-- full calendar -->
+<script src="assets/js/full-calendar.js"></script>
+<!-- jQuery UI -->
+<script src="assets/js/jquery-ui.js"></script>
+<!-- jQuery UI -->
+<script src="assets/js/editor-quill.js"></script>
+<!-- apex charts -->
+<script src="assets/js/apexcharts.min.js"></script>
+<!-- Calendar Js -->
+<script src="assets/js/calendar.js"></script>
+<!-- jvectormap Js -->
+<script src="assets/js/jquery-jvectormap-2.0.5.min.js"></script>
+<!-- jvectormap world Js -->
+<script src="assets/js/jquery-jvectormap-world-mill-en.js"></script>
 
-    <!-- main js -->
-    <script src="assets/js/main.js"></script>
+<!-- main js -->
+<script src="assets/js/main.js"></script>
 
 
 
@@ -286,27 +282,46 @@
 
 @code {
     private Abonnement abonnement = new Abonnement();
-    private string message = "Cliquez sur le bouton pour démarrer.";
+    private string message = "";
 
     private bool isFormVisible = false; // Contrôle la visibilité du formulaire
 
     private bool isDeleteFormVisible = false; // Contrôle la visibilité du formulaire
 
     private int planId;
-
+    private bool estAchete = true;
     private List<Abonnement>? abonnements;
     private Dictionary<int, bool> abonnementsAchetes = new Dictionary<int, bool>();
-
+    private string? EtudiantId = "";
+    //private bool estAchete = false;
 
     // Chargement des abonnements lors de l'initialisation
     protected override async Task OnInitializedAsync()
     {
-        abonnements = await AbonnementService.GetAllAbonnementsAsync();
-        foreach (var abonnement in abonnements)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
         {
-            var estAchete = await AbonnementAcheteService.IsAbonnementAchete(abonnement.Id);
-           // abonnementsAchetes[abonnement.Id] = estAchete;
+            EtudiantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(EtudiantId))
+            {
+                abonnements = await AbonnementService.GetAllAbonnementsAsync();
+                foreach (var abonnement in abonnements)
+                {
+                    var test = await AbonnementAcheteService.IsAbonnementAchete(abonnement.Id, EtudiantId);
+                    if(test){
+                        estAchete = false;
+                        return;
+                    }
+
+                }
+                estAchete = true;
+            }
         }
+
+        
+       
     }
 
     // Méthode de gestion du clic sur "Get Started"

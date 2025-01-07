@@ -6,6 +6,7 @@ using ELearningApp.IServices;
 using ELearningApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -13,7 +14,7 @@ async Task InitializeRoles(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    // Définissez les rôles requis
+    // DÃ©finissez les rÃ´les requis
     string[] roleNames = { "Etudiant", "Enseignant" };
 
     foreach (var roleName in roleNames)
@@ -37,8 +38,8 @@ builder.Services.AddSingleton(new StripeService("sk_test_51Qc2SdKXk8GKN0SWJzl1mu
 
 
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddTransient<IdentityUserAccessor>();
+builder.Services.AddTransient<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 builder.Services.AddAuthentication(options =>
@@ -60,15 +61,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-           .EnableSensitiveDataLogging()
-           .LogTo(Console.WriteLine));
 
-
-
-
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddTransient<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 // cloudinary Account
 var cloudinaryAccount = new Account(
@@ -76,7 +70,7 @@ var cloudinaryAccount = new Account(
     builder.Configuration.GetValue<string>("Cloudinary:ApiKey"),
     builder.Configuration.GetValue<string>("Cloudinary:ApiSecret")
 );
-builder.Services.AddSingleton<Cloudinary>(serviceProvider =>
+builder.Services.AddTransient<Cloudinary>(serviceProvider =>
 {
     return new Cloudinary(cloudinaryAccount);
 });
@@ -96,12 +90,15 @@ builder.Services.AddTransient<IReponseCommentaireService, ReponseCommentaireServ
 builder.Services.AddTransient<ISectionService, SectionService>();
 builder.Services.AddTransient<ISoumissionService, SoumissionService>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 //AbonnementService
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<IAbonnementService, AbonnementService>();
-builder.Services.AddScoped<IPayment, PaymentS>();
-builder.Services.AddScoped<IAbonnementAchete, AbonnementAcheteService>();
-builder.Services.AddScoped<IAbonnementTempService, AbonnementTempService>();
+builder.Services.AddTransient<IAbonnementService, AbonnementService>();
+builder.Services.AddTransient<IPayment, PaymentS>();
+builder.Services.AddTransient<IAbonnementAchete, AbonnementAcheteService>();
+builder.Services.AddTransient<IAbonnementTempService, AbonnementTempService>();
+builder.Services.AddTransient<IRatingService, RatingService>();
 
 /*builder.Services.AddHttpClient<IPayment, PaymentS>(client =>
 {
@@ -124,13 +121,12 @@ else
 }
 
 app.UseHttpsRedirection();
-
-
+app.UseAuthorization();
 app.UseAntiforgery();
+
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .DisableAntiforgery()
     .AddInteractiveServerRenderMode();
 
 // Add additional endpoints required by the Identity /Account Razor components.

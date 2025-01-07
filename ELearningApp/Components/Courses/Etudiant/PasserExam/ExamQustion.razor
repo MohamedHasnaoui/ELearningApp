@@ -1,0 +1,46 @@
+﻿@rendermode InteractiveServer
+
+<div class="mb-20">
+    <label for="question" class="h6 mb-8 fw-semibold">Question @questionNb</label>
+    <p class="form-control fw-medium text-15 text-center">@question.Enonce</p>
+</div>
+
+<div class="mb-20">
+    <div class="row g-20">
+        @{char letter = 'A';}
+        @foreach(var c in question.Choix){
+            char ch = letter;
+            <div class="col-sm-6">
+                <button @onclick="()=>SetChoix(c)" class="delete-item py-4 px-16 rounded-8 bg-gray-50  flex-align gap-8 w-100 @(choix == c? style : "border border-main-200")">
+                    <span class="w-24 h-24 bg-white rounded-circle flex-center text-capitalize text-14">@(ch+"")</span>
+                    <span  class=" border-0 fw-medium text-15" >@c.Texte</span>
+                </button>
+            </div>
+            letter++;
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public Question question { get; set; }
+    [Parameter] public int questionNb { get; set; }
+    public Choix choix;
+    public string style = "border-info-500 border border-2";
+    private async Task SetChoix(Choix c){
+        style = "border-info-500 border border-2";
+        choix = c;
+    }
+    public int Check(){
+        if(choix!=null){
+            if (choix.EstCorrect) {
+                style = "border-success-500 border border-2";
+                StateHasChanged();
+                return 1;
+            }
+            style = "border-danger-500 border border-2";
+            StateHasChanged();
+
+        }
+        return 0;
+    }
+}
