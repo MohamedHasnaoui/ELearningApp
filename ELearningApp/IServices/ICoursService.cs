@@ -18,5 +18,7 @@ namespace ELearningApp.IServices
         Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsAsync(string enseignantId);
        // Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsFiltrésParStatutAsync(string enseignantId, string statut);
         Task<List<TopCoursDto>> GetTop5CoursByEnseignantAsync(string enseignantId);
+        Task<List<CourseStats>> GetStudentEnrollmentsByTeacherAsync(string enseignantId);
+
     }
 }
