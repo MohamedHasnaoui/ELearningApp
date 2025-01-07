@@ -1,4 +1,5 @@
 using ELearningApp.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
@@ -25,20 +26,31 @@ namespace ELearningApp.Data
         public DbSet<AbonnementTemp> AbonnementTemps { get; set; }
         public DbSet<AbonnementAchete> AbonnementsAchetes { get; set; }
 
+        
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
+            
             // Map Etudiant to its table
-            builder.Entity<Etudiant>().ToTable("Etudiants");
-            /* builder.Entity<AbonnementAchete>()
-             .HasKey(a => new { a.IdEtudiant, a.IdAbonnement });*/
-
-           
+            builder.Entity<Etudiant>().ToTable("Etudiants");        
 
             // Map Enseignant to its table
             builder.Entity<Enseignant>().ToTable("Enseignants");
+            // Many-to-Many: Etudiant follows Enseignant
+            builder.Entity<Etudiant>()
+                .HasMany(e => e.FollowedEnseignants)
+                .WithMany(e => e.FollowedByEtudiants)
+                .UsingEntity(j => j.ToTable("EnseignantFollowers"));
+
+            // Many-to-Many: Etudiant likes Enseignant
+            builder.Entity<Etudiant>()
+                .HasMany(e => e.LikedEnseignants)
+                .WithMany(e => e.LikedByEtudiants)
+                .UsingEntity(j => j.ToTable("EnseignantLikes"));
+
             builder.Entity<Abonnement>().ToTable("Abonnements");
+
             builder.Entity<AbonnementTemp>().ToTable("AbonnementTemps");
             builder.Entity<AbonnementAchete>().ToTable("AbonnementAchetes")
             .HasOne(a => a.Etudiant)
@@ -71,6 +83,38 @@ namespace ELearningApp.Data
                    Description = "Courses related to building websites and web applications."
                }
            );
+            builder.Entity<Abonnement>().HasData(
+        new Abonnement
+        {
+            Id = 1,
+            Type = TypeAbonnement.Basique,
+            Duree = DureeAbonnement.an,
+            Prix = 199,
+            IsRecommanded = false,
+            Description = "Perfect plan for students",
+            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing"
+        },
+        new Abonnement
+        {
+            Id = 2,
+            Type = TypeAbonnement.Standard,
+            Duree = DureeAbonnement.an,
+            Prix = 299,
+            IsRecommanded = true,
+            Description = "For users who want to do more",
+            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community"
+        },
+        new Abonnement
+        {
+            Id = 3,
+            Type = TypeAbonnement.Premium,
+            Duree = DureeAbonnement.an,
+            Prix = 499,
+            IsRecommanded = false,
+            Description = "Your entire friends in one place",
+            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community"
+        }
+    );
         }
     }
 }
