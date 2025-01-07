@@ -46,16 +46,23 @@ else
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
+    // [Inject]
+    // private IdentityRedirectManager RedirectManager { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-
-        var isTwoFactorEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
-        if (!isTwoFactorEnabled)
-        {
-            throw new InvalidOperationException("Cannot generate recovery codes for user because they do not have 2FA enabled.");
-        }
+        RedirectManager.RedirectTo("/Login");
     }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+
+    //     var isTwoFactorEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
+    //     if (!isTwoFactorEnabled)
+    //     {
+    //         throw new InvalidOperationException("Cannot generate recovery codes for user because they do not have 2FA enabled.");
+    //     }
+    // }
 
     private async Task OnSubmitAsync()
     {
