@@ -18,7 +18,7 @@
 @inject ApplicationDbContext Context
 @inject IEmailSender EmailSender
 @inject IdentityRedirectManager RedirectManager
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Register</PageTitle>
 
@@ -48,11 +48,18 @@
                 </div>
             }
             <div class="mb-24">
-                <label for="userType" class="form-label mb-8 h6"> Type d'utilisateur</label>
-                <InputSelect @bind-Value="Input.UserType" class="form-control py-11 ps-40" id="userType">
-                    <option value="Etudiant">Etudiant</option>
-                    <option value="Enseignant">Enseignant</option>
-                </InputSelect>
+                <div class="position-relative">
+                    <label for="userType" class="form-label mb-8 h6">Type d'utilisateur</label>
+                    <span class="position-absolute top-50 pt-30 translate-middle-y ms-16 text-gray-600 d-flex">
+                        <i class="ph ph-user"></i>
+                    </span>
+                    <InputSelect @bind-Value="Input.UserType" class="form-control py-11 ps-40" id="userType">
+                        <option value="Etudiant">Etudiant</option>
+                        <option value="Enseignant">Enseignant</option>
+                    </InputSelect>
+                </div>
+
+
                 <ValidationMessage For="() => Input.UserType" class="text-danger" />
             </div>
             @if (Input.UserType == "Enseignant")
@@ -61,7 +68,7 @@
                     <label for="Input.Speciality" class="form-label mb-8 h6"> Spécialité</label>
                     <div class="position-relative">
                         <InputText @bind-Value="Input.Speciality" id="Input.Speciality" class="form-control py-11 ps-40" placeholder="Spécialité" />
-                        <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-user"></i></span>
+                        <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-swatches"></i></span>
                     </div>
                 @if (formSubmitted && string.IsNullOrWhiteSpace(Input.Speciality))
                     {
@@ -336,6 +343,17 @@
             throw new NotSupportedException("The default UI requires a user store with email support.");
         }
         return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            // Redirect to the home page or another page
+            NavigationManager.NavigateTo("/");
+        }
     }
 }
 

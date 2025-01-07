@@ -16,6 +16,7 @@
 @inject IEmailSender EmailSender
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Register confirmation</PageTitle>
 <div class="auth-left bg-main-50 flex-center p-24">
@@ -66,6 +67,14 @@
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine("I'im here");
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user1 = authState.User;
+
+        if (user1.Identity?.IsAuthenticated ?? false)
+        {
+            // Redirect to the home page or another page
+            NavigationManager.NavigateTo("/");
+        }
 
         if (Email is null)
         {

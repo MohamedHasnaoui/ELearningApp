@@ -8,6 +8,8 @@
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Confirm email</PageTitle>
 
@@ -43,6 +45,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user1 = authState.User;
+
+        if (user1.Identity?.IsAuthenticated ?? false)
+        {
+            // Redirect to the home page or another page
+            Navigation.NavigateTo("/");
+        }
+
         if (UserId is null || Code is null)
         {
             Console.WriteLine("null user or code");

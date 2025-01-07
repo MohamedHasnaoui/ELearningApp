@@ -1,0 +1,956 @@
+@using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveServer 
+@attribute [Authorize(Roles = "Admin")]
+@inject IJSRuntime JSRuntime
+@inject ApplicationDbContext Context
+@inject IEtudiantService EtudiantService
+@inject IEnseignantService EnseignantService
+@inject IUserService UserService
+@inject ICertificatService CertificatService
+@inject ICoursService CoursService
+<div class="dashboard-body">
+
+    <div class="row gy-4">
+        <div class="col-lg-9">
+            <!-- Widgets Start -->
+            <div class="row gy-4">
+                <div class="col-xxl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="mb-2">@TotaleCours+</h4>
+                            <span class="text-gray-600">Courses</span>
+                            <div class="flex-between gap-8 mt-16">
+                                <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-600 text-white text-2xl"><i class="ph-fill ph-book-open"></i></span>
+                                <div id="complete-courseAdmin" class="remove-tooltip-title rounded-tooltip-value"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="mb-2">@TotaleCertificat+</h4>
+                            <span class="text-gray-600">Certificate Given</span>
+                            <div class="flex-between gap-8 mt-16">
+                                <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-two-600 text-white text-2xl"><i class="ph-fill ph-certificate"></i></span>
+                                <div id="earned-certificateAdmin" class="remove-tooltip-title rounded-tooltip-value"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="mb-2">@TotaleUser+</h4>
+                            <span class="text-gray-600">Community </span>
+                            <div class="flex-between gap-8 mt-16">
+                                <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-warning-600 text-white text-2xl"><i class="ph-fill ph-users-three"></i></span>
+                                <div id="community-supportAdmin" class="remove-tooltip-title rounded-tooltip-value"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="mb-2">$580.00</h4>
+                            <span class="text-gray-600">Money Earned</span>
+                            <div class="flex-between gap-8 mt-16">
+                                <span class="flex-shrink-0 w-56 h-56 flex-center rounded-circle bg-purple-600 text-white text-2xl">
+                                    <i class="ph-fill ph-credit-card"></i>
+                                </span>
+                                <div id="course-progressAdmin" class="remove-tooltip-title rounded-tooltip-value"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Widgets End -->
+            <!-- Top Course Start -->
+            <div class="card mt-24">
+                <div class="card-body">
+                    <div class="mb-20 flex-between flex-wrap gap-8">
+                        <h4 class="mb-0">Users Statistics</h4>
+                        <div class="flex-align gap-16 flex-wrap">
+                            <div class="flex-align flex-wrap gap-16">
+                                <div class="flex-align flex-wrap gap-8">
+                                    <span class="w-8 h-8 rounded-circle bg-main-600"></span>
+                                    <span class="text-13 text-gray-600">Students</span>
+                                </div>
+                                <div class="flex-align flex-wrap gap-8">
+                                    <span class="w-8 h-8 rounded-circle bg-main-two-600"></span>
+                                    <span class="text-13 text-gray-600">Mentors</span>
+                                </div>
+                            </div>
+                            <select @bind="SelectedChartTypeValue" class="form-select form-control text-13 px-8 pe-24 py-8 rounded-8 w-auto">
+                                <option value="1">Yearly</option>
+                                <option value="2">Monthly</option>
+                                <option value="3">Today</option>
+                            </select>
+                        </div>
+                    </div>
+                    @if (SelectedChartTypeValue == "1")
+                    {
+                        <div id="doubleLineChartYearly" class="tooltip-style y-value-left"></div>
+                    }
+                    else if (SelectedChartTypeValue == "2"){
+                        <div id="doubleLineChartMonthly" class="tooltip-style y-value-left"></div>
+                    }
+                    else if (SelectedChartTypeValue == "3")
+                    {
+                        <div id="doubleLineChartToday" class="tooltip-style y-value-left"></div>
+                    }
+                    else{
+                        <div id="doubleLineChartYearly" class="tooltip-style y-value-left"></div>
+                    }
+                </div>
+            </div>
+            <!-- Top Course End -->
+        </div>
+
+        <div class="col-lg-3">
+            <!-- Calendar Start -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="calendar">
+                        <div class="calendar__header">
+                            <button type="button" class="calendar__arrow left"><i class="ph ph-caret-left"></i></button>
+                            <p class="display h6 mb-0">""</p>
+                            <button type="button" class="calendar__arrow right"><i class="ph ph-caret-right"></i></button>
+                        </div>
+
+                        <div class="calendar__week week">
+                            <div class="calendar__week-text">Su</div>
+                            <div class="calendar__week-text">Mo</div>
+                            <div class="calendar__week-text">Tu</div>
+                            <div class="calendar__week-text">We</div>
+                            <div class="calendar__week-text">Th</div>
+                            <div class="calendar__week-text">Fr</div>
+                            <div class="calendar__week-text">Sa</div>
+                        </div>
+                        <div class="days"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Calendar End -->
+            <!-- Assignment Start -->
+            <div class="card mt-24">
+                <div class="card-header border-bottom border-gray-100 flex-between gap-8 flex-wrap">
+                    <h5 class="mb-0">User Distribution</h5>
+                    <div class="dropdown flex-shrink-0">
+                        <button class="text-gray-400 text-xl d-flex rounded-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ph-fill ph-dots-three-outline"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu--md border-0 bg-transparent p-0">
+                            <div class="card border border-gray-100 rounded-12 box-shadow-custom">
+                                <div class="card-body p-12">
+                                    <div class="max-h-200 overflow-y-auto scroll-sm pe-8">
+                                        <ul>
+                                            <li class="mb-0">
+                                                <a href="/Etudiants" class="py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
+                                                    <span class="text"> <i class="ph ph-user me-4"></i> Students</span>
+                                                </a>
+                                            </li>
+                                            <li class="mb-0">
+                                                <a href="/Enseignant" class="py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
+                                                    <span class="text"> <i class="ph ph-user me-4"></i> Mentors</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="flex-center">
+                        <div id="activityDonutChart" class="w-auto d-inline-block"></div>
+                    </div>
+
+                    <div class="Mycontainer gap-8 flex-wrap mt-24">
+                        <div class="flex-align flex-column">
+                            <span class="w-12 h-12 bg-white border border-3 border-main-600 rounded-circle"></span>
+                            <span class="text-13 my-4 text-main-600">Mentors</span>
+                            <h6 class="mb-0">@PercentageMentors%</h6>
+                        </div>
+                        <div class="flex-align flex-column">
+                            <span class="w-12 h-12 bg-white border border-3 border-main-two-600 rounded-circle"></span>
+                            <span class="text-13 my-4 text-main-two-600">Students</span>
+                            <h6 class="mb-0">@PercentageStudents%</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Assignment End -->
+        </div>
+
+    </div>
+</div>
+<style>
+    .Mycontainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center; /* Optional, aligns items vertically */
+    }
+</style>
+@code {
+    private int TotaleCours { get; set; }
+    private int TotaleCertificat { get; set; }
+    private int TotaleUser { get; set; }
+    private int TotaleStudents { get; set; }
+    private int TotaleMentors { get; set; }
+    private float PercentageStudents { get; set; } = 0;
+    private float PercentageMentors { get; set; } = 0;
+    private float[] PercentageUsers { get; set; } = new float[] { 0.0f, 0.0f };
+    private int[] MonthlyJoindStudents { get; set; } = new int[12];
+    private int[] MonthlyJoindMentors { get; set; } = new int[12];
+    private int[] TodayJoindStudents { get; set; } = new int[12];
+    private int[] TodayJoindMentors { get; set; } = new int[12];
+    private int[] MonthlyDayJoindStudents { get; set; } = new int[12];
+    private int[] MonthlyDayJoindMentors { get; set; } = new int[12];
+    private int[] UsersJoindLast10Day { get; set; } = new int[10];
+    private int[] CoursesCreateLast10Day { get; set; } = new int[10];
+    private int[] CertificatEarnedLast10Day { get; set; } = new int[10];
+
+
+
+    private string SelectedChartTypeValue { get; set; } = "1";
+    private string[] DaysOfMonth { get; set; }
+    private string[] TimesOfDay { get; set; } = Enumerable.Range(0, 12)
+                                                      .Select(hour => $"{hour * 2:D2}:00")
+                                                      .ToArray();
+    private string[] MonthsOfYear { get; set; } = new string[]
+    {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        int daysInCurrentMonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
+        DaysOfMonth = Enumerable.Range(1, daysInCurrentMonth / 3 + 1) 
+                             .Select(day => (day * 3 - 2).ToString()) 
+                             .Where(day => int.Parse(day) <= daysInCurrentMonth) 
+                             .ToArray();
+        TotaleCertificat = Context.Certificats.Count();
+        TotaleCours = Context.Cours.Count();
+        TotaleUser = Context.Users.Count();
+        TotaleStudents = Context.Etudiants.Count();
+        TotaleMentors = Context.Enseignants.Count();
+        MonthlyJoindStudents = await EtudiantService.GetMonthlyStudentRegistrationsAsync();
+        MonthlyJoindMentors = await EnseignantService.GetMonthlyMentorsRegistrationsAsync();
+        TodayJoindStudents = await EtudiantService.GetRegistrationsBy2HourIntervalsAsync();
+        TodayJoindMentors = await EnseignantService.GetRegistrationsBy2HourIntervalsAsync();
+        MonthlyDayJoindStudents = await EtudiantService.GetDailyRegistrationsAsync();
+        MonthlyDayJoindMentors = await EnseignantService.GetDailyRegistrationsAsync();
+        if (TotaleUser != 0)
+        {
+            PercentageStudents = (float)Math.Round(((float)TotaleStudents / TotaleUser)*100, 2);
+            PercentageMentors = (float)Math.Round(((float)TotaleMentors / TotaleUser)*100, 2);
+            PercentageUsers[0] = PercentageMentors;
+            PercentageUsers[1] = PercentageStudents;
+        }
+        UsersJoindLast10Day = await UserService.GetUsersJoinedLast10DaysAsync();
+        
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        
+        if (firstRender)
+        {
+            CertificatEarnedLast10Day = await CertificatService.GetCertificatsIssuedLast10DaysAsync();
+            CoursesCreateLast10Day = await CoursService.GetCoursesCreatedLast10DaysAsync();
+            await JSRuntime.InvokeVoidAsync("initializeCallCalander");
+            await JSRuntime.InvokeVoidAsync("initializeDonut", PercentageUsers);
+            await JSRuntime.InvokeVoidAsync("initializeMiniChart", CoursesCreateLast10Day, CertificatEarnedLast10Day, UsersJoindLast10Day);
+
+        }
+        else{
+            await OnSelectedChartTypeChanged();
+
+        }
+    }
+
+    private async Task OnSelectedChartTypeChanged()
+    {
+        switch (SelectedChartTypeValue)
+        {
+            case "1":
+                await JSRuntime.InvokeVoidAsync("initializeDoubleChart", MonthlyJoindStudents, MonthlyJoindMentors, MonthsOfYear);
+                break;
+            case "2":
+                await JSRuntime.InvokeVoidAsync("initializeDoubleChartMonthly", MonthlyDayJoindStudents, MonthlyDayJoindMentors, DaysOfMonth);
+                break;
+            case "3":
+                await JSRuntime.InvokeVoidAsync("initializeDoubleChartToday", TodayJoindStudents, TodayJoindMentors, TimesOfDay);
+                break;
+            default:
+                await JSRuntime.InvokeVoidAsync("initializeDoubleChart", MonthlyJoindStudents, MonthlyJoindMentors, MonthsOfYear);
+                break;
+        }
+    }
+
+
+}
+<script>
+    // =========================== Double Line Chart Start ===============================
+        window.initializeDoubleChart = function (StudentsAxe,MentorsAxe,formattedOutput){
+            function createLineChart(chartId, chartColor) {
+                var options = {
+                series: [
+                    {
+                        name: 'Students',
+                        data: StudentsAxe,
+                    },
+                    {
+                        name: 'Mentors',
+                        data: MentorsAxe,
+                    },
+                ],
+                chart: {
+                    type: 'area',
+                    width: '100%',
+                    height: 300,
+                    sparkline: {
+                        enabled: false // Remove whitespace
+                    },
+                    toolbar: {
+                        show: false
+                    },
+                    padding: {
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0
+                    }
+                },
+                colors: ['#3D7FF9', chartColor],  // Set the color of the series
+                dataLabels: {
+                    enabled: false,
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 1,
+                    colors: ["#3D7FF9", chartColor],
+                    lineCap: 'round',
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.9,  // Decrease this value to reduce opacity
+                        opacityTo: 0.2,    // Decrease this value to reduce opacity
+                        stops: [0, 100]
+                    }
+                },
+                grid: {
+                    show: true,
+                    borderColor: '#E6E6E6',
+                    strokeDashArray: 3,
+                    position: 'back',
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    row: {
+                        colors: undefined,
+                        opacity: 0.5
+                    },
+                    column: {
+                        colors: undefined,
+                        opacity: 0.5
+                    },
+                    padding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                },
+                // Customize the circle marker color on hover
+                markers: {
+                    colors: ["#3D7FF9", chartColor],
+                    strokeWidth: 3,
+                    size: 0,
+                    hover: {
+                        size: 8
+                    }
+                },
+                    xaxis: {
+                        labels: {
+                            show: false
+                        },
+                        categories: formattedOutput,
+                        tooltip: {
+                            enabled: false,
+                        },
+                        labels: {
+                            formatter: function (value) {
+                                return value;
+                            },
+                            style: {
+                                fontSize: "14px"
+                            }
+                        },
+                    },
+                    yaxis: {
+                            labels: {
+                                formatter: function (value) {
+                                    return + value ;
+                                },
+                                style: {
+                                    fontSize: "14px"
+                                }
+                            },
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd/MM/yy HH:mm'
+                        },
+                    },
+                    legend: {
+                        show: false,
+                        position: 'top',
+                        horizontalAlign: 'right',
+                        offsetX: -10,
+                        offsetY: -0
+                    }
+                };
+
+                var chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
+                chart.render();
+            }
+        
+            createLineChart('doubleLineChartYearly', '#27CFA7');
+        }
+        window.initializeDoubleChartMonthly = function (StudentsAxe,MentorsAxe,formattedOutput){
+            function createLineChart(chartId, chartColor) {
+                var options = {
+                series: [
+                    {
+                        name: 'Students',
+                        data: StudentsAxe,
+                    },
+                    {
+                        name: 'Mentors',
+                        data: MentorsAxe,
+                    },
+                ],
+                chart: {
+                    type: 'area',
+                    width: '100%',
+                    height: 300,
+                    sparkline: {
+                        enabled: false // Remove whitespace
+                    },
+                    toolbar: {
+                        show: false
+                    },
+                    padding: {
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0
+                    }
+                },
+                colors: ['#3D7FF9', chartColor],  // Set the color of the series
+                dataLabels: {
+                    enabled: false,
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 1,
+                    colors: ["#3D7FF9", chartColor],
+                    lineCap: 'round',
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.9,  // Decrease this value to reduce opacity
+                        opacityTo: 0.2,    // Decrease this value to reduce opacity
+                        stops: [0, 100]
+                    }
+                },
+                grid: {
+                    show: true,
+                    borderColor: '#E6E6E6',
+                    strokeDashArray: 3,
+                    position: 'back',
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    row: {
+                        colors: undefined,
+                        opacity: 0.5
+                    },
+                    column: {
+                        colors: undefined,
+                        opacity: 0.5
+                    },
+                    padding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                },
+                // Customize the circle marker color on hover
+                markers: {
+                    colors: ["#3D7FF9", chartColor],
+                    strokeWidth: 3,
+                    size: 0,
+                    hover: {
+                        size: 8
+                    }
+                },
+                    xaxis: {
+                        labels: {
+                            show: false
+                        },
+                        categories: formattedOutput,
+                        tooltip: {
+                            enabled: false,
+                        },
+                        labels: {
+                            formatter: function (value) {
+                                return value;
+                            },
+                            style: {
+                                fontSize: "14px"
+                            }
+                        },
+                    },
+                    yaxis: {
+                            labels: {
+                                formatter: function (value) {
+                                    return + value ;
+                                },
+                                style: {
+                                    fontSize: "14px"
+                                }
+                            },
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd/MM/yy HH:mm'
+                        },
+                    },
+                    legend: {
+                        show: false,
+                        position: 'top',
+                        horizontalAlign: 'right',
+                        offsetX: -10,
+                        offsetY: -0
+                    }
+                };
+
+                var chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
+                chart.render();
+            }
+
+            createLineChart('doubleLineChartMonthly', '#27CFA7');
+        }
+        window.initializeDoubleChartToday = function (StudentsAxe,MentorsAxe,formattedOutput){
+            function createLineChart(chartId, chartColor) {
+                var options = {
+                series: [
+                    {
+                        name: 'Students',
+                        data: StudentsAxe,
+                    },
+                    {
+                        name: 'Mentors',
+                        data: MentorsAxe,
+                    },
+                ],
+                chart: {
+                    type: 'area',
+                    width: '100%',
+                    height: 300,
+                    sparkline: {
+                        enabled: false // Remove whitespace
+                    },
+                    toolbar: {
+                        show: false
+                    },
+                    padding: {
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0
+                    }
+                },
+                colors: ['#3D7FF9', chartColor],  // Set the color of the series
+                dataLabels: {
+                    enabled: false,
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 1,
+                    colors: ["#3D7FF9", chartColor],
+                    lineCap: 'round',
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.9,  // Decrease this value to reduce opacity
+                        opacityTo: 0.2,    // Decrease this value to reduce opacity
+                        stops: [0, 100]
+                    }
+                },
+                grid: {
+                    show: true,
+                    borderColor: '#E6E6E6',
+                    strokeDashArray: 3,
+                    position: 'back',
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    row: {
+                        colors: undefined,
+                        opacity: 0.5
+                    },
+                    column: {
+                        colors: undefined,
+                        opacity: 0.5
+                    },
+                    padding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                },
+                // Customize the circle marker color on hover
+                markers: {
+                    colors: ["#3D7FF9", chartColor],
+                    strokeWidth: 3,
+                    size: 0,
+                    hover: {
+                        size: 8
+                    }
+                },
+                    xaxis: {
+                        labels: {
+                            show: false
+                        },
+                        categories: formattedOutput,
+                        tooltip: {
+                            enabled: false,
+                        },
+                        labels: {
+                            formatter: function (value) {
+                                return value;
+                            },
+                            style: {
+                                fontSize: "14px"
+                            }
+                        },
+                    },
+                    yaxis: {
+                            labels: {
+                                formatter: function (value) {
+                                    return + value ;
+                                },
+                                style: {
+                                    fontSize: "14px"
+                                }
+                            },
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd/MM/yy HH:mm'
+                        },
+                    },
+                    legend: {
+                        show: false,
+                        position: 'top',
+                        horizontalAlign: 'right',
+                        offsetX: -10,
+                        offsetY: -0
+                    }
+                };
+
+                var chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
+                chart.render();
+            }
+
+            createLineChart('doubleLineChartToday', '#27CFA7');
+        }
+        // =========================== Double Line Chart End ===============================
+        // ============================ Donut Chart Start ==========================
+        window.initializeDonut = function (PercentageUsers){
+        var options = {
+            series: PercentageUsers,
+            chart: {
+                height: 200,
+                type: 'donut',
+            },
+            colors: ['#3D7FF9', '#27CFA7'],
+            enabled: true, // Enable data labels
+            formatter: function (val, opts) {
+                return opts.w.config.series[opts.seriesIndex] + '%';
+            },
+            dropShadow: {
+                enabled: false
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '55%' // Fixed slice width
+                    }
+                }
+            },
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        show: false
+                    }
+                }
+            }],
+            legend: {
+                position: 'right',
+                offsetY: 0,
+                height: 230,
+                show: false
+            }
+        };
+        var chart = new ApexCharts(document.querySelector("#activityDonutChart"), options);
+        chart.render();
+        }
+
+        // ============================ Donut Chart End ==========================
+         window.initializeMiniChart = function (AxeCours,AxeCertificate,AxeUsers){
+        function createChart(chartId, chartColor,Axe) {
+
+            let currentYear = new Date().getFullYear();
+
+            var options = {
+            series: [
+                {
+                    name: 'series1',
+                    data: Axe,
+                },
+            ],
+            chart: {
+                type: 'area',
+                width: 80,
+                height: 42,
+                sparkline: {
+                    enabled: true // Remove whitespace
+                },
+
+                toolbar: {
+                    show: false
+                },
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 1,
+                colors: [chartColor],
+                lineCap: 'round'
+            },
+            grid: {
+                show: true,
+                borderColor: 'transparent',
+                strokeDashArray: 0,
+                position: 'back',
+                xaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                row: {
+                    colors: undefined,
+                    opacity: 0.5
+                },
+                column: {
+                    colors: undefined,
+                    opacity: 0.5
+                },
+                padding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                },
+            },
+            fill: {
+                type: 'gradient',
+                colors: [chartColor], // Set the starting color (top color) here
+                gradient: {
+                    shade: 'light', // Gradient shading type
+                    type: 'vertical',  // Gradient direction (vertical)
+                    shadeIntensity: 0.5, // Intensity of the gradient shading
+                    gradientToColors: [`${chartColor}00`], // Bottom gradient color (with transparency)
+                    inverseColors: false, // Do not invert colors
+                    opacityFrom: .5, // Starting opacity
+                    opacityTo: 0.3,  // Ending opacity
+                    stops: [0, 100],
+                },
+            },
+            // Customize the circle marker color on hover
+            markers: {
+                colors: [chartColor],
+                strokeWidth: 2,
+                size: 0,
+                hover: {
+                    size: 8
+                }
+            },
+            xaxis: {
+                labels: {
+                    show: false
+                },
+                categories: [`Jan ${currentYear}`, `Feb ${currentYear}`, `Mar ${currentYear}`, `Apr ${currentYear}`, `May ${currentYear}`, `Jun ${currentYear}`, `Jul ${currentYear}`, `Aug ${currentYear}`, `Sep ${currentYear}`, `Oct ${currentYear}`, `Nov ${currentYear}`, `Dec ${currentYear}`],
+                tooltip: {
+                    enabled: false,
+                },
+            },
+            yaxis: {
+                labels: {
+                    show: false
+                }
+            },
+            tooltip: {
+                x: {
+                    format: 'dd/MM/yy HH:mm'
+                },
+            },
+            };
+
+            var chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
+            chart.render();
+        }
+
+        // Call the function for each chart with the desired ID and color
+        createChart('complete-courseAdmin', '#2FB2AB',AxeCours);
+        createChart('earned-certificateAdmin', '#27CFA7',AxeCertificate);
+        createChart('course-progressAdmin', '#6142FF',AxeUsers);
+        createChart('community-supportAdmin', '#FA902F',AxeUsers);
+        }
+        window.initializeCallCalander = function (){
+                let display = document.querySelector(".display");
+    let days = document.querySelector(".days");
+    let previous = document.querySelector(".left");
+    let next = document.querySelector(".right");
+
+    let date = new Date();
+
+    let year = date.getFullYear();
+    let month = date.getMonth();
+
+    function displayCalendar() {
+      const firstDay = new Date(year, month, 1);
+
+      const lastDay = new Date(year, month + 1, 0);
+
+      const firstDayIndex = firstDay.getDay(); //4
+
+      const numberOfDays = lastDay.getDate(); //31
+
+      let formattedDate = date.toLocaleString("en-US", {
+        month: "long",
+        year: "numeric"
+      });
+
+      display.innerHTML = `${formattedDate}`;
+
+      for (let x = 1; x <= firstDayIndex; x++) {
+        const div = document.createElement("div");
+        div.innerHTML += "";
+
+        days.appendChild(div);
+      }
+
+      for (let i = 1; i <= numberOfDays; i++) {
+        let div = document.createElement("div");
+        let currentDate = new Date(year, month, i);
+
+        div.dataset.date = currentDate.toDateString();
+
+        div.innerHTML += i;
+        days.appendChild(div);
+        if (
+          currentDate.getFullYear() === new Date().getFullYear() &&
+          currentDate.getMonth() === new Date().getMonth() &&
+          currentDate.getDate() === new Date().getDate()
+        ) {
+          div.classList.add("current-date");
+        }
+      }
+    }
+
+    // Call the function to display the calendar
+    displayCalendar();
+
+    previous.addEventListener("click", () => {
+      days.innerHTML = "";
+
+      if (month < 0) {
+        month = 11;
+        year = year - 1;
+      }
+      month = month - 1;
+      date.setMonth(month);
+      displayCalendar();
+    });
+
+    next.addEventListener("click", () => {
+      days.innerHTML = "";
+
+      if (month > 11) {
+        month = 0;
+        year = year + 1;
+      }
+
+      month = month + 1;
+      date.setMonth(month);
+
+      displayCalendar();
+    });
+
+        }
+
+</script>

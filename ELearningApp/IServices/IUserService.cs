@@ -5,6 +5,7 @@ namespace ELearningApp.IServices
 {
     public interface IUserService
     {
+        Task<int[]> GetUsersJoinedLast10DaysAsync();
         Task<ApplicationUser?> GetAuthenticatedUserAsync();
         Task<IEnumerable<ApplicationUser>> GetAllUsersAsync();
         Task<ApplicationUser> GetUserByIdAsync(string userId);

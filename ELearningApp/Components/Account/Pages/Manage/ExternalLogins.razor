@@ -82,28 +82,34 @@
 
     [SupplyParameterFromQuery]
     private string? Action { get; set; }
+    // [Inject]
+    // private IdentityRedirectManager RedirectManager { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        currentLogins = await UserManager.GetLoginsAsync(user);
-        otherLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync())
-            .Where(auth => currentLogins.All(ul => auth.Name != ul.LoginProvider))
-            .ToList();
-
-        string? passwordHash = null;
-        if (UserStore is IUserPasswordStore<ApplicationUser> userPasswordStore)
-        {
-            passwordHash = await userPasswordStore.GetPasswordHashAsync(user, HttpContext.RequestAborted);
-        }
-
-        showRemoveButton = passwordHash is not null || currentLogins.Count > 1;
-
-        if (HttpMethods.IsGet(HttpContext.Request.Method) && Action == LinkLoginCallbackAction)
-        {
-            await OnGetLinkLoginCallbackAsync();
-        }
+        RedirectManager.RedirectTo("/Login");
     }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+    //     currentLogins = await UserManager.GetLoginsAsync(user);
+    //     otherLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync())
+    //         .Where(auth => currentLogins.All(ul => auth.Name != ul.LoginProvider))
+    //         .ToList();
+
+    //     string? passwordHash = null;
+    //     if (UserStore is IUserPasswordStore<ApplicationUser> userPasswordStore)
+    //     {
+    //         passwordHash = await userPasswordStore.GetPasswordHashAsync(user, HttpContext.RequestAborted);
+    //     }
+
+    //     showRemoveButton = passwordHash is not null || currentLogins.Count > 1;
+
+    //     if (HttpMethods.IsGet(HttpContext.Request.Method) && Action == LinkLoginCallbackAction)
+    //     {
+    //         await OnGetLinkLoginCallbackAsync();
+    //     }
+    // }
 
     private async Task OnSubmitAsync()
     {

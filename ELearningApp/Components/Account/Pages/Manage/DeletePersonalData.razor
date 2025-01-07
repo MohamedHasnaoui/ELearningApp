@@ -49,11 +49,12 @@
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
+    // [Inject]
+    // private IdentityRedirectManager RedirectManager { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        Input ??= new();
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        requirePassword = await UserManager.HasPasswordAsync(user);
+        RedirectManager.RedirectTo("/Login");
     }
 
     private async Task OnValidSubmitAsync()

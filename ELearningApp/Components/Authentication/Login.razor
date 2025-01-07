@@ -11,7 +11,8 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
-
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <PageTitle>Log in</PageTitle>
 <div class="auth-left bg-main-50 flex-center p-24">
     <img src="assets/images/thumbs/auth-img1.png" alt="">
@@ -62,7 +63,10 @@
                 New on our platform?
                 <a href="/Register" class="text-main-600 hover-text-decoration-underline">Create an account</a>
             </p>
-
+            <p class="mt-32 text-gray-600 text-center">
+                Go to Menu
+                <a href="/courses/etudiant/decouvrir" class="text-main-600 hover-text-decoration-underline">Menu</a>
+            </p>
             <div class="divider my-32 position-relative text-center">
                 <span class="divider__text text-gray-600 text-13 fw-medium px-26 bg-white">or</span>
             </div>
@@ -104,6 +108,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            // Redirect to the home page or another page
+            Navigation.NavigateTo("/");
+        }
+
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);

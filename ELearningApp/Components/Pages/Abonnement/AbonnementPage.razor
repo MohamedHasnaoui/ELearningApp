@@ -1,0 +1,98 @@
+﻿@page "/AbonnementPage"
+
+@using Microsoft.AspNetCore.Authorization
+@* @attribute [Authorize(Roles = "Admin, Etudiant")] *@
+@inject NavigationManager NavigationManager
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+
+
+
+
+
+<div>
+
+
+    <!--==================== Preloader Start ====================-->
+    <div class="preloader">
+        <div class="loader"></div>
+    </div>
+    <!--==================== Preloader End ====================-->
+    <!--==================== Sidebar Overlay End ====================-->
+    <div class="side-overlay"></div>
+    <!--==================== Sidebar Overlay End ====================-->
+
+    <!-- ============================ Sidebar End  ============================ -->
+
+    <div class="">
+
+
+        <div class="dashboard-body">
+            <!-- Breadcrumb Start -->
+            <div class="breadcrumb mb-24">
+                <ul class="flex-align gap-4">
+                    <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                    <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+                    <li><span class="text-main-600 fw-normal text-15">Pricing Plan</span></li>
+                </ul>
+            </div>
+            <!-- Breadcrumb End -->
+
+            <AbonnementPageComponent/>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+    private bool isEnseignant;
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isEnseignant = user.IsInRole("Enseignant");
+        if(isEnseignant){
+            NavigationManager.NavigateTo("/");
+        }
+
+    }
+
+}

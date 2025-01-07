@@ -1,0 +1,545 @@
+﻿@page "/MyProfile/{MyName}"
+@attribute [Authorize]
+
+@using ELearningApp.Components.Account
+@using ELearningApp.Components.Authentication.Shared
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.JSInterop;
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityUserAccessor UserAccessor
+@inject IdentityRedirectManager RedirectManager
+@inject IJSRuntime JSRuntime
+@inject ICloudinaryService CloudinaryService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ApplicationDbContext Context
+@rendermode InteractiveServer  
+
+<PageTitle>Profile</PageTitle>
+
+@if (MyUser != null)
+{
+
+    <div class="dashboard-body">
+        <!-- Breadcrumb Start -->
+        <div class="breadcrumb mb-24">
+            <ul class="flex-align gap-4">
+                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+                <li><span class="text-main-600 fw-normal text-15">Setting</span></li>
+            </ul>
+        </div>
+        <!-- Breadcrumb End -->
+
+        <div class="card overflow-hidden">
+            <div class="card-body p-0">
+                <div class="cover-img position-relative">
+                    <label for="coverImageUpload" class="btn border-gray-200 text-gray-200 fw-normal hover-bg-gray-400 rounded-pill py-4 px-14 position-absolute inset-block-start-0 inset-inline-end-0 mt-24 me-24">Edit Cover</label>
+                    <div class="avatar-upload">
+                        <input type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg">
+                        <div class="avatar-preview">
+                            <div id="coverImagePreview" style="background-image: url('assets/images/thumbs/setting-cover-img.png');">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-profile px-24">
+                    <div class="flex-between">
+                        <div class="d-flex align-items-end flex-wrap mb-32 gap-24">
+                            <img src='@(MyUser?.imgProfile ?? "assets/images/thumbs/setting-profile-img.jpg")' alt="" class="w-120 h-120 rounded-circle border border-white">
+                            <div>
+                                <h4 class="mb-8">@MyUser.FormalUserName</h4>
+                                <div class="setting-profile__infos flex-align flex-wrap gap-16">
+                                    @if (enseignant is not null)
+                                    {
+                                        <div class="flex-align gap-6">
+                                            <span class="text-gray-600 d-flex text-lg"><i class="ph ph-swatches"></i></span>
+                                            <span class="text-gray-600 d-flex text-15">@enseignant.speciality</span>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(MyUser.Adress))
+                                    {
+                                        <div class="flex-align gap-6">
+                                            <span class="text-gray-600 d-flex text-lg"><i class="ph ph-map-pin"></i></span>
+                                            <span class="text-gray-600 d-flex text-15">@MyUser.Adress</span>
+                                        </div>
+                                    }
+                                    <div class="flex-align gap-6">
+                                        <span class="text-gray-600 d-flex text-lg"><i class="ph ph-calendar-dots"></i></span>
+                                        <span class="text-gray-600 d-flex text-15">Join @formattedDate</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="nav common-tab style-two nav-pills mb-0" id="pills-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="pills-profile-tab" onclick="setActiveTab('pills-profile')" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Profile</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pills-details-tab" onclick="setActiveTab('pills-details')" data-bs-toggle="pill" data-bs-target="#pills-details" type="button" role="tab" aria-controls="pills-details" aria-selected="true">My Details</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pills-password-tab" onclick="setActiveTab('pills-password')" data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab" aria-controls="pills-password" aria-selected="false">Password</button>
+                        </li>
+                        @if (enseignant is null)
+                        {
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-plan-tab" onclick="setActiveTab('pills-plan')" data-bs-toggle="pill" data-bs-target="#pills-plan" type="button" role="tab" aria-controls="pills-plan" aria-selected="false">Plan</button>
+                            </li>
+                        }
+                        @if (!isAdmin && enseignant is null)
+                        {
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Billing</button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="tab-content" id="pills-tabContent">
+            <!-- Profile Tab Start -->
+            <ProfileComponent />
+            <!-- Profile Tab End -->
+            <!-- My Details Tab start -->
+            <div class="tab-pane fade " id="pills-details" role="tabpanel" aria-labelledby="pills-details-tab" tabindex="0">
+                <div class="card mt-24">
+                    <div class="card-header border-bottom">
+                        <h4 class="mb-4">My Details</h4>
+                        <p class="text-gray-600 text-15">Please fill full details about yourself</p>
+                    </div>
+                    <div class="card-body">
+                        <StatusMessage Message="@profileMessage" />
+                        <EditForm Model="Input"  OnValidSubmit="OnValidSubmitAsync">
+                            <DataAnnotationsValidator />
+                            <div class="row gy-4">
+                                <div class="col-sm-6 col-xs-6">
+                                    <label for="fname" class="form-label mb-8 h6">User Name</label>
+                                    <InputText @bind-Value="Input.UserName" id="fname" class="form-control py-11" placeholder="Enter User Name" />
+                                    <ValidationMessage For="() => Input.UserName" class="text-danger" />
+                                </div>
+                                <div class="col-sm-6 col-xs-6">
+                                    <label for="lname" class="form-label mb-8 h6">Email</label>
+                                    <input type="text" class="form-control py-11" id="lname" value="@MyUser.Email" disabled>
+                                </div>
+                                <div class="col-sm-6 col-xs-6">
+                                    <label for="address" class="form-label mb-8 h6">Address</label>
+                                    <InputText @bind-Value="Input.Address" id="address" class="form-control py-11" placeholder="Enter your country and city (e.g., Morroco, Meknes)" />
+                                    <ValidationMessage For="() => Input.Address" class="text-danger" />
+                                </div>
+                                <div class="col-sm-6 col-xs-6">
+                                    <label for="phone" class="form-label mb-8 h6">Phone Number</label>
+
+                                    <!-- Country Code Dropdown -->
+                                    <div class="input-group mb-3">
+                                        <InputSelect class="form-select py-11" @bind-Value="Input.CountryCode">
+                                            @foreach (var country in countryCodes)
+                                            {
+                                                <option value="@country.Key">@country.Value</option>
+                                            }
+                                        </InputSelect>
+
+                                        <!-- Phone Number Input -->
+                                        <InputText type="number" @bind-Value="Input.PhoneNumber" id="phone" class="form-control py-11" placeholder="Enter your phone number" />
+                                    </div>
+
+                                    <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="imageUpload" class="form-label mb-8 h6">Your Photo</label>
+                                    <div class="flex-align gap-22">
+                                        <div class="avatar-upload flex-shrink-0">
+                                            <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg">
+                                            <div class="avatar-preview">
+                                                <div id="profileImagePreview" style="background-image: url('assets/images/thumbs/setting-profile-img.jpg');">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="avatar-upload-box text-center position-relative flex-grow-1 py-24 px-4 rounded-16 border border-main-300 border-dashed bg-main-50 hover-bg-main-100 hover-border-main-400 transition-2 cursor-pointer">
+                                            <label for="imageUpload" class="position-absolute inset-block-start-0 inset-inline-start-0 w-100 h-100 rounded-16 cursor-pointer z-1"></label>
+                                            <span class="text-32 icon text-main-600 d-inline-flex"><i class="ph ph-upload"></i></span>
+                                            <span class="text-13 d-block text-gray-400 text my-8">Click to upload or drag and drop</span>
+                                            <span class="text-13 d-block text-main-600">SVG, PNG, JPEG OR GIF (max 1080px1200px)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label mb-8 h6">Bio</label>
+                                    <InputTextArea @bind-Value="Input.Bio" class="form-control py-11" id="bioInput" />
+                                    <ValidationMessage For="() => Input.Bio" class="text-danger" />
+                                </div>
+                                <div class="col-12">
+                                    <div class="flex-align justify-content-end gap-8">
+                                        <button type="reset" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-9">Cancel</button>
+                                        <button type="submit" class="btn btn-main rounded-pill py-9">Save  Changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+            <!-- My Details Tab End -->
+            <!-- Password Tab Start -->
+            <div class="tab-pane fade" id="pills-password" role="tabpanel" aria-labelledby="pills-password-tab" tabindex="0">
+                <div class="card mt-24">
+                    <div class="card-header border-bottom">
+                        <h4 class="mb-4">Password Settings</h4>
+                        <p class="text-gray-600 text-15">Please fill full details about yourself</p>
+                    </div>
+                    <div class="card-body">
+                        <StatusMessage Message="@passwordMessage" />
+                        <div class="row">
+                            <EditForm Model="Input" OnValidSubmit="OnValidSubmitChangePasswordAsync">
+                                <DataAnnotationsValidator />
+                                <div class="col-md-6">
+                                    <div class="row gy-4">
+                                        <div class="col-12">
+                                            <label for="current-password" class="form-label mb-8 h6">Current Password</label>
+                                            <div class="position-relative">
+                                                <InputText type="password" @bind-Value="Input.OldPassword" id="current-password" class="form-control py-11" placeholder="Enter Current Password" />
+                                                <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#current-password"></span>
+                                                <ValidationMessage For="() => Input.OldPassword" class="text-danger" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="new-password" class="form-label mb-8 h6">New Password</label>
+                                            <div class="position-relative">
+                                                <InputText type="password" @bind-Value="Input.NewPassword" id="new-password" class="form-control py-11" placeholder="Enter New Password" />
+                                                <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#new-password"></span>
+                                                <ValidationMessage For="() => Input.NewPassword" class="text-danger" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="confirm-password" class="form-label mb-8 h6">Confirm Password</label>
+                                            <div class="position-relative">
+                                                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="confirm-password" class="form-control py-11" placeholder="Enter Confirm Password" />
+                                                <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#confirm-password"></span>
+                                                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+
+                                            </div>
+                                        </div>
+                                        @if (errors.Any())
+                                        {
+                                            <div class="col-12">
+                                                <label class="form-label mb-8 h6">Password Requirements:</label>
+                                                <ul class="list-inside">
+                                                    @foreach (var error in errors)
+                                                    {
+                                                        <li class="text-danger-600 mb-4">@error</li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="flex-align justify-content-end gap-8">
+                                        <button type="reset" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-9">Cancel</button>
+                                        <button type="submit" class="btn btn-main rounded-pill py-9">Save Changes</button>
+                                    </div>
+                                </div>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Password Tab End -->
+            @if (enseignant is null)
+            {
+                <!-- Plan Tab Start -->
+                <PlanTab />
+                <!-- Plan Tab End -->
+            }
+            @if (!isAdmin && enseignant is null)
+            {
+                <!-- Billing Tab Start -->
+                <Billing />
+                <!-- Billing Tab End -->
+            }
+
+        </div>
+    </div>
+}
+else{
+    <h1 class="alert alert-danger">User Authenticated is null!!!!!!!!!!!</h1>
+}
+
+<script>
+    // ============================= Initialize Quill editor js Start =============================
+    function editorFunction (editorId) {
+    const quill = new Quill(editorId, {
+    theme: 'snow'
+    });
+
+    }
+    editorFunction('#editor'); 
+    editorFunction('#editorTwo');
+
+    // ============================= Initialize Quill editor js End =============================
+</script>
+<script>
+    function setActiveTab(tabId) {
+    localStorage.setItem('activeTab', tabId);
+
+    }
+    
+</script>
+@code {
+    [Parameter]
+    public string MyName { get; set; }
+    private bool isAdmin;
+    private string? profileMessage;
+    private string? passwordMessage;
+    public string coursImgUrl ;
+    private string imgPublicId;
+    private IBrowserFile ThumbnailImage;
+    private bool hasPassword;
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+    private List<string> errors = new List<string>();
+    private readonly Dictionary<string, string> countryCodes = new Dictionary<string, string>
+    {
+        { "212", "Mor (+212)" },
+        { "966", "Saudi Arabia (+966)" },
+        { "20", "Egypt (+20)" },
+        { "1", "USA (+1)" },
+        { "44", "UK (+44)" },
+        { "91", "India (+91)" },
+        { "33", "France (+33)" },
+        { "61", "Australia (+61)" },
+        { "971", "United Arab Emirates (+971)" },
+        { "962", "Jordan (+962)" },
+        { "968", "Oman (+968)" },
+        { "965", "Kuwait (+965)" },
+        { "974", "Qatar (+974)" },
+        { "973", "Bahrain (+973)" },
+        { "964", "Iraq (+964)" },
+        { "249", "Sudan (+249)" },
+        { "218", "Libya (+218)" }
+    };
+    private Enseignant? enseignant { get; set; }
+    private Etudiant? etudiant { get; set; }
+    private DateTime parsedDate  { get; set; }
+    private string? originalDate { get; set; }
+    private string? formattedDate { get; set; }
+    public ApplicationUser? MyUser { get; set; }
+
+
+    [JSInvokable("HandleThumbnailImageChange")]
+    public async Task HandleThumbnailImageChange(string e)
+    {
+        Console.WriteLine($"File selected: {e}");
+        
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    if (user.Identity?.IsAuthenticated == true)
+    {
+        MyUser = await Context.Users.FirstOrDefaultAsync(u => u.UserName == MyName);
+    }
+        isAdmin = user.IsInRole("Admin");
+        hasPassword = await UserManager.HasPasswordAsync(MyUser);
+        if (!hasPassword)
+        {
+            RedirectManager.RedirectToCurrentPageWithStatus("Error: User not have the password.", HttpContext);
+
+        }
+        if (MyUser is Enseignant)
+        {
+            enseignant = MyUser as Enseignant;
+            // You can now access teacher-specific attributes
+        }
+        else if (MyUser is Etudiant)
+        {
+            etudiant = MyUser as Etudiant;
+        }
+        Input.UserName ??= MyUser.FormalUserName;
+        Input.PhoneNumber ??= MyUser.PhoneNumber;
+        Input.Address ??= MyUser.Adress;
+        Input.Bio ??= MyUser.Bio;
+        Input.CountryCode ??= MyUser.PhoneNumberCode;
+        parsedDate = DateTime.ParseExact(MyUser.joinDate.ToString(), "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+        originalDate = parsedDate.ToString("MM/dd/yyyy HH:mm:ss");
+        formattedDate = parsedDate.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture);
+
+    }
+    private async Task OnValidSubmitAsync()
+    {
+
+        if (Input.PhoneNumber != MyUser.PhoneNumber)
+        {
+            var setPhoneResult = await UserManager.SetPhoneNumberAsync(MyUser, Input.PhoneNumber);
+            if (!setPhoneResult.Succeeded)
+            {
+                profileMessage="Error: Failed to set phone number.";
+                return;
+            }
+        }
+        if (Input.UserName.Replace(" ", "_") != MyUser.UserName)
+        {
+            var userNameExist = await UserManager.FindByNameAsync(Input.UserName.Replace(" ", "_"));
+            if (userNameExist != null)
+            {
+                profileMessage = "Error: This user name already taken";
+                return;
+            }
+            var setUserNameResult = await UserManager.SetUserNameAsync(MyUser, Input.UserName.Replace(" ", "_"));
+            if (!setUserNameResult.Succeeded)
+            {
+                profileMessage = "Error: Failed to set user name.";
+                return;
+            }
+            else
+            {
+                MyUser.FormalUserName = Input.UserName;
+            }
+        }
+        if (Input.Address != MyUser.Adress)
+        {
+            MyUser.Adress = Input.Address;
+        }
+        if (Input.Bio != MyUser.Bio)
+        {
+            MyUser.Bio = Input.Bio;
+        }
+
+        if (Input.CountryCode != MyUser.PhoneNumberCode)
+        {
+            MyUser.PhoneNumberCode = Input.CountryCode;
+        }
+        await UserManager.UpdateAsync(MyUser);
+        await SignInManager.RefreshSignInAsync(MyUser);
+        profileMessage = "Your profile has been updated";
+    }
+    private async Task OnValidSubmitChangePasswordAsync()
+    {
+        errors.Clear();
+
+        // Manual validation
+        if (string.IsNullOrWhiteSpace(Input.OldPassword))
+        {
+            errors.Add("Current password is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(Input.NewPassword))
+        {
+            errors.Add("New password is required.");
+        }
+        else
+        {
+            if (Input.NewPassword.Length < 6)
+            {
+                errors.Add("New password must be at least 6 characters long.");
+            }
+
+            if (!Input.NewPassword.Any(char.IsDigit))
+            {
+                errors.Add("New password must have at least one digit ('0'-'9').");
+            }
+
+            if (!Input.NewPassword.Any(char.IsUpper))
+            {
+                errors.Add("New password must have at least one uppercase letter ('A'-'Z').");
+            }
+
+            if (!Input.NewPassword.Any(ch => !char.IsLetterOrDigit(ch)))
+            {
+                errors.Add("New password must have at least one non-alphanumeric character.");
+            }
+        }
+
+        if (Input.NewPassword != Input.ConfirmPassword)
+        {
+            errors.Add("New password and confirmation password do not match.");
+        }
+
+
+        // If there are validation errors, return without proceeding
+        if (errors.Any())
+        {
+
+            return;
+        }
+        if (MyUser != null)
+        {
+
+            var changePasswordResult = await UserManager.ChangePasswordAsync(MyUser, Input.OldPassword, Input.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                passwordMessage = $"Error: {string.Join(",", changePasswordResult.Errors.Select(error => error.Description))}";
+                return;
+            }
+
+            await SignInManager.RefreshSignInAsync(MyUser);
+            
+            passwordMessage="Your password has been changed";
+        }
+    }
+
+    
+    private sealed class InputModel
+    {
+        [Phone]
+        [Display(Name = "Phone number")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be 10 digits.")]
+        public string? PhoneNumber { get; set; }
+        public string? CountryCode { get; set; }
+
+        [Required(ErrorMessage = "Le nom d'utilisateur est obligatoire.")]
+        [StringLength(50, ErrorMessage = "Le nom d'utilisateur doit comporter au moins {2} caractères et au maximum {1} caractères.", MinimumLength = 3)]
+        [Display(Name = "Nom d'utilisateur")]
+        public string? UserName { get; set; }
+
+        [Display(Name = "Adresse")]
+        [RegularExpression(@"^[a-zA-Z\s]+,\s[a-zA-Z\s]+$", ErrorMessage = "Address must be in 'Country, City' format.")]
+        public string? Address { get; set; }
+        [StringLength(500, ErrorMessage = "Bio cannot exceed 500 characters.")]
+        public string? Bio { get; set; }
+
+        public string OldPassword { get; set; } = "";
+
+        
+        public string NewPassword { get; set; } = "";
+
+        
+        public string ConfirmPassword { get; set; } = "";
+    }
+    
+    
+}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const activeTab = localStorage.getItem('activeTab');
+        console.log("111111111111111111111111111111111111111");
+        if (activeTab) {
+            const tabButton = document.getElementById(`${activeTab}-tab`);
+            if (tabButton) {
+                tabButton.click();
+            }
+        }
+    });
+    window.history.replaceState({}, document.title, window.location.pathname);
+    function handleFileChange() {
+        console.log("111111111111111111111111111111111111111");
+        const input = document.getElementById('imageUpload');
+        const file = input.files[0];
+        if (file) {
+            DotNet.invokeMethodAsync('ELearningApp', 'HandleThumbnailImageChange', file.name);
+        }
+    }
+</script>
