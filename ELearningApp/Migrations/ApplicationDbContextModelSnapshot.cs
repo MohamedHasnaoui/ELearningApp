@@ -30,6 +30,12 @@ namespace ELearningApp.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Adress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -62,6 +68,9 @@ namespace ELearningApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumberCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -132,6 +141,38 @@ namespace ELearningApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Abonnements", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing",
+                            Description = "Perfect plan for students",
+                            Duree = 1,
+                            IsRecommanded = false,
+                            Prix = 199,
+                            Type = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community",
+                            Description = "For users who want to do more",
+                            Duree = 1,
+                            IsRecommanded = true,
+                            Prix = 299,
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community",
+                            Description = "Your entire friends in one place",
+                            Duree = 1,
+                            IsRecommanded = false,
+                            Prix = 499,
+                            Type = 2
+                        });
                 });
 
             modelBuilder.Entity("ELearningApp.Model.AbonnementAchete", b =>
@@ -336,6 +377,9 @@ namespace ELearningApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -357,6 +401,9 @@ namespace ELearningApp.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("nbVids")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -388,8 +435,11 @@ namespace ELearningApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<float>("Progression")
-                        .HasColumnType("real");
+                    b.Property<int>("Progres")
+                        .HasColumnType("int");
+
+                    b.Property<int>("nbWatchedVid")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -583,6 +633,36 @@ namespace ELearningApp.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("Videos");
+                });
+
+            modelBuilder.Entity("EnseignantEtudiant", b =>
+                {
+                    b.Property<string>("FollowedByEtudiantsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FollowedEnseignantsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("FollowedByEtudiantsId", "FollowedEnseignantsId");
+
+                    b.HasIndex("FollowedEnseignantsId");
+
+                    b.ToTable("EnseignantFollowers", (string)null);
+                });
+
+            modelBuilder.Entity("EnseignantEtudiant1", b =>
+                {
+                    b.Property<string>("LikedByEtudiantsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LikedEnseignantsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LikedByEtudiantsId", "LikedEnseignantsId");
+
+                    b.HasIndex("LikedEnseignantsId");
+
+                    b.ToTable("EnseignantLikes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -881,7 +961,7 @@ namespace ELearningApp.Migrations
             modelBuilder.Entity("ELearningApp.Model.Section", b =>
                 {
                     b.HasOne("ELearningApp.Model.Cours", "Cours")
-                        .WithMany()
+                        .WithMany("sections")
                         .HasForeignKey("CoursId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -917,6 +997,36 @@ namespace ELearningApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("EnseignantEtudiant", b =>
+                {
+                    b.HasOne("ELearningApp.Model.Etudiant", null)
+                        .WithMany()
+                        .HasForeignKey("FollowedByEtudiantsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ELearningApp.Model.Enseignant", null)
+                        .WithMany()
+                        .HasForeignKey("FollowedEnseignantsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EnseignantEtudiant1", b =>
+                {
+                    b.HasOne("ELearningApp.Model.Etudiant", null)
+                        .WithMany()
+                        .HasForeignKey("LikedByEtudiantsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ELearningApp.Model.Enseignant", null)
+                        .WithMany()
+                        .HasForeignKey("LikedEnseignantsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1014,6 +1124,8 @@ namespace ELearningApp.Migrations
                 {
                     b.Navigation("Examen")
                         .IsRequired();
+
+                    b.Navigation("sections");
                 });
 
             modelBuilder.Entity("ELearningApp.Model.Examen", b =>
