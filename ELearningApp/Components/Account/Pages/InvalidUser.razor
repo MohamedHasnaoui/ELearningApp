@@ -5,3 +5,12 @@
 <h3>Invalid user</h3>
 
 <StatusMessage />
+@code{
+    [Inject]
+    private IdentityRedirectManager RedirectManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        RedirectManager.RedirectTo("/Login");
+    }
+}
