@@ -7,7 +7,7 @@
     </div>
 
     <div class="mb-20">
-        <label class="h6 mb-8 fw-semibold">Multiple Choices</label>
+        <label class="h6 mb-8 fw-semibold">Choix Multiples</label>
         <div class="row g-20">
             <div class="col-sm-6">
                 <div class="delete-item py-4 px-16 rounded-8 bg-gray-50 border border-main-200 flex-align gap-8">
@@ -37,9 +37,9 @@
     </div>
 
     <div class="mb-20">
-        <label for="answer" class="h6 mb-8 fw-semibold">Answer</label>
+        <label for="answer" class="h6 mb-8 fw-semibold">Réponse</label>
         <select id="answer" class="form-control form-select rounded-8 bg-gray-50 border border-main-200 py-19" @bind="CorrectAnswer">
-            <option selected value="" disabled>Select correct answer</option>
+            <option selected value="" disabled>Sélectionnez la bonne réponse</option>
             <option value="A">A</option>
             <option value="B">B</option>
             <option value="C">C</option>
@@ -69,27 +69,27 @@
 
         if (string.IsNullOrWhiteSpace(Question))
         {
-            ValidationError = "The question field is required.";
+            ValidationError = "Le champ de la question est requis.";
         }
         else if (string.IsNullOrWhiteSpace(OptionA))
         {
-            ValidationError = "Option A is required.";
+            ValidationError = "L'option A est requise.";
         }
         else if (string.IsNullOrWhiteSpace(OptionB))
         {
-            ValidationError = "Option B is required.";
+            ValidationError = "L'option B est requise.";
         }
         else if (string.IsNullOrWhiteSpace(OptionC))
         {
-            ValidationError = "Option C is required.";
+            ValidationError = "L'option C est requise.";
         }
         else if (string.IsNullOrWhiteSpace(OptionD))
         {
-            ValidationError = "Option D is required.";
+            ValidationError = "L'option D est requise.";
         }
         else if (string.IsNullOrWhiteSpace(CorrectAnswer))
         {
-            ValidationError = "Please select a correct answer.";
+            ValidationError = "Veuillez sélectionner une bonne réponse.";
         }
         if (ValidationError == null)
         {
@@ -99,7 +99,8 @@
         StateHasChanged();
         return false;
     }
-    public async Task SaveToDateBase(int examId){
+    public async Task SaveToDateBase(int examId)
+    {
         Question question = new Question() { ExamenId = examId, Enonce = Question };
         await QuestionService.CreateAsync(question);
         Choix ca = new Choix() { QuestionId = question.Id, Texte = OptionA, EstCorrect = CorrectAnswer.Equals("A") };

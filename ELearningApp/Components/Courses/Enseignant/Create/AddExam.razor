@@ -4,9 +4,9 @@
     <!-- Breadcrumb Start -->
     <div class="breadcrumb mb-24">
         <ul class="flex-align gap-4">
-            <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+            <li><NavLink href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</NavLink></li>
             <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-            <li><span class="text-main-600 fw-normal text-15">Create Quiz</span></li>
+            <li><span class="text-main-600 fw-normal text-15">Créer un Examen</span></li>
         </ul>
     </div>
     <!-- Breadcrumb End -->
@@ -16,28 +16,28 @@
 <ul class="step-list mb-24">
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Course Details
+        Détails du Cours
         <span class="line position-relative"></span>
     </li>
 
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Section Details
+        Détails des Sections
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Upload Videos
+        Téléverser des Vidéos
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6  active">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Create Quiz
+        Créer un Examen
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Publish Course
+        Publier le Cours
         <span class="line position-relative"></span>
     </li>
 </ul>
@@ -46,26 +46,27 @@
 <div class="card">
     <div class="card-header border-bottom border-gray-100 flex-between flex-wrap gap-8">
         <div class="flex-align gap-8 flex-wrap">
-            <h5 class="mb-0">Quiz Questions</h5>
-            <button type="button"  class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Quiz Questions">
+            <h5 class="mb-0">Questions de l'Examen</h5>
+            <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Questions de l'Examen">
                 <i class="ph-fill ph-question"></i>
             </button>
         </div>
         <!-- Button trigger modal -->
         <button type="button" @onclick="()=>{if(nbQuestions>0) nbQuestions--;}" class="btn text-bg-danger ms-auto rounded-pill py-8 px-20">
-            Remove Question
+            Supprimer une Question
         </button>
         <button type="button" @onclick="()=>nbQuestions++" class="btn text-bg-secondary rounded-pill py-8 px-20">
-            Add Question
+            Ajouter une Question
         </button>
     </div>
     <div class="card-body">
-        @for(int i=1;i<=nbQuestions;i++){
+        @for (int i = 1; i <= nbQuestions; i++)
+        {
             <ExamQuetion @ref="qstRef" QuestionNb="i" />
         }
         <div class="flex-align justify-content-end gap-8">
-            <button type="button" @onclick="HandleBackClick" @onclick:preventDefault class="btn btn-outline-main rounded-pill py-9">Back</button>
-            <button @onclick="handleContinueClique" @onclick:preventDefault class="btn btn-main rounded-pill py-9">Continue</button>
+            <button type="button" @onclick="HandleBackClick" @onclick:preventDefault class="btn btn-outline-main rounded-pill py-9">Retour</button>
+            <button @onclick="handleContinueClique" @onclick:preventDefault class="btn btn-main rounded-pill py-9">Continuer</button>
         </div>
         @if (!string.IsNullOrEmpty(errorSaving))
         {
@@ -89,21 +90,26 @@
     private async Task handleContinueClique()
     {
         errorSaving = null;
-        if(nbQuestions==0){
-            errorSaving = "il faut avoir au moins une Question";
+        if (nbQuestions == 0)
+        {
+            errorSaving = "Il faut avoir au moins une question.";
         }
-        foreach(var qst in qstList){
+        foreach (var qst in qstList)
+        {
             var res = await qst.ValidateForm();
-            if(!res){
-                errorSaving = "il faut remplir tous les questions";
+            if (!res)
+            {
+                errorSaving = "Il faut remplir toutes les questions.";
             }
         }
         StateHasChanged();
-        if(string.IsNullOrEmpty(errorSaving)){
+        if (string.IsNullOrEmpty(errorSaving))
+        {
             await OnContinueButtonClick.InvokeAsync(3);
         }
     }
-    private async Task HandleBackClick(){
+    private async Task HandleBackClick()
+    {
         await OnBackButtonClick.InvokeAsync(3);
     }
     public async Task SaveToDateBase(int coursId)
@@ -112,7 +118,7 @@
         await ExamenService.CreateAsync(examen);
         foreach (var qst in qstList)
         {
-           await qst.SaveToDateBase(examen.Id);
+            await qst.SaveToDateBase(examen.Id);
         }
     }
 }

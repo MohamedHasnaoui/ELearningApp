@@ -11,11 +11,11 @@
             </span>
             <div>
                 <p class="text-15 text-gray-500">
-                    Drag & drop your single/multiple videos of course, or
-                    <label for="@("video" + SectionNumber)" class="text-main-600 cursor-pointer">Browse</label>
+                    Glissez-déposez vos vidéos (une ou plusieurs) pour ce cours, ou
+                    <label for="@("video" + SectionNumber)" class="text-main-600 cursor-pointer">Parcourir</label>
                     <InputFile OnChange="SetVideoFiles" id="@("video" + SectionNumber)" accept="video/mp4,video/x-m4v,video/*" multiple hidden />
                 </p>
-                <p class="text-13 text-gray-600">Mp4 format with 16:9 aspect ratio (max file size 100mb each)</p>
+                <p class="text-13 text-gray-600">Format Mp4 avec un ratio d'aspect de 16:9 (taille maximale de fichier 100mb chacun)</p>
                 @if (!string.IsNullOrEmpty(uploadingmsg))
                 {
                     <p class="text-main-600 cursor-pointer">@uploadingmsg</p>
@@ -50,8 +50,8 @@
                                         <ul>
                                             <li class="mb-0">
                                                 <button type="button" @onclick="() => DeleteVideo(vid)"
-                                                class="delete-item-btn py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
-                                                    <span class="text">Delete</span>
+                                                        class="delete-item-btn py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
+                                                    <span class="text">Supprimer</span>
                                                 </button>
                                             </li>
                                         </ul>
@@ -74,7 +74,7 @@
     private async Task SetVideoFiles(InputFileChangeEventArgs e)
     {
         var files = e.GetMultipleFiles(); // Get all selected files
-        uploadingmsg = "Uploading ... please wait";
+        uploadingmsg = "Téléversement en cours... veuillez patienter";
         foreach (var file in files)
         {
             using var stream = file.OpenReadStream(maxAllowedSize: 100000000);
@@ -84,7 +84,7 @@
             Video videoModel = new Video()
                 {
                     VidPublicId = res.PublicId,
-                    Title = file.Name.Replace(".mp4",""),
+                    Title = file.Name.Replace(".mp4", ""),
                     Duree = res.Duration,
                     Thumbnail = res.SecureUrl.ToString().Remove(res.SecureUrl.ToString().Length - 3) + "jpg",
                     VideoUrl = res.SecureUrl.ToString()
@@ -93,7 +93,7 @@
             Videos.Add(videoModel);
             StateHasChanged();
         }
-        uploadingmsg = "Done";
+        uploadingmsg = "Terminé";
     }
 
     private async void DeleteVideo(Video video)
@@ -103,12 +103,11 @@
         await CloudinaryService.DeleteAsync(video.VidPublicId, CloudinaryDotNet.Actions.ResourceType.Video);
     }
 
-
-
     public async Task<Double> SaveToDataBase(int sectionId)
     {
         double dureeTotal = 0;
-        foreach(var vid in Videos){
+        foreach (var vid in Videos)
+        {
             vid.SectionId = sectionId;
             vid.Id = null;
             await VideoService.CreateAsync(vid);

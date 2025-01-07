@@ -3,16 +3,16 @@
 <div class="col-lg-6 col-sm-12 my-20">
     <h5 class="mb-4">Section @SectionNumber</h5>
     <div class="mb-3">
-        <label for="sectionTitle_@SectionNumber" class="form-label">Section Title</label>
-        <input type="text" id="sectionTitle_@SectionNumber" class="form-control" placeholder="Enter section title" @bind="sectionTitle" />
+        <label for="sectionTitle_@SectionNumber" class="form-label">Titre de la Section</label>
+        <input type="text" id="sectionTitle_@SectionNumber" class="form-control" placeholder="Entrez le titre de la section" @bind="sectionTitle" />
         @if (!string.IsNullOrEmpty(titleError))
         {
             <div class="text-danger">@titleError</div>
         }
     </div>
     <div class="mb-3">
-        <label for="sectionDescription_@SectionNumber" class="form-label">Section Description</label>
-        <textarea id="sectionDescription_@SectionNumber" class="form-control" placeholder="Enter section description" @bind="sectionDescription"></textarea>
+        <label for="sectionDescription_@SectionNumber" class="form-label">Description de la Section</label>
+        <textarea id="sectionDescription_@SectionNumber" class="form-control" placeholder="Entrez la description de la section" @bind="sectionDescription"></textarea>
         @if (!string.IsNullOrEmpty(descriptionError))
         {
             <div class="text-danger">@descriptionError</div>
@@ -25,6 +25,7 @@
         }
     </div>
 </div>
+
 @code {
     [Parameter] public int SectionNumber { get; set; }
     [Parameter] public EventCallback<bool> OnSaveCompleted { get; set; }
@@ -44,11 +45,11 @@
 
         if (string.IsNullOrEmpty(sectionTitle))
         {
-            titleError = "Title is required.";
+            titleError = "Le titre est requis.";
         }
         if (string.IsNullOrEmpty(sectionDescription))
         {
-            descriptionError = "Description is required.";
+            descriptionError = "La description est requise.";
         }
         StateHasChanged();
         if (!string.IsNullOrEmpty(titleError) || !string.IsNullOrEmpty(descriptionError))
@@ -57,14 +58,18 @@
         }
         return true;
     }
-    public async Task<Section> SaveToDataBase(int coursId){
-        Section section = new Section(){CoursId=coursId,Description=sectionDescription,Title=sectionTitle};
+
+    public async Task<Section> SaveToDataBase(int coursId)
+    {
+        Section section = new Section() { CoursId = coursId, Description = sectionDescription, Title = sectionTitle };
         try
         {
             await SectionService.CreateAsync(section);
             return section;
-        }catch(Exception e){
-            Console.WriteLine("error saving the section {0}", e.Message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Erreur lors de la sauvegarde de la section : {0}", e.Message);
         }
         return section;
     }
