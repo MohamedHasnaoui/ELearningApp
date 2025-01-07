@@ -1,4 +1,6 @@
 ﻿@page "/success"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
 @rendermode InteractiveServer
 
 @layout ELearningApp.Components.Layout.EmptyLayout

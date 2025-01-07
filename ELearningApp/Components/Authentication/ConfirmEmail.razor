@@ -1,0 +1,83 @@
+﻿@page "/ConfirmEmail"
+@layout Layout.MainLayoutAuhtentification
+@using System.Text
+@using ELearningApp.Components.Account
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using ELearningApp.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IdentityRedirectManager RedirectManager
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Confirm email</PageTitle>
+
+<div class="auth-left bg-main-50 flex-center p-24">
+    <img src="assets/images/thumbs/auth-img4.png" alt="">
+</div>
+<div class="auth-right py-40 px-24 flex-center flex-column">
+    <div class="auth-right__inner mx-auto w-100">
+        <a href="index.html" class="auth-right__logo">
+            <img src="assets/images/logo/logo.png" alt="">
+        </a>
+        @if (!string.IsNullOrEmpty(statusMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @statusMessage
+            </div>
+            <a href="/Register" class="btn btn-main rounded-pill w-100">Go To Re Register</a>
+        }
+    </div>
+</div>
+
+@code {
+    private string? statusMessage;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? UserId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? Code { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user1 = authState.User;
+
+        if (user1.Identity?.IsAuthenticated ?? false)
+        {
+            // Redirect to the home page or another page
+            Navigation.NavigateTo("/");
+        }
+
+        if (UserId is null || Code is null)
+        {
+            Console.WriteLine("null user or code");
+            RedirectManager.RedirectTo("");
+        }
+
+        var user = await UserManager.FindByIdAsync(UserId);
+        if (user is null)
+        {
+            Console.WriteLine("Error loading user with ID");
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            statusMessage = $"Error loading user with ID {UserId}";
+        }
+        else
+        {
+            Console.WriteLine("Email confirm");
+            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
+            var result = await UserManager.ConfirmEmailAsync(user, code);
+            statusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+            if (result.Succeeded)
+            {
+                RedirectManager.RedirectTo("/Login");
+
+            }
+        }
+    }
+}
