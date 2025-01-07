@@ -17,13 +17,20 @@
 
     private string? DisplayMessage => Message ?? messageFromCookie;
 
-    protected override void OnInitialized()
-    {
-        messageFromCookie = HttpContext.Request.Cookies[IdentityRedirectManager.StatusCookieName];
+    [Inject]
+    private IdentityRedirectManager RedirectManager { get; set; }
 
-        if (messageFromCookie is not null)
-        {
-            HttpContext.Response.Cookies.Delete(IdentityRedirectManager.StatusCookieName);
-        }
+    protected override async Task OnInitializedAsync()
+    {
+        RedirectManager.RedirectTo("/Login");
     }
+    // protected override void OnInitialized()
+    // {
+    //     messageFromCookie = HttpContext.Request.Cookies[IdentityRedirectManager.StatusCookieName];
+
+    //     if (messageFromCookie is not null)
+    //     {
+    //         HttpContext.Response.Cookies.Delete(IdentityRedirectManager.StatusCookieName);
+    //     }
+    // }
 }
