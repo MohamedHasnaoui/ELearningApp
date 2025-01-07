@@ -1,4 +1,6 @@
 ﻿@inject ICoursService CoursService
+@inject IEnseignantService EnseignantService
+
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
@@ -9,57 +11,45 @@
     <div class="row gy-4">
         <div class="col-lg-9">
             <!-- Widgets Start -->
-            <div class="row gy-4">
-                <div class="col-xxl-3 col-sm-6">
+            <div class="row gy-3">
+                <div class="col-12 col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="mb-2">155+</h4>
-                            <span class="text-gray-600">Completed Courses</span>
+                            <h4 class="mb-2">@TotalCours+</h4>
+                            <span class="text-gray-600">Total Cours</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-600 text-white text-2xl"><i class="ph-fill ph-book-open"></i></span>
-                                <div id="complete-course" class="remove-tooltip-title rounded-tooltip-value"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xxl-3 col-sm-6">
+
+                <div class="col-12 col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="mb-2">39+</h4>
-                            <span class="text-gray-600">Earned Certificate</span>
-                            <div class="flex-between gap-8 mt-16">
-                                <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-two-600 text-white text-2xl"><i class="ph-fill ph-certificate"></i></span>
-                                <div id="earned-certificate" class="remove-tooltip-title rounded-tooltip-value"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xxl-3 col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="mb-2">25+</h4>
-                            <span class="text-gray-600">Course in Progress</span>
+                            <h4 class="mb-2">@TotalEvaluations+</h4>
+                            <span class="text-gray-600">Total Evaluation</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-purple-600 text-white text-2xl"> <i class="ph-fill ph-graduation-cap"></i></span>
-                                <div id="course-progress" class="remove-tooltip-title rounded-tooltip-value"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xxl-3 col-sm-6">
+
+                <div class="col-12 col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="mb-2">18k+</h4>
-                            <span class="text-gray-600">Community Support</span>
+                            <h4 class="mb-2">@TotalEtudiants+</h4>
+                            <span class="text-gray-600">Total Etudiant</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-warning-600 text-white text-2xl"><i class="ph-fill ph-users-three"></i></span>
-                                <div id="community-support" class="remove-tooltip-title rounded-tooltip-value"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Widgets End -->
+
             <!-- Top Course Start -->
             @*             <div class="card mt-24">
                 <div class="card-body">
@@ -85,7 +75,6 @@
                         </div>
                     </div>
 
-                    <div id="doubleLineChart" class="tooltip-style y-value-left"></div>
 
                 </div>
             </div>
@@ -97,19 +86,19 @@
 
             <div class="dashboard-body bg-white card border  mt-24 ">
                 <!-- Titre ajouté au-dessus du champ de filtre -->
-                <div class="flex-between align-items-center mb-24">
-                    <h4 class="mb-4">Top 5 Cours</h4>
-                    <div class="breadcrumb-with-buttons flex-between flex-wrap gap-8">
-                        <div class="flex-align gap-8 flex-wrap">
-                            <div class="position-relative text-gray-500 flex-align gap-4 text-13">
-                                <span class="text-inherit">Selon: </span>
-                                <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
-                                    <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
-                                    <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnSortOptionChanged">
-                                        <option selected value="evaluation">Evaluation</option>
-                                        <option value="etudiants">Etudiants</option>
-                                    </select>
-                                </div>
+                <h4 class="mb-4">Statistiques de Top 5 Cours</h4>
+
+                <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8  p-4">
+                    <div class="flex-align gap-8 flex-wrap">
+                        <div class="position-relative text-gray-500 flex-align gap-4 text-13">
+                            <span class="text-inherit">Ordonner par: </span>
+                            <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
+                                <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
+                                <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnSortOptionChanged">
+                                    <option value="all">Tous</option>
+                                    <option value="evaluation">Evaluation</option>
+                                    <option value="etudiants">Etudiants</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -129,7 +118,7 @@
                                 <thead class="border border-gray-100 rounded-4">
                                     <tr>
                                         <th style="width: 25%; text-align: center;">Cours</th>
-                                        <th style="width: 25%; text-align: center;">Description</th>
+                                        <th style="width: 25%; text-align: center;">Catégorie</th>
                                         <th style="width: 25%; text-align: center;">Evaluations</th>
                                         <th style="width: 25%; text-align: center;">Etudiants Inscrits</th>
                                     </tr>
@@ -142,7 +131,7 @@
                                                 <span class="h6 mb-0 fw-medium text-gray-300">@cours.Nom</span>
                                             </td>
                                             <td style="text-align: center;">
-                                                <span class="h6 mb-0 fw-medium text-gray-300">@cours.Description</span>
+                                                <span class="h6 mb-0 fw-medium text-gray-300">@cours.Category</span>
                                             </td>
                                             <td style="text-align: center;">
                                                 <span class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
@@ -168,8 +157,12 @@
                     <p>Aucun cours trouvé pour cet enseignant.</p>
                 }
             </div>
+            <div class="card border dashboard-body  mt-24 p-6">
+                <ChartEtudiant />
 
-            <!-- Top Course End -->
+            </div>
+
+ <!-- Top Course End -->
             <!-- Top Course Start -->
             <div class="card mt-24">
                 <div class="card-body">
@@ -290,11 +283,14 @@
 </div>
 
 @code {
-
     private string? EnseignantId;
     private List<TopCoursDto>? topCours;
     List<Cours> Top3cours = new();
     private bool isLoading = true;
+    private int TotalCours;
+    private int TotalEtudiants;
+    private double TotalEvaluations;
+    private string? ErrorMessage;
     private string sortOption = "evaluation"; // Variable to hold the selected sorting option
 
     protected override async Task OnInitializedAsync()
@@ -313,20 +309,39 @@
                     isLoading = true;
                     topCours = await CoursService.GetTop5EvaluationCoursByEnseignantAsync(EnseignantId);
                     Top3cours = await CoursService.GetTop3RatedCoursByEnseignantIdAsync(EnseignantId);
+                    topCours = await CoursService.GetTop5CoursByEnseignantAsync(EnseignantId);
+
+                if (topCours == null || topCours.Count == 0)
+                {
+                    Console.WriteLine("Aucun cours trouvé pour cet enseignant.");
+                }
+
+                // Récupérer les statistiques pour l'enseignant connecté
+                var stats = await EnseignantService.GetEnseignantStatsAsync(EnseignantId);
+
+                if (stats != default) // Vérification correcte pour un tuple
+                {
+                    TotalCours = stats.totalCours;
+                    TotalEtudiants = stats.totalEtudiants;
+                    TotalEvaluations = stats.totalEvaluations;
                 }
                 else
                 {
-                    Console.WriteLine("ID de l'enseignant introuvable.");
+                    ErrorMessage = "Impossible de récupérer les statistiques de l'enseignant.";
                 }
-            }
+    }
+   
             else
             {
                 Console.WriteLine("Utilisateur non authentifié.");
             }
+     
+                    
+       
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur : {ex.Message}");
+            ErrorMessage = $"Une erreur s'est produite : {ex.Message}";
         }
         finally
         {
@@ -358,7 +373,11 @@
 
             StateHasChanged(); // Forcer la mise à jour de l'interface après le tri
         }
+            StateHasChanged(); // Forcer la mise à jour de l'interface après le tri
+        }
 
+        Console.WriteLine("Après le tri:");
+        PrintCours(topCours); // Log the courses after sorting
     }
     int count = 0;
     private string[] categoryStyle = { "bg-purple-50 text-purple-600",
@@ -366,7 +385,7 @@
                                        "bg-warning-50 text-warning-600",
                                        "bg-info-50 text-info-600",
                                        "bg-danger-50 text-danger-600",
-                                                          };
-
-
+        }
 }
+
+</script>
