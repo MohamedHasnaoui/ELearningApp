@@ -34,9 +34,9 @@
             <!-- Breadcrumb Start -->
             <div class="breadcrumb mb-24">
                 <ul class="flex-align gap-4">
-                    <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                    <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
                     <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                    <li><span class="text-main-600 fw-normal text-15">Pricing Plan</span></li>
+                    <li><span class="text-main-600 fw-normal text-15">Plan Principaux</span></li>
                 </ul>
             </div>
             <!-- Breadcrumb End -->
@@ -53,8 +53,8 @@
                     else
                     {
                         <div class="card-header border-bottom">
-                            <h4 class="mb-4">Pricing Breakdown</h4>
-                            <p class="text-gray-600 text-15">Creating a detailed pricing plan for your course requires considering various factors.</p>
+                            <h4 class="mb-4">Plan Principaux</h4>
+                            <p class="text-gray-600 text-15">Découvrez nos offres et améliorez votre formation en accédant à divers cours dans le domaine de l'IT.</p>
                         </div>
                         <div class="card-body">
                             <div class="row gy-4">
@@ -102,7 +102,7 @@
                                             @if (estAchete)
                                             {
                                                 <button class="btn btn-outline-main w-100 rounded-pill py-16 border-main-300 text-17 fw-medium mt-32" @onclick="() => Checkout(abonnement.Id, abonnement.Type.ToString(), abonnement.Prix)">
-                                                    Get Started
+                                                    Commencer
                                                 </button>
                                             }
 
@@ -116,11 +116,11 @@
 
 
                     <div class="col-12">
-                        <label class="form-label mb-8 h6 mt-32">Terms & Policy</label>
+                        <label class="form-label mb-8 h6 mt-32">Conditions et Politique</label>
                         <ul class="list-inside">
-                            <li class="text-gray-600 mb-4">1. Set up multiple pricing levels with different features and functionalities to maximize revenue</li>
-                            <li class="text-gray-600 mb-4">2. Continuously test different price points and discounts to find the sweet spot that resonates with your target audience</li>
-                            <li class="text-gray-600 mb-4">3. Price your course based on the perceived value it provides to students, considering factors</li>
+                            <li class="text-gray-600 mb-4">1. Configurez plusieurs niveaux de tarification avec des fonctionnalités différentes pour maximiser les revenus.</li>
+                            <li class="text-gray-600 mb-4">2. Testez continuellement différents points de prix et remises pour trouver le point idéal qui résonne avec votre public cible.</li>
+                            <li class="text-gray-600 mb-4">3. Fixez le prix de votre cours en fonction de la valeur perçue qu'il apporte aux étudiants, en tenant compte de divers facteurs.</li>
                         </ul>
 
                         @if (isFormVisible)
@@ -175,7 +175,7 @@
                         {
                             <button type="button" class="btn btn-primary me-4 mt-32" @onclick="ShowForm">
                                 <i class="ph ph-plus me-4"></i>
-                                Add New Plan
+                                Ajouter Un Plan
                             </button>
                         }
 
@@ -192,7 +192,7 @@
                                 <p>@message</p>
 
                                 <div class="mt-32 ">
-                                    <button type="submit" class="btn btn-primary me-4 ">Delete</button>
+                                    <button type="submit" class="btn btn-primary me-4 ">Supprimer</button>
                                     <button type="button" class="btn btn-primary me-4 " @onclick="CloseDeleteForm">Close</button>
                                 </div>
                             </EditForm>
@@ -202,7 +202,7 @@
                         {
                             <button type="button" class="btn btn-primary me-4 mt-32" @onclick="ShowDeleteForm">
                                 <i class="ph ph-minus me-4"></i>
-                                Delete a Plan
+                                Supprimer Un Plan
                             </button>
                         }
 
@@ -444,3 +444,5 @@
   
 
 }
+
+

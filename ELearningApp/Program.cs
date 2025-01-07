@@ -91,6 +91,7 @@ builder.Services.AddTransient<ISectionService, SectionService>();
 builder.Services.AddTransient<ISoumissionService, SoumissionService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IEnseignantService, EnseignantService>();
 
 //AbonnementService
 builder.Services.AddHttpClient();
