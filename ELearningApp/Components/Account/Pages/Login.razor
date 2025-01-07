@@ -75,15 +75,21 @@
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+    // [Inject]
+    // private IdentityRedirectManager RedirectManager { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
-        {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-        }
+        RedirectManager.RedirectTo("/Login");
     }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (HttpMethods.IsGet(HttpContext.Request.Method))
+    //     {
+    //         Clear the existing external cookie to ensure a clean login process
+    //         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+    //     }
+    // }
 
     public async Task LoginUser()
     {

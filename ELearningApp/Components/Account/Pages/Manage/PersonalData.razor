@@ -27,8 +27,15 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
+    [Inject]
+    private IdentityRedirectManager RedirectManager { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        RedirectManager.RedirectTo("/Login");
     }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
+    // }
 }

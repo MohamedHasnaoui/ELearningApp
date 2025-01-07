@@ -1,8 +1,16 @@
 ﻿@inject NavigationManager NavigationManager
 
 @code {
-    protected override void OnInitialized()
+    [Inject]
+    private IdentityRedirectManager RedirectManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
     {
-        NavigationManager.NavigateTo($"/Login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+        RedirectManager.RedirectTo("/Login");
+
     }
+    // protected override void OnInitialized()
+    // {
+    //     NavigationManager.NavigateTo($"/courses/etudiant/decouvrir?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+    // }
 }

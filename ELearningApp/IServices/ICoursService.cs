@@ -26,5 +26,10 @@ namespace ELearningApp.IServices
         Task<List<Cours>> SearchCoursesByTitleAndCategoryIdAsync(string partialTitle, int categoryId, int pageNumber, int pageSize);
         Task<int> CountCoursesByTitleAsync(string partialTitle);
         Task<int> CountCoursesByTitleAndCategoryIdAsync(string partialTitle, int categoryId);
+       // Task<List<EtudiantCoursInfo>> GetEtudiantsInscritsFiltrésParStatutAsync(string enseignantId, string statut);
+        Task<List<TopCoursDto>> GetTop5CoursByEnseignantAsync(string enseignantId);
+        Task<List<CourseStats>> GetStudentEnrollmentsByTeacherAsync(string enseignantId);
+
+
     }
 }
