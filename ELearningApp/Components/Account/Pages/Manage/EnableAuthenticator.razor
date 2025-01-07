@@ -81,12 +81,19 @@ else
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
+    // [Inject]
+    // private IdentityRedirectManager RedirectManager { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-
-        await LoadSharedKeyAndQrCodeUriAsync(user);
+        RedirectManager.RedirectTo("/Login");
     }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+
+    //     await LoadSharedKeyAndQrCodeUriAsync(user);
+    // }
 
     private async Task OnValidSubmitAsync()
     {

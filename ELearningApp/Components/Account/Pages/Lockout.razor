@@ -6,3 +6,12 @@
     <h1 class="text-danger">Locked out</h1>
     <p class="text-danger" role="alert">This account has been locked out, please try again later.</p>
 </header>
+@code{
+    [Inject]
+    private IdentityRedirectManager RedirectManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        RedirectManager.RedirectTo("/Login");
+    }
+}
