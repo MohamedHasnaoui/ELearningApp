@@ -4,6 +4,7 @@ namespace ELearningApp.IServices
 {
     public interface ICertificatService
     {
+        Task<int[]> GetCertificatsIssuedLast10DaysAsync();
         Task<IEnumerable<Certificat>> GetAllAsync();
         Task<Certificat> GetByIdAsync(int id);
         Task<IEnumerable<Certificat>> GetByEtudiantIdAsync(string etudiantId);
