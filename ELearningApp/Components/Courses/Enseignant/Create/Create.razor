@@ -1,5 +1,6 @@
 ﻿@page "/courses/Enseignant/create"
 @inject ICoursService CoursService
+@inject ICategoryCoursService CategoryCoursService
 @rendermode InteractiveServer
 
 @* part0 *@
@@ -24,7 +25,7 @@
 
 @* part4 *@
 <div class="@(b[4] ? "" : "d-none") dashboard-body">
-    <Publish coursTitle="@refpart0?.Title" coursLevel="@refpart0?.Level" numberSections="@numberSections" publishCourse="publishCourse" CoursCategoryId="@refpart0?.CategoryId" CoursDescription="@refpart0?.Description" coursImgUrl="@refpart0?.coursImgUrl" OnBackButtonClick="priviousPage" />
+    <Publish coursTitle="@refpart0?.Title" coursLevel="@refpart0?.levelString" numberSections="@numberSections" publishCourse="publishCourse" CoursCategory="@refpart0?.Category" CoursDescription="@refpart0?.Description" coursImgUrl="@refpart0?.coursImgUrl" OnBackButtonClick="priviousPage" />
 </div>
 
 @code {

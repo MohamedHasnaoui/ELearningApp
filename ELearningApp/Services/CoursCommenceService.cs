@@ -83,6 +83,20 @@ namespace ELearningApp.Services
                 .Where(cc => cc.Progres < 100)
                 .ToListAsync();
         }
+        public async Task<int> CountByEtudiantIdOnGoingAsync(string etudiantId)
+        {
+            return await _context.CoursCommences
+                .Where(cc => cc.EtudiantId == etudiantId)
+                .Where(cc => cc.Progres < 100)
+                .CountAsync();
+        }
+        public async Task<int> CountByEtudiantIdCompletedAsync(string etudiantId)
+        {
+            return await _context.CoursCommences
+                .Where(cc => cc.EtudiantId == etudiantId)
+                .Where(cc => cc.Progres == 100)
+                .CountAsync();
+        }
         public async Task<CoursCommence> GetByEtudiantAndCoursAsync(string etudiantId, int coursId)
         {
             return await _context.CoursCommences
@@ -113,5 +127,25 @@ namespace ELearningApp.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<Dictionary<int, int>> GetCoursTermineParMoisAsync(int annee,string EtudiantId)
+        {
+            var result = await _context.CoursCommences
+                .Where(cc => cc.DateFin.HasValue && cc.DateFin.Value.Year == annee && cc.EtudiantId==EtudiantId)
+                .GroupBy(cc => cc.DateFin.Value.Month) // Grouper par mois
+                .Select(g => new
+                {
+                    Mois = g.Key, 
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            var fullResult = Enumerable.Range(1, 12)
+            .ToDictionary(
+                mois => mois, // Clé : le numéro du mois
+                mois => result.FirstOrDefault(r => r.Mois == mois)?.Count ?? 0 // Valeur : 0 si aucune donnée
+            );
+            return fullResult;
+        }
+
     }
 }

@@ -15,5 +15,8 @@ namespace ELearningApp.IServices
         Task<int> CountByCoursIdAsync(int coursId);
         Task<IEnumerable<CoursCommence>> GetByEtudiantIdOnGoingAsync(string etudiantId);
         Task<IEnumerable<CoursCommence>> GetByEtudiantIdCompletedAsync(string etudiantId);
+        Task<Dictionary<int, int>> GetCoursTermineParMoisAsync(int annee, string EtudiantI);
+        Task<int> CountByEtudiantIdOnGoingAsync(string etudiantId);
+        Task<int> CountByEtudiantIdCompletedAsync(string etudiantId);
     }
 }

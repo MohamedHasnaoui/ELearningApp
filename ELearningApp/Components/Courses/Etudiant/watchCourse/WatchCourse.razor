@@ -272,7 +272,10 @@
         {
             lastVidDur = currentVidDur;
             coursCommence!.Progres = (int)((lastVidDur * 100) / coursCommence.Cours.Duree);
-            if (coursCommence!.Progres > 97) coursCommence!.Progres = 100;
+            if (coursCommence!.Progres > 97) {
+                coursCommence!.Progres = 100;
+                coursCommence.DateFin = DateTime.UtcNow;
+            }
             coursCommence!.nbWatchedVid++;
             await CoursCommenceService.UpdateAsync(coursCommence);
         }
@@ -288,7 +291,7 @@
                     VideoId = (int) currentVid.Id!
                 };
             await CommentaireVideoService.CreateAsync(commentaireVideo);
-            commentairesVideo = commentairesVideo.Append(commentaireVideo).OrderByDescending(c => c.DateCreation);
+            commentairesVideo = (await CommentaireVideoService.GetByVideoIdAsync(currentVid.Id.Value)).OrderByDescending(c => c.DateCreation);
             commentInput = string.Empty;
             StateHasChanged();
         }

@@ -10,25 +10,31 @@ namespace ELearningApp.Services
 {
     public class UserService : IUserService
     {
+        private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private ApplicationUser? _cachedUser;
 
-        public UserService(UserManager<ApplicationUser> userManager, AuthenticationStateProvider authenticationStateProvider)
+        public UserService(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, AuthenticationStateProvider authenticationStateProvider)
         {
             _userManager = userManager;
             _authenticationStateProvider = authenticationStateProvider;
+            _dbContext = dbContext;
         }
         public async Task<ApplicationUser?> GetAuthenticatedUserAsync()
         {
             if (_cachedUser != null) return _cachedUser;
 
             var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            var principal = authState.User;
+            var user = authState.User;
 
-            if (principal.Identity?.IsAuthenticated == true)
+            if (user.Identity?.IsAuthenticated == true)
             {
-                _cachedUser = await _userManager.GetUserAsync(principal);
+                var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    _cachedUser = await _dbContext.Users.FindAsync(userId);
+                }
             }
 
             return _cachedUser;

@@ -58,6 +58,15 @@ namespace ELearningApp.Services
                 .Take(pageSize)
                 .ToListAsync();
         }
+        public async Task<List<Cours>> GetTop3RatedCoursByEnseignantIdAsync(string enseignantId)
+        {
+            return await _context.Cours
+                .Where(c => c.EnseignantId == enseignantId) // Filter by EnseignantId (CreateurId)
+                .Include(c => c.Category)
+                .OrderByDescending(course => course.Evaluation)
+                .Take(3)
+                .ToListAsync();
+        }
         public async Task<List<Cours>> SearchCoursesByTitleAsync(string partialTitle, int pageNumber, int pageSize)
         {
  
@@ -186,7 +195,7 @@ namespace ELearningApp.Services
                 .ToListAsync();
         }
 
-        public async Task<List<TopCoursDto>> GetTop5CoursByEnseignantAsync(string enseignantId)
+        public async Task<List<TopCoursDto>> GetTop5EvaluationCoursByEnseignantAsync(string enseignantId)
         {
             var topCours = await _context.Cours
                 .Where(c => c.EnseignantId == enseignantId) // Filtrer par enseignant
@@ -201,7 +210,28 @@ namespace ELearningApp.Services
                     EnseignantNom = c.Enseignant.UserName // Nom de l'enseignant
                 })
                 .OrderByDescending(c => c.Evaluation) // Trier par évaluation
-                .ThenByDescending(c => c.NombreEtudiants) // Puis par nombre d'étudiants
+                .ThenByDescending(c => c.NombreEtudiants)
+                .Take(5) // Prendre les 5 premiers
+                .ToListAsync();
+
+            return topCours;
+        }
+        public async Task<List<TopCoursDto>> GetTop5NbEtudinatCoursByEnseignantAsync(string enseignantId)
+        {
+            var topCours = await _context.Cours
+                .Where(c => c.EnseignantId == enseignantId) // Filtrer par enseignant
+                .Include(c => c.Enseignant) // Inclure les informations sur l'enseignant
+                .Select(c => new TopCoursDto
+                {
+                    Id = c.Id,
+                    Nom = c.Nom,
+                    Description = c.Description,
+                    Evaluation = c.Evaluation,
+                    NombreEtudiants = _context.CoursCommences.Count(cc => cc.CoursId == c.Id),
+                    EnseignantNom = c.Enseignant.UserName // Nom de l'enseignant
+                })
+                .OrderByDescending(c => c.NombreEtudiants) // Trier par évaluation
+                .ThenByDescending(c=>c.Evaluation)
                 .Take(5) // Prendre les 5 premiers
                 .ToListAsync();
 

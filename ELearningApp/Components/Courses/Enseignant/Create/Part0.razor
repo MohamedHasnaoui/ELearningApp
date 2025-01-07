@@ -98,8 +98,8 @@
                         <div class="col-sm-6">
                             <label for="courseCategory" class="h5 mb-8 fw-semibold font-heading">Course Category </label>
                             <div class="position-relative">
-                                <select @bind="CategoryId" id="courseCategory" class="form-select py-9 placeholder-13 text-15">
-                                    <option value="" disabled selected>Enter course category</option>
+                                <select @bind="CategoryIdB" id="courseCategory" class="form-select py-9 placeholder-13 text-15">
+                                    <option value="0" disabled selected>Enter course category</option>
                                     @foreach (var c in categoryCoursList)
                                     {
                                         <option value="@c.Id">@c.Name</option>
@@ -176,8 +176,20 @@
     // Form fields
     private IBrowserFile ThumbnailImage;
     public string Title;
-    public int? CategoryId = null;
+    public int CategoryId = 0;
+    public int? CategoryIdB {
+        set {
+
+            CategoryId = value.Value;
+        }
+        get
+        {
+            return CategoryId;
+        }
+    } 
+    public string? Category = "";
     public string Level;
+    public string levelString = "";
     public string Description;
     public int TotalSections = 1;
     public string coursImgUrl ;
@@ -235,7 +247,7 @@
     {
         ThumbnailImageError = ThumbnailImage == null ? "Thumbnail image is required" : "";
         TitleError = string.IsNullOrEmpty(Title) ? "Course title is required" : "";
-        CategoryIdError = CategoryId == null ? "Course category is required" : "";
+        CategoryIdError = CategoryId == 0 ? "Course category is required" : "";
         LevelError = string.IsNullOrEmpty(Level) ? "Course level is required" : "";
         DescriptionError = string.IsNullOrEmpty(Description) ? "Course description is required" : "";
         TotalSectionsError = TotalSections < 1 || TotalSections > 10 ? "Total sections must be between 1 and 10" : "";
@@ -257,6 +269,10 @@
         await ValidateForm();
         if ( await IsFormValid())
         {
+            Category =( await CategoryCoursService.GetCategoryByIdAsync(CategoryId)).Name;
+            if (Level == "0") levelString = "Debutant";
+            else if (Level == "1") levelString = "Intermidiare";
+            else if (Level == "2") levelString = "Avance";
             await UpdateNumberSections.InvokeAsync(TotalSections);
             await OnContinueButtonClick.InvokeAsync(0);
         }

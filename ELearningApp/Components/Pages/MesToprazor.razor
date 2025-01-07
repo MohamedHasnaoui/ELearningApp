@@ -101,7 +101,7 @@
                 if (!string.IsNullOrEmpty(EnseignantId))
                 {
                     isLoading = true;
-                    topCours = await CoursService.GetTop5CoursByEnseignantAsync(EnseignantId);
+                    topCours = await CoursService.GetTop5NbEtudinatCoursByEnseignantAsync(EnseignantId);
                 }
                 else
                 {

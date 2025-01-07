@@ -464,6 +464,7 @@
     public int nbVid = 0;
     protected override async Task OnInitializedAsync()
     {
+        await Task.Delay(100);
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 

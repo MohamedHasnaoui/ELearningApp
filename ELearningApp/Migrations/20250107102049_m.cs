@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ELearningApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Merge2 : Migration
+    public partial class m : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -260,6 +260,7 @@ namespace ELearningApp.Migrations
                     CoursImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CoursImgPublicId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     nbVids = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Niveau = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -311,11 +312,9 @@ namespace ELearningApp.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Titre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     DateObtention = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CoursId = table.Column<int>(type: "int", nullable: false),
-                    EtudiantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LienTelechargement = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    EtudiantId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -462,9 +461,7 @@ namespace ELearningApp.Migrations
                     ExamenId = table.Column<int>(type: "int", nullable: false),
                     EtudiantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateSoumission = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LienSoumission = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Note = table.Column<float>(type: "real", nullable: true),
-                    CommentaireCorrecteur = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
+                    Note = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
