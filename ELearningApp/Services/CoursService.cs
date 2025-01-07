@@ -1,7 +1,9 @@
-﻿using ELearningApp.Data;
+﻿using CloudinaryDotNet;
+using ELearningApp.Data;
 using ELearningApp.IServices;
 using ELearningApp.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace ELearningApp.Services
 {
@@ -13,39 +15,69 @@ namespace ELearningApp.Services
         {
             _context = context;
         }
+        public async Task<int[]> GetCoursesCreatedLast10DaysAsync()
+        {
+            var today = DateTime.Now.Date;
+            var last10Days = Enumerable.Range(0, 10)
+                .Select(i => today.AddDays(-i)) // Get the last 10 days
+                .ToList();
 
-        public async Task<Cours> GetByIdAsync(int id)
+            var courseCounts = await _context.Cours
+                .Where(c => c.CreatedAt >= today.AddDays(-10)) // Filter courses created in the last 10 days
+                .GroupBy(c => c.CreatedAt.Date) // Group courses by their creation date
+                .Select(g => new { CreatedDate = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var result = new int[10];
+
+            foreach (var day in last10Days)
+            {
+                var countForDay = courseCounts.FirstOrDefault(c => c.CreatedDate == day)?.Count ?? 0;
+                result[last10Days.IndexOf(day)] = countForDay;
+            }
+
+            return result;
+        }
+        public async Task<Cours?> GetByIdAsync(int id)
         {
             return await _context.Cours
                 .Include(c => c.Category) // Eagerly load the associated Category
                 .Include(c => c.Enseignant)
-                .Include(c => c.Examen)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<IEnumerable<Cours>> GetAllAsync()
+        public async Task<IEnumerable<Cours>> GetAllAsync(int pageNumber, int pageSize)
         {
             return await _context.Cours
-                .Include(c => c.Category) // Eagerly load the associated Category
-                .Include(c => c.Enseignant) // Eagerly load the related Teacher (Enseignant)
+                .Include(c => c.Category) 
+                .Include(c => c.Enseignant)
+                .OrderBy(c => c.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Cours>> GetCoursByCategoryIdAsync(int categoryId)
+        public async Task<IEnumerable<Cours>> GetCoursByCategoryIdAsync(int categoryId, int pageNumber, int pageSize)
         {
             return await _context.Cours
                 .Where(c => c.CategoryId == categoryId)
-                .Include(c => c.Category) // Eagerly load the associated Category
-                .Include(c => c.Enseignant) // Eagerly load the related Teacher (Enseignant)
+                .Include(c => c.Category) 
+                .Include(c => c.Enseignant)
+                .OrderBy(c => c.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 
         // New method to get Cours by EnseignantId
-        public async Task<IEnumerable<Cours>> GetCoursByEnseignantIdAsync(string enseignantId)
+        public async Task<IEnumerable<Cours>> GetCoursByEnseignantIdAsync(string enseignantId, int pageNumber, int pageSize)
         {
             return await _context.Cours
                 .Where(c => c.EnseignantId == enseignantId) // Filter by EnseignantId (CreateurId)
-                .Include(c => c.Category) // Eagerly load the associated Category
+                .Include(c => c.Category)
+                .OrderBy(c => c.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 
@@ -62,7 +94,20 @@ namespace ELearningApp.Services
             await _context.SaveChangesAsync();
             return cours;
         }
-
+        public async Task<int> CountCourses()
+        {
+            return await _context.Cours.CountAsync();
+        }
+        public async Task<int> CountByEnseignantId(string enseignantId)
+        {
+            return await _context.Cours.Where(c => c.EnseignantId == enseignantId).CountAsync();
+        }
+        public async Task<int> CountByCategoryIdAsync(int categoryId)
+        {
+            return await _context.Cours
+                .Where(c => c.CategoryId == categoryId)
+                .CountAsync();
+        }
         public async Task<bool> DeleteAsync(int id)
         {
             var cours = await _context.Cours.FindAsync(id);

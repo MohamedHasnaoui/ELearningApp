@@ -3,6 +3,7 @@ using ELearningApp.Data;
 using ELearningApp.IServices;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
@@ -13,22 +14,53 @@ namespace ELearningApp.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private ApplicationUser? _cachedUser;
+        private readonly ApplicationDbContext _dbContext;
 
-        public UserService(UserManager<ApplicationUser> userManager, AuthenticationStateProvider authenticationStateProvider)
+
+        public UserService(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, AuthenticationStateProvider authenticationStateProvider)
         {
             _userManager = userManager;
             _authenticationStateProvider = authenticationStateProvider;
+            _dbContext = dbContext;
         }
+        public async Task<int[]> GetUsersJoinedLast10DaysAsync()
+        {
+            var today = DateTime.Now.Date;
+            var last10Days = Enumerable.Range(0, 10)
+                .Select(i => today.AddDays(-i)) // Get the last 10 days
+                .ToList();
+
+            var userCounts = await _userManager.Users
+                .Where(u => u.joinDate >= today.AddDays(-10)) // Filter users created in the last 10 days
+                .GroupBy(u => u.joinDate.Date) // Group users by their join date
+                .Select(g => new { JoinDate = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var result = new int[10];
+
+            foreach (var day in last10Days)
+            {
+                var countForDay = userCounts.FirstOrDefault(u => u.JoinDate == day)?.Count ?? 0;
+                result[last10Days.IndexOf(day)] = countForDay;
+            }
+
+            return result;
+        }
+        
         public async Task<ApplicationUser?> GetAuthenticatedUserAsync()
         {
             if (_cachedUser != null) return _cachedUser;
 
             var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            var principal = authState.User;
+            var user = authState.User;
 
-            if (principal.Identity?.IsAuthenticated == true)
+            if (user.Identity?.IsAuthenticated == true)
             {
-                _cachedUser = await _userManager.GetUserAsync(principal);
+                var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    _cachedUser = await _dbContext.Users.FindAsync(userId);
+                }
             }
 
             return _cachedUser;
