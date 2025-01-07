@@ -162,7 +162,7 @@
 
             </div>
 
- <!-- Top Course End -->
+            <!-- Top Course End -->
             <!-- Top Course Start -->
             <div class="card mt-24">
                 <div class="card-body">
@@ -309,8 +309,7 @@
                     isLoading = true;
                     topCours = await CoursService.GetTop5EvaluationCoursByEnseignantAsync(EnseignantId);
                     Top3cours = await CoursService.GetTop3RatedCoursByEnseignantIdAsync(EnseignantId);
-                    topCours = await CoursService.GetTop5CoursByEnseignantAsync(EnseignantId);
-
+                }
                 if (topCours == null || topCours.Count == 0)
                 {
                     Console.WriteLine("Aucun cours trouvé pour cet enseignant.");
@@ -329,15 +328,15 @@
                 {
                     ErrorMessage = "Impossible de récupérer les statistiques de l'enseignant.";
                 }
-    }
-   
+            }
+
             else
             {
                 Console.WriteLine("Utilisateur non authentifié.");
             }
-     
-                    
-       
+
+
+
         }
         catch (Exception ex)
         {
@@ -373,11 +372,7 @@
 
             StateHasChanged(); // Forcer la mise à jour de l'interface après le tri
         }
-            StateHasChanged(); // Forcer la mise à jour de l'interface après le tri
-        }
 
-        Console.WriteLine("Après le tri:");
-        PrintCours(topCours); // Log the courses after sorting
     }
     int count = 0;
     private string[] categoryStyle = { "bg-purple-50 text-purple-600",
@@ -385,7 +380,5 @@
                                        "bg-warning-50 text-warning-600",
                                        "bg-info-50 text-info-600",
                                        "bg-danger-50 text-danger-600",
-        }
+        };
 }
-
-</script>

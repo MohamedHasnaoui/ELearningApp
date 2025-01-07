@@ -229,7 +229,6 @@ namespace ELearningApp.Services
                 {
                     Id = c.Id,
                     Nom = c.Nom,
-                    Description = c.Description,
                     Evaluation = c.Evaluation,
                     NombreEtudiants = _context.CoursCommences.Count(cc => cc.CoursId == c.Id),
                     EnseignantNom = c.Enseignant.UserName // Nom de l'enseignant
