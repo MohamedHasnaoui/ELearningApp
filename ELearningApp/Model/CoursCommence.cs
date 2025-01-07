@@ -32,9 +32,12 @@ namespace ELearningApp.Model
 
         [Display(Name = "Progression (%)")]
         [Range(0, 100, ErrorMessage = "La progression doit être comprise entre 0 et 100.")]
-        public float Progression { get; set; } // Pourcentage de progression.
+        public int Progres { get; set; }
+
+        [Display(Name = "nombreVidRegarde")]
+        public int nbWatchedVid { get; set; }
 
         [Display(Name = "Date de fin")]
-        public DateTime? DateFin { get; set; } // Nullable pour indiquer qu'un cours n'est pas encore terminé.
+        public DateTime? DateFin { get; set; } 
     }
 }

@@ -14,6 +14,7 @@ namespace ELearningApp.Model
         [StringLength(100, ErrorMessage = "Le nom du cours ne peut pas dépasser 100 caractères.")]
         [Display(Name = "Nom du cours")]
         public string Nom { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required(ErrorMessage = "La description du cours est obligatoire.")]
         [StringLength(500, ErrorMessage = "La description ne peut pas dépasser 500 caractères.")]
@@ -46,7 +47,12 @@ namespace ELearningApp.Model
         [Display(Name = "CoursImgPublicId")]
         public string CoursImgPublicId { get; set; }
 
+        [Display(Name = "NombreVideos")]
+        public int nbVids { get; set; }
+
         public Enseignant Enseignant { get; set; }
+
+        public ICollection<Section> sections { get; set; }
 
         public Examen Examen { get; set; }
 
@@ -55,6 +61,18 @@ namespace ELearningApp.Model
         [EnumDataType(typeof(Niveau), ErrorMessage = "Valeur du niveau invalide.")]
         [Display(Name = "Niveau")]
         public Niveau Niveau { get; set; }
+
+        public string FormatDuration()
+        {
+            int minutes = (int)(this.Duree / 60);
+            int remainingSeconds = (int)(Duree % 60);
+            return $"{minutes:D2} : {remainingSeconds:D2}"; // Format as mm:ss
+        }
+
+        public Cours()
+        {
+            sections = new List<Section>();
+        }
     }
 
     // Déclaration de l'énumération Niveau
