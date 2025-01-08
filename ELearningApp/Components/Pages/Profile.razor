@@ -46,7 +46,7 @@
                 <div class="setting-profile px-24">
                     <div class="flex-between">
                         <div class="d-flex align-items-end flex-wrap mb-32 gap-24">
-                            <img src="assets/images/thumbs/setting-profile-img.jpg" alt="" class="w-120 h-120 rounded-circle border border-white">
+                            <img src='@(AuthenticatedUser?.imgProfile ?? "assets/images/thumbs/setting-profile-img.jpg")'  alt="" class="w-120 h-120 rounded-circle border border-white">
                             <div>
                                 <h4 class="mb-8">@AuthenticatedUser.FormalUserName</h4>
                                 <div class="setting-profile__infos flex-align flex-wrap gap-16">

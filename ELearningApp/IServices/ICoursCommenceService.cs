@@ -5,6 +5,7 @@ namespace ELearningApp.IServices
     public interface ICoursCommenceService
     {
         Task<IEnumerable<CoursCommence>> GetAllAsync();
+        Task<int[]> GetMonthlyCoursCommenceByEnseignantAsync(string enseignantId);
         Task<CoursCommence?> GetByIdAsync(int id);
         Task<IEnumerable<CoursCommence>> GetByCoursIdAsync(int coursId);
         Task<IEnumerable<CoursCommence>> GetByEtudiantIdAsync(string etudiantId);
