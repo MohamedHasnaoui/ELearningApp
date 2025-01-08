@@ -2,124 +2,133 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 @inject ICertificatService CertificatService
-@if(certificat != null){
-<div class="dashboard-body">
-    <div class="card mt-24">
-        <div class="card-body overflow-x-scroll">
-            <div class="outer-border" id="certificate">
-                <div class="inner-dotted-border">
-                    <span class="certification">Certificate of Completion</span>
-                    <br><br>
-                    <span class="certify"><i>This is to certify that</i></span>
-                    <br><br>
-                    <span class="name"><b>@certificat.Etudiant.FormalUserName</b></span><br /><br />
-                    <span class="certify"><i>has successfully completed the certification</i></span> <br /><br />
-                    <span class="fs-30 course-name">@certificat.Cours.Nom</span> <br /><br />
-                    <span class="fs-20">with a score of <span class="grade">100/100</span></span> <br /><br /><br />
-                    <span class="certify"><i>dated</i></span><br>
-                        <span class="fs-30">@certificat.DateObtention.ToString("d MMMM, yyyy");</span>
+@if (certificat != null)
+{
+    <div class="dashboard-body">
+        <!-- Breadcrumb Start -->
+        <div class="breadcrumb ">
+            <ul class="flex-align gap-4">
+                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
+                <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+                <li><span class="text-main-600 fw-normal text-15">Certificat</span></li>
+            </ul>
+        </div>
+        <div class="card mt-24">
+            <div class="card-body overflow-x-scroll">
+                <div class="outer-border" id="certificate">
+                    <div class="inner-dotted-border">
+                        <span class="certification">Certificat de Réussite</span>
+                        <br><br>
+                        <span class="certify"><i>Ceci certifie que</i></span>
+                        <br><br>
+                        <span class="name"><b>@certificat.Etudiant.FormalUserName</b></span><br /><br />
+                        <span class="certify"><i>a réussi avec succès la certification</i></span> <br /><br />
+                        <span class="fs-30 course-name">@certificat.Cours.Nom</span> <br /><br />
+                        <span class="fs-20">avec un score de <span class="grade">100/100</span></span> <br /><br /><br />
+                        <span class="certify"><i>daté du</i></span><br>
+                        <span class="fs-30">@certificat.DateObtention.ToString("d MMMM, yyyy", CultureInfo.GetCultureInfo("fr-FR"))</span>
 
+                    </div>
                 </div>
-            </div>
-            <div class="flex-align justify-content-center mt-24 gap-8">
-                <button @onclick="ExportAsPdf" type="button" class="btn btn-outline-main rounded-10 py-9">
-                    Telecharger Comme Pdf    
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="2Z6" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6" />
-                    </svg>
-                </button>
+                <div class="flex-align justify-content-center mt-24 gap-8">
+                    <button @onclick="ExportAsPdf" type="button" class="btn btn-outline-main rounded-10 py-9">
+                        Télécharger en PDF
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="2Z6" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<style>
-    .outer-border {
-    width: 800px;
-    height: 650px;
-    padding: 20px;
-    text-align: center;
-    border: 10px solid;
-    border-image: linear-gradient(to right, #FF5722, #673AB7) 1;
-    margin: auto;
-    background-color: #f3f4f6;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+    <style>
+        .outer-border {
+            width: 800px;
+            height: 650px;
+            padding: 20px;
+            text-align: center;
+            border: 10px solid;
+            border-image: linear-gradient(to right, #FF5722, #673AB7) 1;
+            margin: auto;
+            background-color: #f3f4f6;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-    .inner-dotted-border {
-    width: 750px;
-    height: 600px;
-    padding: 20px;
-    text-align: center;
-    border: 5px dotted #FF5722;
-    background: #ffffff;
-    border-radius: 10px;
-    }
+        .inner-dotted-border {
+            width: 750px;
+            height: 600px;
+            padding: 20px;
+            text-align: center;
+            border: 5px dotted #FF5722;
+            background: #ffffff;
+            border-radius: 10px;
+        }
 
-    .certification {
-    font-size: 50px;
-    font-weight: bold;
-    color: #673AB7;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    }
+        .certification {
+            font-size: 50px;
+            font-weight: bold;
+            color: #673AB7;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
 
-    .certify {
-    font-size: 24px;
-    color: #555555;
-    }
+        .certify {
+            font-size: 24px;
+            color: #555555;
+        }
 
-    .name {
-    font-size: 32px;
-    color: #FF5722;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    }
+        .name {
+            font-size: 32px;
+            color: #FF5722;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
 
-    .fs-30 {
-    font-size: 28px;
-    color: #333333;
-    }
+        .fs-30 {
+            font-size: 28px;
+            color: #333333;
+        }
 
-    .fs-20 {
-    font-size: 22px;
-    color: #555555;
-    }
+        .fs-20 {
+            font-size: 22px;
+            color: #555555;
+        }
 
-    .course-name {
-    color: #673AB7;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    }
+        .course-name {
+            color: #673AB7;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
 
-    .grade {
-    color: #FF5722;
-    font-weight: bold;
-    }
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        .grade {
+            color: #FF5722;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
-<script>
-    function exportAsImage(elementId) {
-    html2canvas(document.getElementById(elementId)).then(canvas => {
-    const link = document.createElement('a');
-    link.download = 'certificate.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    });
-    }
+    <script>
+        function exportAsImage(elementId) {
+        html2canvas(document.getElementById(elementId)).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'certificate.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        });
+        }
 
-    function exportAsPdf(elementId) {
-    const { jsPDF } = window.jspdf;
-    html2canvas(document.getElementById(elementId)).then(canvas => {
-    const pdf = new jsPDF();
-    const imgData = canvas.toDataURL('image/png');
-    const imgWidth = 190; // A4 width in mm (landscape)
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-    pdf.save('certificate.pdf');
-    });
-    }
-</script>
+        function exportAsPdf(elementId) {
+        const { jsPDF } = window.jspdf;
+        html2canvas(document.getElementById(elementId)).then(canvas => {
+        const pdf = new jsPDF();
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = 190; // A4 width in mm (landscape)
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+        pdf.save('certificat@certificat.Etudiant.FormalUserName.pdf');
+        });
+        }
+    </script>
 }
 @code {
     [SupplyParameterFromQuery] public int certificatId { get; set; }

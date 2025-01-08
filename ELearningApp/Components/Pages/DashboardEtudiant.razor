@@ -306,11 +306,11 @@
         </div>
     </div>
     <script src="assets/js/apexcharts.min.js"></script>
-    <script>
+    <script @key="StudyStatistique">
         function initChart(){
         var options = {
         series: [{
-        name: 'Exam',
+        name: 'Cours Terminé',
         data: [
         @for (int i = 1; i <= 11; i++)
         {
@@ -391,6 +391,7 @@
         var chart = new ApexCharts(elementstudy, options);
         chart.render();
         }
+        initChart();
     </script>
 }
 @code {
@@ -416,7 +417,7 @@
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (StudyStatistique != null)
+        if (coursCommences != null && StudyStatistique != null && AuthenticatedUser != null)
         {
             await JSRuntime.InvokeVoidAsync("initChart");
             nullStat = false;

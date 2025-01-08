@@ -7,9 +7,9 @@
     <!-- Breadcrumb Start -->
     <div class="breadcrumb mb-24">
         <ul class="flex-align gap-4">
-            <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+            <li><NavLink href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</NavLink></li>
             <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-            <li><span class="text-main-600 fw-normal text-15">Mentor Courses</span></li>
+            <li><span class="text-main-600 fw-normal text-15">Cours du Mentor</span></li>
         </ul>
     </div>
     <!-- Breadcrumb End -->
@@ -17,22 +17,23 @@
     <div class="card mt-24">
         <div class="card-body">
             <div class="mb-20 flex-between flex-wrap gap-8">
-                <h4 class="mb-0">My courses</h4>
+                <h4 class="mb-0">Mes cours</h4>
                 <NavLink href="/courses/Enseignant/create" class="btn btn-main rounded-pill py-7 flex-align gap-4 fw-normal">
                     <span class="d-flex text-md"><i class="ph ph-plus"></i></span>
-                    Create New Course
+                    Créer un nouveau cours
                 </NavLink>
             </div>
             <div class="row g-20">
-                @foreach(var c in courses){
+                @foreach (var c in courses)
+                {
                     <CourseCard Refrech="Refrech" categoryStyle="@categoryStyle[count++%5]" coursimg="@c.CoursImg" coursId="@c.Id" Category="@c.Category.Name" CoursTitle="@c.Nom" Duree="@c.FormatDuration()" Rating="@c.Evaluation" />
                 }
             </div>
 
             <div class="flex-between flex-wrap gap-8 mt-20">
-                <button @onclick="async()=>await move(-1)" disabled="@(currentnbPage = 1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
+                <button @onclick="async()=>await move(-1)" disabled="@(currentnbPage == 1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
                     <span class="d-flex text-xl"><i class="ph ph-arrow-left"></i></span>
-                    Previous
+                    Précédent
                 </button>
                 <ul class="pagination flex-align flex-wrap">
                     <li class="page-item active">
@@ -40,7 +41,7 @@
                     </li>
                 </ul>
                 <button @onclick="async()=>await move(1)" disabled="@(currentnbPage >= pageNbs)" class="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
-                    Next <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
+                    Suivant <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
                 </button>
             </div>
         </div>
@@ -71,15 +72,18 @@
             pageNbs = await CoursService.CountByEnseignantId(AuthenticatedUser.Id);
             pageNbs = (pageNbs - 1) / 9 + 1;
             Console.WriteLine("pages " + pageNbs);
-        }else {
+        }
+        else
+        {
             Console.WriteLine("null");
         }
     }
-    private async Task move(int i){
+    private async Task move(int i)
+    {
         Console.WriteLine("clicked");
-        if ((i==1 && currentnbPage < pageNbs) ||(i==-1 && currentnbPage>1))
+        if ((i == 1 && currentnbPage < pageNbs) || (i == -1 && currentnbPage > 1))
         {
-            currentnbPage+=i;
+            currentnbPage += i;
             courses = await CoursService.GetCoursByEnseignantIdAsync(AuthenticatedUser.Id, currentnbPage, 9);
             await JSRuntime.InvokeVoidAsync("scrollToTop");
         }
@@ -89,8 +93,9 @@
                                        "bg-warning-50 text-warning-600",
                                        "bg-info-50 text-info-600",
                                        "bg-danger-50 text-danger-600",
-                                                              };
-    private async Task Refrech(){
+                                                          };
+    private async Task Refrech()
+    {
         courses = await CoursService.GetCoursByEnseignantIdAsync(AuthenticatedUser.Id, currentnbPage, 9);
         Console.WriteLine(courses.Count());
         StateHasChanged();
