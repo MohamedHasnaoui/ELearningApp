@@ -9,16 +9,16 @@
 @inject NavigationManager NavManager
 @inject ApplicationDbContext Context
 
-<PageTitle>Mentors</PageTitle>
+<PageTitle>Enseignants</PageTitle>
 
 <div class="dashboard-body">
     <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
             <ul class="flex-align gap-4">
-                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
                 <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                <li><span class="text-main-600 fw-normal text-15">Teacher</span></li>
+                <li><span class="text-main-600 fw-normal text-15">Enseignants</span></li>
             </ul>
         </div>
         <!-- Breadcrumb End -->
@@ -28,7 +28,7 @@
             <div style="display: @(isAdmin ? "flex" : "none")" class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
                 <span class="text-lg"><i class="ph ph-layout"></i></span>
                 <select class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="async e => await ExportData(e.Value.ToString())">
-                    <option value="" selected>Export</option>
+                    <option value="" selected>Exporter</option>
                     <option value="csv">CSV</option>
                     <option value="json">JSON</option>
                 </select>
@@ -37,7 +37,8 @@
         <!-- Breadcrumb Right End -->
     </div>
 
-    @if(isAdmin){
+    @if (isAdmin)
+    {
         <div class="card overflow-hidden">
             <div class="card-body p-0 overflow-x-auto">
                 <table id="studentTable" class="table table-striped">
@@ -48,13 +49,13 @@
                                     <input class="form-check-input border-gray-200 rounded-4" type="checkbox" id="selectAll">
                                 </div>
                             </th>
-                            <th class="h6 text-gray-300">Teacher</th>
-                            <th class="h6 text-gray-300">Email ID</th>
-                            <th class="h6 text-gray-300">Courses</th>
-                            <th class="h6 text-gray-300">Raiting</th>
+                            <th class="h6 text-gray-300">Enseignant</th>
+                            <th class="h6 text-gray-300">E-mail</th>
+                            <th class="h6 text-gray-300">Cours</th>
+                            <th class="h6 text-gray-300">Évaluation</th>
                             @if (isAdmin)
                             {
-                                <th class="h6 text-gray-300">Status</th>
+                                <th class="h6 text-gray-300">Statut</th>
                                 <th class="h6 text-gray-300">Actions</th>
                             }
                         </tr>
@@ -93,12 +94,12 @@
                                         <td>
                                             <span class="text-13 py-2 px-8 bg-@(enseignant.EmailConfirmed ?"success":"danger")-50 text-@(enseignant.EmailConfirmed ?"success":"danger")-600 d-inline-flex align-items-center gap-8 rounded-pill">
                                                 <span class="w-6 h-6 bg-@(enseignant.EmailConfirmed ?"success":"danger")-600 rounded-circle flex-shrink-0"></span>
-                                                @(enseignant.EmailConfirmed ? "Allowed" : "Blocked")
+                                                @(enseignant.EmailConfirmed ? "Autorisé" : "Bloqué")
                                             </span>
                                         </td>
                                         <td>
                                             <button @onclick="() => ToggleBlockUser(enseignant.Id)" class="bg-main-50 text-main-600 py-2 px-14 rounded-pill hover-bg-main-600 hover-text-white">
-                                                @(enseignant.EmailConfirmed ? "Block" : "Unblock")
+                                                @(enseignant.EmailConfirmed ? "Bloquer" : "Débloquer")
                                             </button>
                                         </td>
                                     }
@@ -111,7 +112,7 @@
             <div class="card-footer flex-between flex-wrap">
                 <button id="Mybtn" @onclick="async()=>await move(-1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
                     <span class="d-flex text-xl"><i class="ph ph-arrow-left"></i></span>
-                    Previous
+                    Précédent
                 </button>
                 <ul class="pagination flex-align flex-wrap">
                     <li class="page-item active">
@@ -119,17 +120,18 @@
                     </li>
                 </ul>
                 <button id="Mybtn" @onclick="async()=>await move(1)" disabled="@(CurrentPage >= pageNbs)" class="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
-                    Next <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
+                    Suivant <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
                 </button>
             </div>
         </div>
     }
-    else{
+    else
+    {
         <!-- All Mentors Start -->
         <div class="card mt-24">
             <div class="card-body">
                 <div class="mb-20 flex-between flex-wrap gap-8">
-                    <h4 class="mb-0">All Mentors</h4>
+                    <h4 class="mb-0">Tous les mentors</h4>
 
                 </div>
 
@@ -145,7 +147,7 @@
                                         @if (!isEnseignant)
                                         {
                                             <button type="button" @onclick="() => ToggleFollow(enseignant.Id)"
-                                            class="follow-btn py-2 px-8 flex-align gap-4 text-13 fw-medium text-white border border-white rounded-pill position-absolute inset-block-start-0 inset-inline-end-0 mt-8 me-8 transition-1 @((followStatus.ContainsKey(enseignant.Id) && followStatus[enseignant.Id]) ? "active" : "")">
+                                                    class="follow-btn py-2 px-8 flex-align gap-4 text-13 fw-medium text-white border border-white rounded-pill position-absolute inset-block-start-0 inset-inline-end-0 mt-8 me-8 transition-1 @((followStatus.ContainsKey(enseignant.Id) && followStatus[enseignant.Id]) ? "active" : "")">
                                                 <i class="ph ph-plus d-flex"></i>
                                                 <span class="text">@GetFollowText(enseignant.Id)</span>
                                             </button>
@@ -173,7 +175,7 @@
                                             <div class="flex-align gap-4">
                                                 <span class="text-15 fw-normal text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
                                                 <span class="text-13 fw-normal text-gray-600">@Rating[enseignant.Id]</span>
-                                                <span class="text-13 fw-normal text-gray-600">(@RatingCounts[enseignant.Id] Reviews)</span>
+                                                <span class="text-13 fw-normal text-gray-600">(@RatingCounts[enseignant.Id] Avis)</span>
                                             </div>
                                         </div>
                                     </div>
@@ -185,7 +187,7 @@
                 <div class="card-footer flex-between flex-wrap">
                     <button id="Mybtn" @onclick="async()=>await move(-1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
                         <span class="d-flex text-xl"><i class="ph ph-arrow-left"></i></span>
-                        Previous
+                        Précédent
                     </button>
                     <ul class="pagination flex-align flex-wrap">
                         <li class="page-item active">
@@ -193,7 +195,7 @@
                         </li>
                     </ul>
                     <button id="Mybtn" @onclick="async()=>await move(1)" disabled="@(CurrentPage >= pageNbs)" class="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
-                        Next <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
+                        Suivant <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
                     </button>
                 </div>
 

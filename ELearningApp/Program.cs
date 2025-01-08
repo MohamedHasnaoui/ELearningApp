@@ -139,6 +139,49 @@ async Task SeedDataAsync(IServiceProvider serviceProvider)
 
     }
 }
+async Task SeedAbonnementsAsync(IServiceProvider serviceProvider)
+{
+    using var scope = serviceProvider.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    // Vérifier si les abonnements existent déjà
+    if (!dbContext.Abonnements.Any())
+    {
+        // Ajouter les abonnements sans spécifier l'ID
+        dbContext.Abonnements.AddRange(
+            new Abonnement
+            {
+                Type = TypeAbonnement.Basique,
+                Duree = DureeAbonnement.an,
+                Prix = 199,
+                IsRecommanded = false,
+                Description = "Plan parfait pour les étudiants",
+                Caracteristiques = "Vidéo d'introduction au cours, Quiz interactifs, Programme du cours, Assistance communautaire, Certificat de fin de formation, Leçon d'exemple"
+            },
+            new Abonnement
+            {
+                Type = TypeAbonnement.Standard,
+                Duree = DureeAbonnement.an,
+                Prix = 299,
+                IsRecommanded = true,
+                Description = "Pour les utilisateurs qui souhaitent en faire plus",
+                Caracteristiques = "Vidéo d'introduction au cours, Quiz interactifs, Programme du cours, Assistance communautaire, Certificat de fin de formation, Leçon d'exemple, Accès à la communauté du cours"
+            },
+            new Abonnement
+            {
+                Type = TypeAbonnement.Premium,
+                Duree = DureeAbonnement.an,
+                Prix = 499,
+                IsRecommanded = false,
+                Description = "Tous vos amis au même endroit",
+                Caracteristiques = "Vidéo d'introduction au cours, Quiz interactifs, Programme du cours, Assistance communautaire, Certificat de fin de formation, Leçon d'exemple, Accès à la communauté du cours"
+            }
+        );
+
+        await dbContext.SaveChangesAsync();
+    }
+}
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -256,6 +299,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await SeedDataAsync(services);
+    await SeedAbonnementsAsync(services);
 }
 
 

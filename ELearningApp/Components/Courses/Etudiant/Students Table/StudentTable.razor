@@ -1,19 +1,19 @@
 ﻿@page "/Etudiants"
-@rendermode InteractiveServer 
+@rendermode InteractiveServer
 @inject IEtudiantService EtudiantService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
 @inject ICoursCommenceService CoursCommenceService
 @inject ICertificatService CertificatService
-<PageTitle>Students</PageTitle>
+<PageTitle>Étudiants</PageTitle>
 <div class="dashboard-body">
     <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
             <ul class="flex-align gap-4">
-                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
                 <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                <li><span class="text-main-600 fw-normal text-15">Students</span></li>
+                <li><span class="text-main-600 fw-normal text-15">Étudiants</span></li>
             </ul>
         </div>
         <!-- Breadcrumb End -->
@@ -22,8 +22,8 @@
 
             <div style="display: @(isAdmin ? "flex" : "none")" class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
                 <span class="text-lg"><i class="ph ph-layout"></i></span>
-                <select class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="async e => await ExportData(e.Value.ToString())" >
-                    <option value="" selected >Export</option>
+                <select class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="async e => await ExportData(e.Value.ToString())">
+                    <option value="" selected>Exporter</option>
                     <option value="csv">CSV</option>
                     <option value="json">JSON</option>
                 </select>
@@ -40,24 +40,26 @@
                     <tr>
                         <th class="fixed-width">
                             <div class="form-check">
-                                <input class="form-check-input border-gray-200 rounded-4" type="checkbox"  id="selectAll">
+                                <input class="form-check-input border-gray-200 rounded-4" type="checkbox" id="selectAll">
                             </div>
                         </th>
-                        <th class="h6 text-gray-300">Students</th>
-                        <th class="h6 text-gray-300">Email ID</th>
-                        <th class="h6 text-gray-300">Courses</th>
-                        <th class="h6 text-gray-300">Certificates Earned</th>
+                        <th class="h6 text-gray-300">Étudiants</th>
+                        <th class="h6 text-gray-300">E-mail</th>
+                        <th class="h6 text-gray-300">Cours</th>
+                        <th class="h6 text-gray-300">Certificats obtenus</th>
                         @if (isAdmin)
                         {
-                            <th class="h6 text-gray-300">Status</th>
+                            <th class="h6 text-gray-300">Statut</th>
                             <th class="h6 text-gray-300">Actions</th>
                         }
                     </tr>
                 </thead>
                 <tbody>
-                    @if (etudiants!=null){
-                        int i=0;
-                        @foreach (var etudiant in etudiants) {
+                    @if (etudiants != null)
+                    {
+                        int i = 0;
+                        @foreach (var etudiant in etudiants)
+                        {
                             <tr>
                                 <td class="fixed-width">
                                     <div class="form-check">
@@ -86,12 +88,12 @@
                                     <td>
                                         <span class="text-13 py-2 px-8 bg-@(etudiant.EmailConfirmed ?"success":"danger")-50 text-@(etudiant.EmailConfirmed ?"success":"danger")-600 d-inline-flex align-items-center gap-8 rounded-pill">
                                             <span class="w-6 h-6 bg-@(etudiant.EmailConfirmed ?"success":"danger")-600 rounded-circle flex-shrink-0"></span>
-                                            @(etudiant.EmailConfirmed ? "Allowed":"Blocked")
+                                            @(etudiant.EmailConfirmed ? "Autorisé" : "Bloqué")
                                         </span>
                                     </td>
                                     <td>
                                         <button @onclick="() => ToggleBlockUser(etudiant.Id)" class="bg-main-50 text-main-600 py-2 px-14 rounded-pill hover-bg-main-600 hover-text-white">
-                                            @(etudiant.EmailConfirmed ? "Block" : "Unblock")
+                                            @(etudiant.EmailConfirmed ? "Bloquer" : "Débloquer")
                                         </button>
                                     </td>
                                 }
@@ -102,9 +104,9 @@
             </table>
         </div>
         <div class="card-footer flex-between flex-wrap">
-            <button id="Mybtn" @onclick="async()=>await move(-1)"  class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
+            <button id="Mybtn" @onclick="async()=>await move(-1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
                 <span class="d-flex text-xl"><i class="ph ph-arrow-left"></i></span>
-                Previous
+                Précédent
             </button>
             <ul class="pagination flex-align flex-wrap">
                 <li class="page-item active">
@@ -112,7 +114,7 @@
                 </li>
             </ul>
             <button id="Mybtn" @onclick="async()=>await move(1)" disabled="@(CurrentPage >= pageNbs)" class="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
-                Next <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
+                Suivant <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
             </button>
         </div>
     </div>
