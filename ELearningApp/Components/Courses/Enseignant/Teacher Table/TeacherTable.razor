@@ -230,8 +230,11 @@
         // etudiants = await EtudiantService.GetAllEtudiantsAsync();
         await LoadPage(1);
         var myUser = Context.Etudiants.FirstOrDefault(myuser => myuser.UserName == user.Identity.Name);
-        var etudiantId = myUser.Id;
-
+        string etudiantId="";
+        if (myUser!=null)
+        {
+            etudiantId = myUser.Id;
+        }
         if (!string.IsNullOrEmpty(etudiantId))
         {
             foreach (var mentor in enseignants)
