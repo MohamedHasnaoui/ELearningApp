@@ -5,10 +5,12 @@ namespace ELearningApp.IServices
 {
     public interface ICoursService
     {
+        Task<int[]> GetCoursesCreatedLast10DaysAsync();
         Task<Cours> GetByIdAsync(int id);
         Task<IEnumerable<Cours>> GetAllAsync(int pageNumber, int pageSize);
         Task<IEnumerable<Cours>> GetCoursByCategoryIdAsync(int categoryId, int pageNumber, int pageSize);
         Task<IEnumerable<Cours>> GetCoursByEnseignantIdAsync(string enseignantId, int pageNumber, int pageSize);
+        Task<IEnumerable<Cours>> GetAllCoursByEnseignantAsync(string enseignantId);
         Task<List<Cours>> GetTop3RatedCoursByEnseignantIdAsync(string enseignantId);
         Task<Cours> CreateAsync(Cours cours);
         Task<Cours> UpdateAsync(Cours cours);

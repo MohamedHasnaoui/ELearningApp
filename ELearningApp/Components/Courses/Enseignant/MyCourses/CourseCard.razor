@@ -12,7 +12,7 @@
             </div>
             <div class="p-8">
                 <span class="text-13 py-2 px-10 rounded-pill @categoryStyle mb-16">@Category</span>
-                <h5 class="mb-0"><a href="course-details.html" class="hover-text-main-600">@CoursTitle</a></h5>
+                <h5 class="mb-0"><NavLink href="@getDetailsLink(coursId.Value)" class="hover-text-main-600">@CoursTitle</NavLink></h5>
 
                 <div class="flex-between flex-wrap mt-16">
                     <div class="flex-align flex-wrap gap-4">
@@ -35,12 +35,12 @@
                     </div>
                     <div class="flex-align gap-4">
                         <span class="text-15 fw-bold text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                        <span class="text-13 fw-bold text-gray-600">@(Rating==null? 0:Rating.Value) </span>
+                        <span class="text-13 fw-bold text-gray-600">@(Rating == null ? 0 : Rating.Value.ToString("0.0")) </span>
                     </div>
                 </div>
                 <div class="flex-align w-100">
-                    <button @onclick="NavigateEdit" class="btn btn-outline-main rounded-pill py-9 m-8 flex-grow-1">Edit</button>
-                    <button @onclick="OpenDeleteCoursModal" class="btn border-danger-500 text-danger-500 rounded-pill py-9 m-8">Delete</button>
+                    <button @onclick="NavigateEdit" class="btn btn-outline-main rounded-pill py-9 m-8 flex-grow-1">Modifier</button>
+                    <button @onclick="OpenDeleteCoursModal" class="btn border-danger-500 text-danger-500 rounded-pill py-9 m-8">Supprimer</button>
                 </div>
             </div>
         </div>
@@ -52,15 +52,15 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <h5 class="modal-title">Confirmer la suppression</h5>
                     <button type="button" class="btn-close" @onclick="CloseDeleteCoursModal"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete the course "<strong>@CoursTitle</strong>"?
+                    Êtes-vous sûr de vouloir supprimer le cours "<strong>@CoursTitle</strong>" ?
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseDeleteCoursModal">Cancel</button>
-                    <button class="btn btn-danger" @onclick="DeleteCours">Delete</button>
+                    <button class="btn btn-secondary" @onclick="CloseDeleteCoursModal">Annuler</button>
+                    <button class="btn btn-danger" @onclick="DeleteCours">Supprimer</button>
                 </div>
             </div>
         </div>
@@ -80,26 +80,34 @@
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(100);
-        if(coursId != null)
+        if (coursId != null)
             studentnb = await CoursCommenceService.CountByCoursIdAsync(coursId.Value);
     }
     private async Task NavigateEdit()
     {
         string link = NavigationManager.GetUriWithQueryParameters(
         NavigationManager.ToAbsoluteUri("/cours/modifier").AbsoluteUri,
-        new Dictionary<string, object?> { ["coursId"] = coursId});
+        new Dictionary<string, object?> { ["coursId"] = coursId });
         NavigationManager.NavigateTo(link);
     }
     private async Task OpenDeleteCoursModal()
     {
         IsDeleteCourseModalOpen = true;
     }
-    private async Task CloseDeleteCoursModal(){
+    private async Task CloseDeleteCoursModal()
+    {
         IsDeleteCourseModalOpen = false;
     }
-    private async Task DeleteCours(){
+    private async Task DeleteCours()
+    {
         await CoursService.DeleteAsync(coursId.Value);
         IsDeleteCourseModalOpen = false;
         await Refrech.InvokeAsync();
+    }
+    private string getDetailsLink(int coursId)
+    {
+        return NavigationManager.GetUriWithQueryParameters(
+      NavigationManager.ToAbsoluteUri("/cours/details").AbsoluteUri,
+      new Dictionary<string, object?> { ["coursId"] = coursId });
     }
 }

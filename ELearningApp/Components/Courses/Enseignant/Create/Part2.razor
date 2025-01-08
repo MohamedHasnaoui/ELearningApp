@@ -2,40 +2,39 @@
     <!-- Breadcrumb Start -->
     <div class="breadcrumb mb-24">
         <ul class="flex-align gap-4">
-            <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+            <li><NavLink href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</NavLink></li>
             <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-            <li><span class="text-main-600 fw-normal text-15">Upload Videos</span></li>
+            <li><span class="text-main-600 fw-normal text-15">Téléverser des Vidéos</span></li>
         </ul>
     </div>
     <!-- Breadcrumb End -->
-
 </div>
 
 <!-- Create Course Step List Start -->
 <ul class="step-list mb-24">
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6 done ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Course Details
+        Détails du Cours
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7 done">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Section Details
+        Détails des Sections
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6  active">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Upload Videos
+        Téléverser des Vidéos
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Create Quiz
+        Créer un Quiz
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-6  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Publish Course
+        Publier le Cours
         <span class="line position-relative"></span>
     </li>
 </ul>
@@ -43,8 +42,8 @@
 <!-- Course Tab Start -->
 <div class="card">
     <div class="card-header border-bottom border-gray-100 flex-align gap-8">
-        <h5 class="mb-0">Upload Videos</h5>
-        <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Upload Videos">
+        <h5 class="mb-0">Téléverser des Vidéos</h5>
+        <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Téléverser des Vidéos">
             <i class="ph-fill ph-question"></i>
         </button>
     </div>
@@ -55,8 +54,8 @@
             <Section_Video @ref="sectionVidRef" SectionNumber="i" />
         }
         <div class="flex-align justify-content-end gap-8 mt-20">
-            <button type="button" @onclick="HandleBackClick" @onclick:preventDefault class="btn btn-outline-main rounded-pill py-9">Back</button>
-            <button type="button" @onclick="HandleContinueClick" @onclick:preventDefault class="btn btn-main rounded-pill py-9">Continue</button>
+            <button type="button" @onclick="HandleBackClick" @onclick:preventDefault class="btn btn-outline-main rounded-pill py-9">Retour</button>
+            <button type="button" @onclick="HandleContinueClick" @onclick:preventDefault class="btn btn-main rounded-pill py-9">Continuer</button>
         </div>
         @if (!string.IsNullOrEmpty(errorSaving))
         {
@@ -64,6 +63,7 @@
         }
     </div>
 </div>
+
 @code {
     [Parameter]
     public EventCallback<int> OnContinueButtonClick { get; set; }
@@ -76,11 +76,14 @@
     {
         set { sectionVids.Add(value); }
     }
-    private async Task HandleContinueClick(){
+    private async Task HandleContinueClick()
+    {
         errorSaving = null;
-        foreach (var sectionVid in sectionVids){
-            if(sectionVid.Videos.Count()==0){
-                errorSaving = "Pour chaque section il faut au moins ajouter un seul video";
+        foreach (var sectionVid in sectionVids)
+        {
+            if (sectionVid.Videos.Count() == 0)
+            {
+                errorSaving = "Pour chaque section, il faut ajouter au moins une vidéo.";
                 return;
             }
         }
@@ -95,14 +98,18 @@
         int i = 0;
         double dureeTotal = 0;
         int nbVid = 0;
-        foreach(var section in sections){
-            try{
-                dureeTotal+=await sectionVids[i].SaveToDataBase(section.Id);
+        foreach (var section in sections)
+        {
+            try
+            {
+                dureeTotal += await sectionVids[i].SaveToDataBase(section.Id);
                 nbVid += sectionVids[i].Videos.Count();
                 i++;
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
             }
         }
-        return (dureeTotal,nbVid);
+        return (dureeTotal, nbVid);
     }
 }

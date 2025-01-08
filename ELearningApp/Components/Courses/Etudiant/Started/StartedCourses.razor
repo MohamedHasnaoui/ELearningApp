@@ -1,25 +1,38 @@
 ﻿@page "/courses/etudiant/started"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ICoursCommenceService CoursCommenceService
 @inject IJSRuntime JSRuntime
+<PageTitle>Started Courses</PageTitle>
+
 <div class="dashboard-body">
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb mb-24">
+        <ul class="flex-align gap-4">
+            <li><NavLink href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</NavLink></li>
+            <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+            <li><span class="text-main-600 fw-normal text-15">Mes Cours</span></li>
+        </ul>
+    </div>
     <div class="card">
         <div class="card-body">
             <div class="mb-24">
                 <ul class="nav nav-pills common-tab gap-20">
                     <li class="nav-item" role="presentation">
-                        <button @onclick="changeToOngoing" class="nav-link @(completedPage? "":"active")">Ongoing (@coursesOngoing.Count())</button>
+                        <button @onclick="changeToOngoing" class="nav-link @(completedPage? "":"active")">En cours (@coursesOngoing.Count())</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button @onclick="changeToCompleted" class="nav-link @(completedPage? "active":"")">Completed (@coursesCompleted.Count())</button>
+                        <button @onclick="changeToCompleted" class="nav-link @(completedPage? "active":"")">Terminés (@coursesCompleted.Count())</button>
                     </li>
                 </ul>
             </div>
             <div class="tab-content">
                 <div class="tab-pane fade show active">
                     <div class="row g-20">
-                        @foreach(var cc in courses){
+                        @foreach (var cc in courses)
+                        {
                             <StartedCoursesCard courscommence="cc" />
                         }
                     </div>
@@ -42,16 +55,20 @@
         {
             EtudiantId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
-        if (!string.IsNullOrEmpty(EtudiantId)){
+        if (!string.IsNullOrEmpty(EtudiantId))
+        {
             coursesCompleted = await CoursCommenceService.GetByEtudiantIdCompletedAsync(EtudiantId);
             coursesOngoing = await CoursCommenceService.GetByEtudiantIdOnGoingAsync(EtudiantId);
             courses = coursesOngoing;
 
-        }else {
+        }
+        else
+        {
             Console.WriteLine("null");
         }
     }
-    private async Task changeToOngoing(){
+    private async Task changeToOngoing()
+    {
         completedPage = false;
         courses = coursesOngoing;
     }

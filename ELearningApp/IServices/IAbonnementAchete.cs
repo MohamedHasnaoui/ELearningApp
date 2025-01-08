@@ -10,6 +10,7 @@ namespace ELearningApp.IServices
         Task UpdateAbonnementAchete(AbonnementAchete abonnementAchete);
         Task DeleteAbonnementAchete(string idEtudiant, int idAbonnement);
         Task<bool> IsAbonnementAchete(int idAbonnement, string etudiantId);
-         }
+        Task<bool> IsAbonnementAchete(string etudiantId);
+    }
 
 }

@@ -5,20 +5,34 @@
 @inject ISoumissionService SoumissionService
 @inject NavigationManager NavigationManager
 @inject ICertificatService CertificatService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
+<PageTitle>Exam</PageTitle>
+
 <div class="dashboard-body">
+	<!-- Breadcrumb Start -->
+	<div class="breadcrumb">
+		<ul class="flex-align gap-4">
+			<li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
+			<li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+			<li><span class="text-main-600 fw-normal text-15">Examen Final</span></li>
+		</ul>
+	</div>
 	<div class="card mt-24">
 		<div class="card-body">
-			@if(examen != null){
-				<h5>Examen: @examen.Cours.Nom</h5>
-				int i=1;
-				@foreach(var q in examen.Questions){
-					int k=i;
-					<ExamQustion @ref="refQ" question="q" questionNb="k"/>
+			@if (examen != null)
+			{
+				<h5>Examen : @examen.Cours.Nom</h5>
+				int i = 1;
+				@foreach (var q in examen.Questions)
+				{
+					int k = i;
+					<ExamQustion @ref="refQ" question="q" questionNb="k" />
 					i++;
 				}
 			}
 			<div class="flex-align justify-content-end gap-8">
-				<button @onclick="submit" type="button" class="btn btn-outline-main rounded-pill py-9">Submit</button>
+				<button @onclick="submit" type="button" class="btn btn-outline-main rounded-pill py-9">Soumettre</button>
 			</div>
 			@if (!string.IsNullOrEmpty(message))
 			{
@@ -32,13 +46,15 @@
 	private Examen examen;
 	public int finalScore = 0;
 	public string EtudiantId;
-	ExamQustion refQ {
-		set {
+	ExamQustion refQ
+	{
+		set
+		{
 			examQustions.Add(value);
 		}
 	}
 	private string message = "";
-	List<ExamQustion> examQustions = new List<ExamQustion>(); 
+	List<ExamQustion> examQustions = new List<ExamQustion>();
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(100);
@@ -54,12 +70,15 @@
 			examen = await ExamenService.GetByCoursIdAsync(coursId.Value);
 		}
 	}
-	private async Task submit(){
+	private async Task submit()
+	{
 		message = "";
 		int score = 0;
-		foreach(var eq in examQustions){
-			if(eq.choix == null){
-				message = "il faut repondre a tous les questions";
+		foreach (var eq in examQustions)
+		{
+			if (eq.choix == null)
+			{
+				message = "Il faut répondre à toutes les questions";
 				return;
 			}
 			score += eq.Check();
@@ -67,9 +86,11 @@
 		finalScore = (score * 100) / examQustions.Count();
 		Soumission soumission = new Soumission() { EtudiantId = EtudiantId, DateSoumission = DateTime.UtcNow, ExamenId = examen.Id, Note = finalScore };
 		await SoumissionService.AddAsync(soumission);
-		if(finalScore == 100){
+		if (finalScore == 100)
+		{
 			Certificat certificat = await CertificatService.GetByEtudiantIdCoursIdAsync(EtudiantId, examen.CoursId);
-			if(certificat==null){
+			if (certificat == null)
+			{
 				certificat = new Certificat() { CoursId = examen.CoursId, DateObtention = DateTime.UtcNow, EtudiantId = EtudiantId };
 				await CertificatService.AddAsync(certificat);
 			}

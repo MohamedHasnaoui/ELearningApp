@@ -8,6 +8,8 @@
 @inject ICloudinaryService CloudinaryService
 @inject IVideoService VideoService
 @inject IJSRuntime JSRuntime
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Enseignant")]
 @rendermode InteractiveServer
 @if (cours != null)
 {
@@ -15,9 +17,9 @@
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
             <ul class="flex-align gap-4">
-                <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
                 <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                <li><span class="text-main-600 fw-normal text-15">Course Details</span></li>
+                <li><span class="text-main-600 fw-normal text-15">Détails du Cours</span></li>
             </ul>
         </div>
         <!-- Breadcrumb End -->
@@ -30,7 +32,7 @@
                         <div class="row gy-20 ">
                             <div class="col-xxl-3 col-md-4 col-sm-5 d-flex flex-column align-content-center justify-content-center">
                                 <div class="mb-20">
-                                    <label class="h5 fw-semibold font-heading mb-0">Thumbnail Image <span class="text-13 text-gray-400 fw-medium">(Required)</span> </label>
+                                    <label class="h5 fw-semibold font-heading mb-0">Image de la Miniature <span class="text-13 text-gray-400 fw-medium">(Requis)</span> </label>
                                 </div>
                                 <div id="fileUpload" class="fileUpload image-upload">
                                     <label for="coursImg" class="file-upload image-upload__box w-100 d-flex justify-content-center align-items-center">
@@ -56,7 +58,7 @@
                                     <div class="col-sm-12">
                                         <label for="courseTitle" class="h5 mb-8 fw-semibold font-heading">Titre du cours</label>
                                         <div class="position-relative">
-                                            <input @bind="Title" @bind:event="oninput" type="text" class="text-counter placeholder-13 form-control py-11 pe-76" maxlength="100" id="courseTitle" placeholder="Name of the Lesson" />
+                                            <input @bind="Title" @bind:event="oninput" type="text" class="text-counter placeholder-13 form-control py-11 pe-76" maxlength="100" id="courseTitle" placeholder="Nom de la Leçon" />
                                             <div class="text-gray-400 position-absolute inset-inline-end-0 top-50 translate-middle-y me-16">
                                                 <span id="current">@Title?.Length</span>
                                                 <span id="maximum">/ 100</span>
@@ -70,10 +72,10 @@
                                         }
                                     </div>
                                     <div class="col-sm-6">
-                                        <label for="courseCategory" class="h5 mb-8 fw-semibold font-heading">Course Category </label>
+                                        <label for="courseCategory" class="h5 mb-8 fw-semibold font-heading">Catégorie du Cours</label>
                                         <div class="position-relative">
                                             <select @bind="CategoryId" id="courseCategory" class="form-select py-9 placeholder-13 text-15">
-                                                <option value="" disabled selected>Enter course category</option>
+                                                <option value="" disabled selected>Choisir une catégorie</option>
                                                 @foreach (var c in categoryCoursList)
                                                 {
                                                     <option value="@c.Id">@c.Name</option>
@@ -88,10 +90,10 @@
                                         }
                                     </div>
                                     <div class="col-sm-6">
-                                        <label for="courseLevel" class="h5 mb-8 fw-semibold font-heading">Course Level</label>
+                                        <label for="courseLevel" class="h5 mb-8 fw-semibold font-heading">Niveau du Cours</label>
                                         <div class="position-relative">
                                             <select @bind="Level" id="courseLevel" class="form-select py-9 placeholder-13 text-15">
-                                                <option value="" disabled selected>Select course level</option>
+                                                <option value="" disabled selected>Sélectionner le niveau</option>
                                                 <option value="0">Débutant</option>
                                                 <option value="1">Intermédiaire</option>
                                                 <option value="2">Avancé</option>
@@ -105,8 +107,8 @@
                                         }
                                     </div>
                                     <div class="col-sm-12">
-                                        <label for="CourseDescription" class="h5 mb-8 fw-semibold font-heading">Cours Description</label>
-                                        <textarea @bind="Description" id="CourseDescription" class="form-control" placeholder="Enter Course description"></textarea>
+                                        <label for="CourseDescription" class="h5 mb-8 fw-semibold font-heading">Description du Cours</label>
+                                        <textarea @bind="Description" id="CourseDescription" class="form-control" placeholder="Entrez la description du cours"></textarea>
                                         @if (!string.IsNullOrEmpty(DescriptionError))
                                         {
                                             <div class="text-danger my-3 text-sm" role="alert">
@@ -160,7 +162,7 @@
                                         {
                                             <li class="course-list__item flex-align gap-8 mb-16">
                                                 <div class="w-100 flex-align justify-content-between">
-                                                    <button  class="text-gray-300 fw-medium d-block hover-text-main-600 d-lg-block text-start">
+                                                    <button class="text-gray-300 fw-medium d-block hover-text-main-600 d-lg-block text-start">
                                                         @j. @vid.Title
                                                         <span class="text-gray-300 text-start fw-normal d-block"> @vid.FormatDuration()</span>
                                                     </button>
@@ -220,23 +222,23 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Section</h5>
+                        <h5 class="modal-title">Modifier la Section</h5>
                         <button type="button" class="btn-close" @onclick="CloseEditSectionModal"></button>
                     </div>
                     <div class="modal-body">
                         <EditForm Model="@EditingSection" OnValidSubmit="SaveSection">
                             <DataAnnotationsValidator />
                             <div class="mb-3">
-                                <label for="sectionTitle" class="form-label">Section Title</label>
+                                <label for="sectionTitle" class="form-label">Titre de la Section</label>
                                 <InputText id="sectionTitle" class="form-control" @bind-Value="EditingSection.Title" />
                                 <ValidationMessage For="@(() => EditingSection.Title)" />
                             </div>
                             <div class="mb-3">
-                                <label for="sectionDescription" class="form-label">Section Description</label>
+                                <label for="sectionDescription" class="form-label">Description de la Section</label>
                                 <InputText id="sectionDescription" class="form-control" @bind-Value="EditingSection.Description" />
                                 <ValidationMessage For="@(() => EditingSection.Description)" />
                             </div>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">Enregistrer les Modifications</button>
                         </EditForm>
                     </div>
                 </div>
@@ -251,15 +253,15 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <h5 class="modal-title">Confirmer la Suppression</h5>
                         <button type="button" class="btn-close" @onclick="CloseDeleteSectionModal"></button>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete the section "<strong>@DeletingSection.Title</strong>"?
+                        Êtes-vous sûr de vouloir supprimer la section "<strong>@DeletingSection.Title</strong>" ?
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" @onclick="CloseDeleteSectionModal">Cancel</button>
-                        <button class="btn btn-danger" @onclick="DeleteSection">Delete</button>
+                        <button class="btn btn-secondary" @onclick="CloseDeleteSectionModal">Annuler</button>
+                        <button class="btn btn-danger" @onclick="DeleteSection">Supprimer</button>
                     </div>
                 </div>
             </div>
@@ -272,26 +274,26 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Video</h5>
+                        <h5 class="modal-title">Modifier la Vidéo</h5>
                         <button type="button" class="btn-close" @onclick="CloseEditVideoModal"></button>
                     </div>
                     <div class="modal-body">
                         <EditForm Model="@EditingVideo" OnValidSubmit="SaveVideo">
                             <DataAnnotationsValidator />
                             <div class="mb-3">
-                                <label for="videoTitle" class="form-label">Video Title</label>
-                                <InputText  id="videoTitle" class="form-control" @bind-Value="EditingVideo.Title" />
+                                <label for="videoTitle" class="form-label">Titre de la Vidéo</label>
+                                <InputText id="videoTitle" class="form-control" @bind-Value="EditingVideo.Title" />
                                 <ValidationMessage For="@(() => EditingVideo.Title)" />
                             </div>
                             <div class="upload-card-item p-16 rounded-12 mt-8 bg-main-50 mb-20">
                                 <div class="flex-align gap-10 flex-wrap">
                                     <div>
                                         <p class="text-15 text-gray-500">
-                                            Drag & drop your single/multiple videos of course, or
-                                            <label for="video_input" class="text-main-600 cursor-pointer">Browse</label>
+                                            Glissez-déposez vos vidéos (une ou plusieurs) pour ce cours, ou
+                                            <label for="video_input" class="text-main-600 cursor-pointer">Parcourir</label>
                                             <InputFile OnChange="SetVideoFiles" id="video_input" accept="video/mp4,video/x-m4v,video/*" hidden />
                                         </p>
-                                        <p class="text-13 text-gray-600">Mp4 format with 16:9 aspect ratio (max file size 100mb each)</p>
+                                        <p class="text-13 text-gray-600">Format Mp4 avec un ratio d'aspect de 16:9 (taille maximale de fichier 100mb chacun)</p>
                                         @if (!string.IsNullOrEmpty(uploadingmsg))
                                         {
                                             <p class="text-main-600 cursor-pointer">@uploadingmsg</p>
@@ -299,7 +301,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">Enregistrer les Modifications</button>
                         </EditForm>
 
                     </div>
@@ -315,15 +317,15 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <h5 class="modal-title">Confirmer la Suppression</h5>
                         <button type="button" class="btn-close" @onclick="CloseDeleteVideoModal"></button>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete the video "<strong>@DeletingVideo.Title</strong>" from section "<strong>@DeletingSection?.Title</strong>"?
+                        Êtes-vous sûr de vouloir supprimer la vidéo "<strong>@DeletingVideo.Title</strong>" de la section "<strong>@DeletingSection?.Title</strong>" ?
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" @onclick="CloseDeleteVideoModal">Cancel</button>
-                        <button class="btn btn-danger" @onclick="DeleteVideo">Delete</button>
+                        <button class="btn btn-secondary" @onclick="CloseDeleteVideoModal">Annuler</button>
+                        <button class="btn btn-danger" @onclick="DeleteVideo">Supprimer</button>
                     </div>
                 </div>
             </div>
@@ -336,14 +338,14 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Video</h5>
+                        <h5 class="modal-title">Ajouter une Vidéo</h5>
                         <button type="button" class="btn-close" @onclick="CloseNewVideoModal"></button>
                     </div>
                     <div class="modal-body">
                         <EditForm Model="@NewVid" OnValidSubmit="SaveVideo1">
                             <DataAnnotationsValidator />
                             <div class="mb-3">
-                                <label for="videoTitle" class="form-label">Video Title</label>
+                                <label for="videoTitle" class="form-label">Titre de la Vidéo</label>
                                 <InputText id="videoTitle" class="form-control" @bind-Value="NewVid.Title" />
                                 <ValidationMessage For="@(() => NewVid.Title)" />
                             </div>
@@ -351,11 +353,11 @@
                                 <div class="flex-align gap-10 flex-wrap">
                                     <div>
                                         <p class="text-15 text-gray-500">
-                                            Drag & drop your single/multiple videos of course, or
-                                            <label for="video_input" class="text-main-600 cursor-pointer">Browse</label>
+                                            Glissez-déposez vos vidéos (une ou plusieurs) pour ce cours, ou
+                                            <label for="video_input" class="text-main-600 cursor-pointer">Parcourir</label>
                                             <InputFile Value="null" OnChange="SetVideoFiles1" id="video_input" accept="video/mp4,video/x-m4v,video/*" hidden />
                                         </p>
-                                        <p class="text-13 text-gray-600">Mp4 format with 16:9 aspect ratio (max file size 100mb each)</p>
+                                        <p class="text-13 text-gray-600">Format Mp4 avec un ratio d'aspect de 16:9 (taille maximale de fichier 100mb chacun)</p>
                                         @if (!string.IsNullOrEmpty(uploadingmsg1))
                                         {
                                             <p class="text-main-600 cursor-pointer">@uploadingmsg1</p>
@@ -363,7 +365,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
                         </EditForm>
 
                     </div>
@@ -378,23 +380,23 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Section</h5>
+                        <h5 class="modal-title">Ajouter une Section</h5>
                         <button type="button" class="btn-close" @onclick="CloseNewSectionModal"></button>
                     </div>
                     <div class="modal-body">
                         <EditForm Model="@NewSec" OnValidSubmit="SaveSection1">
                             <DataAnnotationsValidator />
                             <div class="mb-3">
-                                <label for="sectionTitle" class="form-label">Section Title</label>
+                                <label for="sectionTitle" class="form-label">Titre de la Section</label>
                                 <InputText id="sectionTitle" class="form-control" @bind-Value="NewSec.Title" />
                                 <ValidationMessage For="@(() => NewSec.Title)" />
                             </div>
                             <div class="mb-3">
-                                <label for="sectionDescription" class="form-label">Section Description</label>
+                                <label for="sectionDescription" class="form-label">Description de la Section</label>
                                 <InputText id="sectionDescription" class="form-control" @bind-Value="NewSec.Description" />
                                 <ValidationMessage For="@(() => NewSec.Description)" />
                             </div>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
                         </EditForm>
                     </div>
                 </div>
@@ -454,7 +456,7 @@
     public string uploadingmsg1 = "";
     public string uploadingmsg2 = "";
 
-    private string btnSaveText = "Enregitrer";
+    private string btnSaveText = "Enregistrer";
 
     [SupplyParameterFromQuery] public int coursId { get; set; }
     private IEnumerable<CategoryCours> categoryCoursList = new List<CategoryCours>();
@@ -493,20 +495,20 @@
     }
     private async Task HandleThumbnailImageChange(InputFileChangeEventArgs e)
     {
-        uploadingmsg2 = "uploading ... wait";
+        uploadingmsg2 = "Téléversement en cours... veuillez patienter";
         var file = e.File;
         if (file != null)
         {
             var allowedTypes = new[] { "image/png", "image/jpeg" };
             if (!allowedTypes.Contains(file.ContentType))
             {
-                ThumbnailImageError = "Only PNG and JPEG files are allowed.";
+                ThumbnailImageError = "Seuls les fichiers PNG et JPEG sont autorisés.";
                 return;
             }
 
             if (file.Size > 5 * 1024 * 1024) // 5MB limit
             {
-                ThumbnailImageError = "File size must be less than 5MB.";
+                ThumbnailImageError = "La taille du fichier doit être inférieure à 5MB.";
                 return;
             }
 
@@ -523,33 +525,33 @@
         }
         else
         {
-            ThumbnailImageError = "Thumbnail image is required.";
+            ThumbnailImageError = "L'image de la miniature est requise.";
         }
         uploadingmsg2 = "";
     }
     private async Task SetVideoFiles(InputFileChangeEventArgs e)
     {
         var file = e.File; // Get all selected files
-        uploadingmsg = "Uploading ... please wait";
+        uploadingmsg = "Téléversement en cours... veuillez patienter";
         using var stream = file.OpenReadStream(maxAllowedSize: 100000000);
         var res = await CloudinaryService.UploadVideoAsync(stream, file.Name);
 
 
         EditingVideo = new Video()
-                {
-                    Id = EditingVideo.Id,
-                    VidPublicId = res.PublicId,
-                    Title = EditingVideo.Title,
-                    Duree = res.Duration,
-                    Thumbnail = res.SecureUrl.ToString().Remove(res.SecureUrl.ToString().Length - 3) + "jpg",
-                    VideoUrl = res.SecureUrl.ToString()
-                };
-        uploadingmsg = "Done";
+            {
+                Id = EditingVideo.Id,
+                VidPublicId = res.PublicId,
+                Title = EditingVideo.Title,
+                Duree = res.Duration,
+                Thumbnail = res.SecureUrl.ToString().Remove(res.SecureUrl.ToString().Length - 3) + "jpg",
+                VideoUrl = res.SecureUrl.ToString()
+            };
+        uploadingmsg = "Terminé";
     }
     private async Task SetVideoFiles1(InputFileChangeEventArgs e)
     {
         var file = e.File; // Get all selected files
-        uploadingmsg1 = "Uploading ... please wait";
+        uploadingmsg1 = "Téléversement en cours... veuillez patienter";
         using var stream = file.OpenReadStream(maxAllowedSize: 100000000);
         var res = await CloudinaryService.UploadVideoAsync(stream, file.Name);
 
@@ -564,7 +566,7 @@
                 Thumbnail = res.SecureUrl.ToString().Remove(res.SecureUrl.ToString().Length - 3) + "jpg",
                 VideoUrl = res.SecureUrl.ToString()
             };
-        uploadingmsg1 = "Done";
+        uploadingmsg1 = "Terminé";
     }
     private List<Section> Sections = new List<Section>(); // Your data source
     private Section? EditingSection;
@@ -588,7 +590,7 @@
 
     private async Task OpenEditSectionModal(Section section)
     {
-        EditingSection = new Section() { Id = section.Id, Title=section.Title, Description=section.Description};
+        EditingSection = new Section() { Id = section.Id, Title = section.Title, Description = section.Description };
         IsEditSectionModalOpen = true;
         StateHasChanged();
     }
@@ -614,11 +616,14 @@
     private async Task SaveSection()
     {
         Section section = await SectionService.GetByIdAsync(EditingSection.Id);
-        if(section != null){
+        if (section != null)
+        {
             section.Title = EditingSection.Title;
             section.Description = EditingSection.Description;
             await SectionService.UpdateAsync(section);
-            sections =( await SectionService.GetSectionsByCoursIdAsync(coursId)).ToList();
+            int ind = sections.FindIndex(s => s.Id == EditingSection.Id);
+            sections[ind] = section;
+            StateHasChanged();
         }
         await CloseEditSectionModal();
     }
@@ -635,7 +640,7 @@
     private async Task OpenEditVideoModal(Video video)
     {
         uploadingmsg = "";
-        EditingVideo = new Video() { Title = video.Title, Id = video.Id, Duree=video.Duree, Thumbnail=video.Thumbnail,VideoUrl=video.VideoUrl,VidPublicId=video.VidPublicId };
+        EditingVideo = new Video() { Title = video.Title, Id = video.Id, Duree = video.Duree, Thumbnail = video.Thumbnail, VideoUrl = video.VideoUrl, VidPublicId = video.VidPublicId };
         IsEditVideoModalOpen = true;
     }
 
@@ -645,7 +650,7 @@
         IsEditVideoModalOpen = false;
     }
 
-    private async Task OpenDeleteVideoModal(Video video,Section section)
+    private async Task OpenDeleteVideoModal(Video video, Section section)
     {
         IsDeleteVideoModalOpen = true;
         DeletingVideo = video;
@@ -695,7 +700,7 @@
 
     private async Task OpenNewVideoModal(Section s)
     {
-        NewVid = new Video(){SectionId=s.Id};
+        NewVid = new Video() { SectionId = s.Id };
         EditingSection = s;
         uploadingmsg1 = "";
         IsNewVideoModalOpen = true;
@@ -739,18 +744,19 @@
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
+        if(cours!=null){
         await JSRuntime.InvokeVoidAsync("init");
+    }
 
     }
     private async Task ValidateForm()
     {
-        ThumbnailImageError = coursImgUrl == null ? "Thumbnail image is required" : "";
-        TitleError = string.IsNullOrEmpty(Title) ? "Course title is required" : "";
-        CategoryIdError = CategoryId == null ? "Course category is required" : "";
-        LevelError = Level==null ? "Course level is required" : "";
-        DescriptionError = string.IsNullOrEmpty(Description) ? "Course description is required" : "";
-        TotalSectionsError = TotalSections < 1 || TotalSections > 10 ? "Total sections must be between 1 and 10" : "";
+        ThumbnailImageError = coursImgUrl == null ? "L'image de la miniature est requise" : "";
+        TitleError = string.IsNullOrEmpty(Title) ? "Le titre du cours est requis" : "";
+        CategoryIdError = CategoryId == null ? "La catégorie du cours est requise" : "";
+        LevelError = Level == null ? "Le niveau du cours est requis" : "";
+        DescriptionError = string.IsNullOrEmpty(Description) ? "La description du cours est requise" : "";
+        TotalSectionsError = TotalSections < 1 || TotalSections > 10 ? "Le nombre de sections doit être compris entre 1 et 10" : "";
         Console.WriteLine(ThumbnailImageError);
     }
 
@@ -766,7 +772,7 @@
 
     private async Task HandleSubmit()
     {
-        btnSaveText = "Attend ....";
+        btnSaveText = "Veuillez patienter...";
         await ValidateForm();
         if (await IsFormValid())
         {
@@ -778,7 +784,7 @@
             cours.Niveau = (Niveau)Level;
             await CoursService.UpdateAsync(cours);
         }
-        btnSaveText = "Bien Enregistrer";
+        btnSaveText = "Enregistré avec succès";
     }
 }
 <script>

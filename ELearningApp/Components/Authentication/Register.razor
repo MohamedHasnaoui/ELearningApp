@@ -23,11 +23,11 @@
 <PageTitle>Register</PageTitle>
 
 <div class="auth-left bg-main-50 flex-center p-24">
-    <img src="assets/images/thumbs/auth-img2.png" alt="">
+    <img src="assets/images/thumbs/auth-img1.png" alt="">
 </div>
 <div class="auth-right py-40 px-24 flex-center flex-column">
     <div class="auth-right__inner mx-auto w-100">
-        <a href="index.html" class="auth-right__logo">
+        <a href="/courses/etudiant/decouvrir" class="auth-right__logo">
             <img src="assets/images/logo/logo.png" alt="">
         </a>
         <h2 class="mb-8">Sign Up</h2>
@@ -47,13 +47,15 @@
                     @resultMessage
                 </div>
             }
-            <div class="mb-24">
-                <label for="userType" class="form-label mb-8 h6"> Type d'utilisateur</label>
+            <div class="position-relative">
+                <label for="userType" class="form-label mb-8 h6">Type d'utilisateur</label>
+                <span class="position-absolute top-50 pt-30 translate-middle-y ms-16 text-gray-600 d-flex">
+                    <i class="ph ph-user"></i>
+                </span>
                 <InputSelect @bind-Value="Input.UserType" class="form-control py-11 ps-40" id="userType">
                     <option value="Etudiant">Etudiant</option>
                     <option value="Enseignant">Enseignant</option>
                 </InputSelect>
-                <ValidationMessage For="() => Input.UserType" class="text-danger" />
             </div>
             @if (Input.UserType == "Enseignant")
             {
@@ -61,7 +63,7 @@
                     <label for="Input.Speciality" class="form-label mb-8 h6"> Spécialité</label>
                     <div class="position-relative">
                         <InputText @bind-Value="Input.Speciality" id="Input.Speciality" class="form-control py-11 ps-40" placeholder="Spécialité" />
-                        <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-user"></i></span>
+                        <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-swatches"></i></span>
                     </div>
                 @if (formSubmitted && string.IsNullOrWhiteSpace(Input.Speciality))
                     {

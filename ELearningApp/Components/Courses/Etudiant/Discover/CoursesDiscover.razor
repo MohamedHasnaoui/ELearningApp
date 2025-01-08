@@ -3,7 +3,17 @@
 @inject ICategoryCoursService CategoryCoursService
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
+<PageTitle>Discover</PageTitle>
+
 <div class="dashboard-body">
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb mb-24">
+        <ul class="flex-align gap-4">
+            <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
+            <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+            <li><span class="text-main-600 fw-normal text-15">Cours Disponibles</span></li>
+        </ul>
+    </div>
     <div class="card">
         <div class="card-body">
             <div class="mb-20 flex-between flex-wrap gap-8">
@@ -11,18 +21,19 @@
                     <form class="w-350 mb-24 d-sm-block d-none" @onsubmit="async()=>{pageNumber=1; await PerformSearch();}">
                         <div class="position-relative">
                             <button type="submit" class="input-icon text-xl d-flex text-gray-100 pointer-event-none"><i class="ph ph-magnifying-glass"></i></button>
-                            <input @bind:event="onchange" @bind="SearchQuery" type="text" class="form-control ps-40 h-40 border-transparent focus-border-main-600 bg-main-50 rounded-pill placeholder-15" placeholder="Search...">
+                            <input @bind:event="onchange" @bind="SearchQuery" type="text" class="form-control ps-40 h-40 border-transparent focus-border-main-600 bg-main-50 rounded-pill placeholder-15" placeholder="Rechercher...">
                         </div>
                     </form>
-                    <h4 class="">Latest Courses</h4>
+                    <h4 class="">Derniers Cours</h4>
                 </div>
                 <div class="flex-align just gap-8 flex-wrap align-self-start">
                     <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-8 focus-border-main-600">
                         <span class="text-lg"><i class="ph ph-layout"></i></span>
                         <select @oninput="OnCategoryChanged" class="form-control px-8 py-12 border-0 text-inherit rounded-4 text-center">
-                            <option value="" disabled>Category</option>
-                            <option value="0" >All</option>
-                            @foreach(var c in categories){
+                            <option value="" disabled>Catégorie</option>
+                            <option value="0">Tous</option>
+                            @foreach (var c in categories)
+                            {
                                 <option value="@c.Id">@c.Name</option>
                             }
                         </select>
@@ -30,14 +41,15 @@
                 </div>
             </div>
             <div class="row g-20">
-                @foreach(var c in Courses){
+                @foreach (var c in Courses)
+                {
                     <DiscCoursCard ensName="@c.Enseignant.UserName" ensImage="@c.Enseignant.imgProfile" categoryStyle="@categoryStyle[count++%5]" coursimg="@c.CoursImg" coursId="@c.Id" Category="@c.Category.Name" CoursTitle="@c.Nom" Duree="@c.FormatDuration()" Rating="@c.Evaluation" />
                 }
             </div>
             <div class="flex-between flex-wrap gap-8 mt-20">
                 <button @onclick="async()=>await move(-1)" disabled="@(pageNumber == 1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
                     <span class="d-flex text-xl"><i class="ph ph-arrow-left"></i></span>
-                    Previous
+                    Précédent
                 </button>
                 <ul class="pagination flex-align flex-wrap">
                     <li class="page-item active">
@@ -45,7 +57,7 @@
                     </li>
                 </ul>
                 <button @onclick="async()=>await move(1)" disabled="@(pageNumber == nbPages)" class="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
-                    Next <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
+                    Suivant <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
                 </button>
             </div>
         </div>
@@ -61,7 +73,7 @@
     private string SearchQuery = string.Empty;
     protected override async Task OnInitializedAsync()
     {
-        Courses = await CourService.GetAllAsync(pageNumber,9);
+        Courses = await CourService.GetAllAsync(pageNumber, 9);
         nbPages = await CourService.CountCourses();
         nbPages = (nbPages - 1) / 9 + 1;
         categories = await CategoryCoursService.GetAllCategoriesAsync();
@@ -71,7 +83,7 @@
                                        "bg-warning-50 text-warning-600",
                                        "bg-info-50 text-info-600",
                                        "bg-danger-50 text-danger-600",
-          };
+      };
     private async Task move(int i)
     {
         Console.WriteLine("clicked");
@@ -95,17 +107,23 @@
     }
     private async Task PerformSearch()
     {
-        if(!string.IsNullOrWhiteSpace(SearchQuery)){
-            if (categId != 0){
-                Courses = await CourService.SearchCoursesByTitleAndCategoryIdAsync(SearchQuery,categId, pageNumber, 9);
-                nbPages = await CourService.CountCoursesByTitleAndCategoryIdAsync(SearchQuery,categId);
+        if (!string.IsNullOrWhiteSpace(SearchQuery))
+        {
+            if (categId != 0)
+            {
+                Courses = await CourService.SearchCoursesByTitleAndCategoryIdAsync(SearchQuery, categId, pageNumber, 9);
+                nbPages = await CourService.CountCoursesByTitleAndCategoryIdAsync(SearchQuery, categId);
                 nbPages = (nbPages - 1) / 9 + 1;
-            }else {
+            }
+            else
+            {
                 Courses = await CourService.SearchCoursesByTitleAsync(SearchQuery, pageNumber, 9);
                 nbPages = await CourService.CountCoursesByTitleAsync(SearchQuery);
                 nbPages = (nbPages - 1) / 9 + 1;
             }
-        }else {
+        }
+        else
+        {
             if (categId != 0)
             {
                 Courses = await CourService.GetCoursByCategoryIdAsync(categId, pageNumber, 9);

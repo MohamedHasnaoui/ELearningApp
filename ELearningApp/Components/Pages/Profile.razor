@@ -1,26 +1,31 @@
 ﻿@page "/Profile"
+@attribute [Authorize]
 @using ELearningApp.Components.Account
 @using ELearningApp.Components.Authentication.Shared
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICloudinaryService CloudinaryService
+@inject IUserService UserService
 
-<PageTitle>Home</PageTitle>
+
+<PageTitle>Profile</PageTitle>
 
 @if (AuthenticatedUser != null)
 {
-
     <div class="dashboard-body">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
             <ul class="flex-align gap-4">
                 <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
                 <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                <li><span class="text-main-600 fw-normal text-15">Setting</span></li>
+                <li><span class="text-main-600 fw-normal text-15">Profile</span></li>
             </ul>
         </div>
         <!-- Breadcrumb End -->
@@ -30,7 +35,7 @@
                 <div class="cover-img position-relative">
                     <label for="coverImageUpload" class="btn border-gray-200 text-gray-200 fw-normal hover-bg-gray-400 rounded-pill py-4 px-14 position-absolute inset-block-start-0 inset-inline-end-0 mt-24 me-24">Edit Cover</label>
                     <div class="avatar-upload">
-                        <input type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg">
+                        <InputFile onchange="HandleProfilelImageChange" type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg" />
                         <div class="avatar-preview">
                             <div id="coverImagePreview" style="background-image: url('assets/images/thumbs/setting-cover-img.png');">
                             </div>
@@ -74,12 +79,18 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pills-password-tab" onclick="setActiveTab('pills-password')" data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab" aria-controls="pills-password" aria-selected="false">Password</button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-plan-tab" onclick="setActiveTab('pills-plan')" data-bs-toggle="pill" data-bs-target="#pills-plan" type="button" role="tab" aria-controls="pills-plan" aria-selected="false">Plan</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Billing</button>
-                        </li>
+                        @if (enseignant is null)
+                        {
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-plan-tab" onclick="setActiveTab('pills-plan')" data-bs-toggle="pill" data-bs-target="#pills-plan" type="button" role="tab" aria-controls="pills-plan" aria-selected="false">Plan</button>
+                            </li>
+                        }
+                        @if (!isAdmin && enseignant is null)
+                        {
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Billing</button>
+                            </li>
+                        }
                     </ul>
                 </div>
 
@@ -139,7 +150,7 @@
                                     <label for="imageUpload" class="form-label mb-8 h6">Your Photo</label>
                                     <div class="flex-align gap-22">
                                         <div class="avatar-upload flex-shrink-0">
-                                            <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg">
+                                            <InputFile OnChange="HandleProfilelImageChange" type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
                                             <div class="avatar-preview">
                                                 <div id="profileImagePreview" style="background-image: url('assets/images/thumbs/setting-profile-img.jpg');">
                                                 </div>
@@ -236,12 +247,18 @@
                 </div>
             </div>
             <!-- Password Tab End -->
-            <!-- Plan Tab Start -->
-            <PlanTab/>
-            <!-- Plan Tab End -->
-            <!-- Billing Tab Start -->
-            <Billing/>
-            <!-- Billing Tab End -->
+            @if (enseignant is null)
+            {
+                <!-- Plan Tab Start -->
+                <PlanTab />
+                <!-- Plan Tab End -->
+            }
+            @if (!isAdmin && enseignant is null)
+            {
+                <!-- Billing Tab Start -->
+                <Billing />
+                <!-- Billing Tab End -->
+            }
 
         </div>
     </div>
@@ -273,12 +290,12 @@ else{
     private string? profileMessage;
     private string? passwordMessage;
     private bool hasPassword;
+    private bool isAdmin;
+
     [CascadingParameter]
     public ApplicationUser? AuthenticatedUser { get; set; }
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
     private List<string> errors = new List<string>();
     private readonly Dictionary<string, string> countryCodes = new Dictionary<string, string>
     {
@@ -311,14 +328,12 @@ else{
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
         Console.WriteLine("11111111111111111111111111");
-
+        isAdmin = user.IsInRole("Admin");
         hasPassword = await UserManager.HasPasswordAsync(AuthenticatedUser);
-        if (!hasPassword)
-        {
-            RedirectManager.RedirectToCurrentPageWithStatus("Error: User not have the password.", HttpContext);
 
-        }
         if (AuthenticatedUser is Enseignant)
         {
             enseignant = AuthenticatedUser as Enseignant;
@@ -450,12 +465,12 @@ else{
             }
 
             await SignInManager.RefreshSignInAsync(AuthenticatedUser);
-            
+
             passwordMessage="Your password has been changed";
         }
     }
 
-    
+
     private sealed class InputModel
     {
         [Phone]
@@ -477,13 +492,27 @@ else{
 
         public string OldPassword { get; set; } = "";
 
-        
+
         public string NewPassword { get; set; } = "";
 
-        
+
         public string ConfirmPassword { get; set; } = "";
     }
-    
+
+    private async Task HandleProfilelImageChange(InputFileChangeEventArgs e)
+    {
+        Console.WriteLine("changed");
+        var file = e.File;
+        if (file != null)
+        {
+            var allowedTypes = new[] { "image/png", "image/jpeg" };
+            Stream stream = file.OpenReadStream();
+            var res = await CloudinaryService.UploadImageAsync(stream, file.Name);
+            AuthenticatedUser.imgCover = res.SecureUrl.ToString();
+            await UserService.UpdateUserAsync(AuthenticatedUser);
+        }
+        
+    }
     
 }
 <script>

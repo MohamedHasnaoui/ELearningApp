@@ -1,6 +1,6 @@
 ﻿@page "/courses/etudiant/watch"
 @inject ICoursCommenceService CoursCommenceService
-@rendermode InteractiveServer 
+@rendermode InteractiveServer
 @inject IJSRuntime JSRuntime
 @inject ICloudinaryService CloudinaryService
 @inject ICommentaireVideoService CommentaireVideoService
@@ -11,36 +11,37 @@
 @inject ICertificatService CertificatService
 <style>
     .star {
-    font-size: 2rem;
-    cursor: pointer;
-    transition: color 0.2s ease-in-out;
+        font-size: 2rem;
+        cursor: pointer;
+        transition: color 0.2s ease-in-out;
     }
 
     .text-warning {
-    color: #ffc107 !important; /* Yellow for selected stars */
+        color: #ffc107 !important; /* Yellow for selected stars */
     }
 
     .text-muted {
-    color: #ddd !important; /* Gray for unselected stars */
+        color: #ddd !important; /* Gray for unselected stars */
     }
 
     .star:hover ~ .star {
-    color: #ffc107 !important;
+        color: #ffc107 !important;
     }
 
     .star:hover {
-    color: #ffc107 !important;
+        color: #ffc107 !important;
     }
 </style>
 
-@if(coursCommence != null && commentairesVideo!=null){
+@if (coursCommence != null && commentairesVideo != null)
+{
     <div class="dashboard-body">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
             <ul class="flex-align gap-4">
-                <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                <li><NavLink href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</NavLink></li>
                 <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                <li><span class="text-main-600 fw-normal text-15">Course Details</span></li>
+                <li><span class="text-main-600 fw-normal text-15">Regarder le cours</span></li>
             </ul>
         </div>
         <!-- Breadcrumb End -->
@@ -57,12 +58,15 @@
                     <div class="card-body">
                         <div class="pb-8 flex-between gap-4 flex-wrap">
                             <h5 class="mb-12 fw-bold">Commentaires (@commentairesVideo.Count())</h5>
-                            <button @onclick="()=>{seeAll=!seeAll;}" class="btn btn-outline-gray text-gray-500 text-13 py-8 px-8 rounded-4">@(seeAll? "show less": "show All")</button>
+                            <button @onclick="()=>{seeAll=!seeAll;}" class="btn btn-outline-gray text-gray-500 text-13 py-8 px-8 rounded-4">@(seeAll ? "Afficher moins" : "Afficher tout")</button>
                         </div>
 
                         <ul class="comment-list">
-                            @{ int count = 0;}
-                            @foreach(var cv in commentairesVideo){
+                            @{
+                                int count = 0;
+                            }
+                            @foreach (var cv in commentairesVideo)
+                            {
                                 if (!seeAll && count == 2) break;
                                 <li class="mt-24">
                                     <div class="d-flex align-items-start gap-8 flex-xs-row flex-column">
@@ -72,7 +76,7 @@
                                                 <h6 class="text-15 fw-bold mb-0">@cv.Utilisateur.UserName</h6>
                                                 @if (@cv.Utilisateur.Id == EtudiantId)
                                                 {
-                                                    <span class="py-0 px-8 bg-main-50 text-main-600 rounded-4 text-15 fw-medium h5 mb-0 fw-bold">You</span>
+                                                    <span class="py-0 px-8 bg-main-50 text-main-600 rounded-4 text-15 fw-medium h5 mb-0 fw-bold">Vous</span>
                                                 }
                                                 else if (@cv.Utilisateur.Id == coursCommence.Cours.Enseignant.Id)
                                                 {
@@ -88,7 +92,7 @@
                             }
                         </ul>
                         <div class="position-relative mt-44">
-                            <input @bind="commentInput" type="text" class="form-control bg-main-50 border-0 py-18 pe-54" placeholder="Drop your questions here...">
+                            <input @bind="commentInput" type="text" class="form-control bg-main-50 border-0 py-18 pe-54" placeholder="Posez vos questions ici...">
                             <button @onclick="addComment" class="w-40 h-40 flex-center rounded-8 bg-white text-main-600 hover-bg-main-600 hover-text-white transition-1 position-absolute inset-inline-end-0 top-50 translate-middle-y me-8">
                                 <i class="ph ph-paper-plane-tilt"></i>
                             </button>
@@ -103,12 +107,12 @@
             <div class="col-md-4">
                 <div class="card mb-8">
                     <div class="card-body">
-                        <h4 class="text-center mb-0">Evaluer ce cours</h4>
+                        <h4 class="text-center mb-0">Évaluer ce cours</h4>
                         <div class="star-rating d-flex align-center justify-content-center">
                             @for (int j = 5; j > 0; j--)
                             {
                                 int r = j;
-                                <span class="star @(r <= CurrentRating ? " text-warning" : "text-muted")" @onclick ="() => SetRating(r)">
+                                <span class="star @(r <= CurrentRating ? " text-warning" : "text-muted")" @onclick="() => SetRating(r)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
                                         <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
                                     </svg>
@@ -126,7 +130,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="flex-between flex-wrap mb-12">
-                            <h5 class="mb-0 fw-bold">Your Lesson</h5>
+                            <h5 class="mb-0 fw-bold">Vos leçons</h5>
                             <span class="text-13">@coursCommence.nbWatchedVid/@coursCommence.Cours.nbVids</span>
                         </div>
                         <div class="flex-align gap-8 mb-12">
@@ -139,9 +143,11 @@
                             @{
                                 double i = 0;
                             }
-                            @foreach(var s in coursCommence.Cours.sections){
-                                @foreach (var vid in s.Videos){
-                                    double k = i+vid.Duree;
+                            @foreach (var s in coursCommence.Cours.sections)
+                            {
+                                @foreach (var vid in s.Videos)
+                                {
+                                    double k = i + vid.Duree;
                                     <li class="lesson-list__item d-flex align-items-start gap-16 @((int)k<=(int)lastVidDur ? "active":"")">
                                         <span class="circle w-16 h-16 flex-center rounded-circle text-main-100 text-13 flex-shrink-0">
                                             <i class="ph-fill ph-check-circle"></i>
@@ -150,17 +156,19 @@
                                             @if ((int)k <= (int)lastVidDur || (int)(k - vid.Duree) <= (int)lastVidDur)
                                             {
                                                 <button @onclick="()=>startVideo(vid,k)" class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600 ">
-                                                    @s.Title : @vid.Title.Replace(".mp4","")
+                                                    @s.Title : @vid.Title.Replace(".mp4", "")
                                                 </button>
-                                            }else {
+                                            }
+                                            else
+                                            {
                                                 <button class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">
                                                     @s.Title : @vid.Title.Replace(".mp4", "")
-                                                    <span class="text-13 text-heading text-start d-block text-gray-600 fw-medium">Locked</span>
+                                                    <span class="text-13 text-heading text-start d-block text-gray-600 fw-medium">Verrouillé</span>
                                                 </button>
                                             }
                                         </div>
                                     </li>
-                                    i=k;
+                                    i = k;
                                 }
                             }
                             <li class="lesson-list__item d-flex align-items-center gap-16 @(certificat!=null ? "active":"")">
@@ -173,13 +181,13 @@
                                         <button @onclick="NavigateToExam" class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">
                                             Examen Final
                                         </button>
-                                        <button @onclick="NavigateToSubnissions" class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">Voir historique de soumission</button>
+                                        <button @onclick="NavigateToSubnissions" class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">Voir historique des soumissions</button>
                                     }
                                     else
                                     {
                                         <button class="text-13 text-heading d-block text-gray-600 fw-medium hover-text-main-600">
                                             Examen Final
-                                            <span class="text-13 text-heading text-start d-block text-gray-600 fw-medium">Locked</span>
+                                            <span class="text-13 text-heading text-start d-block text-gray-600 fw-medium">Verrouillé</span>
                                         </button>
                                     }
                                 </div>

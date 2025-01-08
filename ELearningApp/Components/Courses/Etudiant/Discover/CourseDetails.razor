@@ -4,15 +4,20 @@
 @inject NavigationManager NavigationManager
 @inject ICoursCommenceService CoursCommenceService
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
+@inject IAbonnementAchete AbonnementAchete
 @rendermode InteractiveServer
+<PageTitle>Detail Cours</PageTitle>
+
 @if(cours!=null){
     <div class="dashboard-body">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
             <ul class="flex-align gap-4">
-                <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
                 <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                <li><span class="text-main-600 fw-normal text-15">Course Details</span></li>
+                <li><span class="text-main-600 fw-normal text-15">Détails du Cours</span></li>
             </ul>
         </div>
         <!-- Breadcrumb End -->
@@ -25,9 +30,8 @@
                         <div class="flex-between flex-wrap gap-12 mb-20">
                             <div>
                                 <h3 class="mb-4">@cours.Nom</h3>
-                                <button class="text-gray-600 fw-bold text-15">@cours.Enseignant.UserName</button>
+                                <button class="text-gray-600 fw-bold text-15">Enseignant : @cours.Enseignant.UserName</button>
                             </div>
-
                             <div class="flex-align flex-wrap gap-24">
                                 <span class="py-6 px-16 bg-main-50 text-main-600 rounded-pill text-15">@cours.Category.Name</span>
                                 <div class=" share-social position-relative">
@@ -50,6 +54,9 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="rounded-16 overflow-hidden">
+                                <img src="@cours.CoursImg" alt="Alternate Text" />
+                            </div>
                         </div>
                         <div class="mt-24">
                             <div class="mb-24 pb-24 border-bottom border-gray-100">
@@ -57,30 +64,30 @@
                                 <p class="text-gray-300 text-15 mb-8">@cours.Description</p>
                             </div>
                             <div class="mb-24 pb-24 border-bottom border-gray-100">
-                                <h5 class="mb-16 fw-bold">This Course Includes</h5>
+                                <h5 class="mb-16 fw-bold">Ce cours comprend</h5>
                                 <div class="row g-20">
                                     <div class="col-md-4 col-sm-6">
                                         <ul>
                                             <li class="flex-align gap-6 text-gray-300 text-15 mb-12">
                                                 <span class="flex-shrink-0 text-22 d-flex text-main-600"><i class="ph ph-checks"></i> </span>
-                                                @cours.FormatDuration() on-demand video
+                                                @cours.FormatDuration() de vidéo à la demande
                                             </li>
                                             <li class="flex-align gap-6 text-gray-300 text-15 mb-12">
                                                 <span class="flex-shrink-0 text-22 d-flex text-main-600"><i class="ph ph-checks"></i> </span>
-                                                One Final Exam
+                                                Un examen final
                                             </li>
                                             <li class="flex-align gap-6 text-gray-300 text-15 mb-12">
                                                 <span class="flex-shrink-0 text-22 d-flex text-main-600"><i class="ph ph-checks"></i> </span>
-                                                @sections.Count() Sections
+                                                @sections.Count() sections
                                             </li>
                                             <li class="flex-align gap-6 text-gray-300 text-15 mb-12">
                                                 <span class="flex-shrink-0 text-22 d-flex text-main-600"><i class="ph ph-checks"></i> </span>
-                                                Access on Mobile
+                                                Accès sur mobile
                                             </li>
 
                                             <li class="flex-align gap-6 text-gray-300 text-15 mb-12">
                                                 <span class="flex-shrink-0 text-22 d-flex text-main-600"><i class="ph ph-checks"></i> </span>
-                                                Cetificat of completion
+                                                Certificat de réussite
                                             </li>
                                         </ul>
                                     </div>
@@ -88,31 +95,27 @@
                                         <ul>
                                             <li class="flex-align gap-6 text-gray-300 text-15 mb-12">
                                                 <span class="flex-shrink-0 text-22 d-flex text-main-600"><i class="ph ph-checks"></i> </span>
-                                                Videos: @nbVid
+                                                Vidéos : @nbVid
                                             </li>
                                             <li class="flex-align gap-6 text-gray-300 text-15 mb-12">
                                                 <span class="flex-shrink-0 text-22 d-flex text-main-600"><i class="ph ph-checks"></i> </span>
-                                                Captions: Yes
+                                                Sous-titres : Oui
                                             </li>
                                             <li class="flex-align gap-6 text-gray-300 text-15 mb-12">
                                                 <span class="flex-shrink-0 text-22 d-flex text-main-600"><i class="ph ph-checks"></i> </span>
-                                                Language English
+                                                Langue : Francais
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                             <div class="">
-                                <h5 class="mb-12 fw-bold">Instructor</h5>
+                                <h5 class="mb-12 fw-bold">Instructeur</h5>
                                 <div class="flex-align gap-8">
                                     <img src="assets/images/thumbs/mentor-img1.png" alt="" class="w-44 h-44 rounded-circle object-fit-cover flex-shrink-0">
                                     <div class="d-flex flex-column">
-                                        <h6 class="text-15 fw-bold mb-0">@cours.Enseignant.UserName</h6>
+                                        <h6 class="text-15 fw-bold mb-0">@cours.Enseignant.FormalUserName</h6>
                                         <span class="text-13 text-gray-300">@cours.Enseignant.speciality</span>
-                                        <div class="flex-align gap-4 mt-4">
-                                            <span class="text-15 fw-bold text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                                            <span class="text-13 fw-bold text-gray-600">4.9</span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -136,35 +139,49 @@
                                 </button>
                                 <div class="course-item-dropdown border-bottom border-gray-100">
                                     <ul class="course-list p-16 pb-0">
-                                        @{ int j = 1; }
-                                        @foreach(var vid in s.Videos){
+                                        @{
+                                            int j = 1;
+                                        }
+                                        @foreach (var vid in s.Videos)
+                                        {
                                             <li class="course-list__item flex-align gap-8 mb-16">
                                                 <div class="w-100">
                                                     <button class="text-gray-300 fw-medium d-block hover-text-main-600 d-lg-block">
-                                                        @j. @vid.Title.Replace(".mp4","")
+                                                        @j. @vid.Title.Replace(".mp4", "")
                                                         <span class="text-gray-300 text-start fw-normal d-block"> @vid.FormatDuration()</span>
                                                     </button>
                                                 </div>
                                             </li>
                                             j++;
-                                        }   
+                                        }
                                     </ul>
                                 </div>
                             </div>
                         }
                     </div>
                 </div>
-                @if(Role=="Etudiant"){
+                @if (Role == "Etudiant")
+                {
                     <div class="card mt-24">
                         <div class="card-body">
-                            @if(coursCommence1==null){
-                                <h5 class="mb-16">Start Learning</h5>
-                                <p class="text-gray-300">Ready For a new Journey</p>
-                                <button @onclick="startCourse" class="btn btn-main rounded-pill py-11 w-100  mt-16">Start Now</button>
-                            }else {
-                                <h5 class="mb-16">Continue Learning</h5>
-                                <p class="text-gray-300">You have already started this Course</p>
-                                <NavLink href="@continueLink" class="btn btn-main rounded-pill py-11 w-100  mt-16">Continue Watching</NavLink>
+                            @if(!hasSubscription){
+                                <h5 class="mb-16">Commencer l'apprentissage</h5>
+                                <p class="text-gray-300">Vous n'avez aucun abonnement</p>
+                                <NavLink href="/AbonnementPage" class="btn btn-main rounded-pill py-11 w-100  mt-16">Achter un Abonnemet</NavLink>
+                            }
+                            else {
+                                @if (coursCommence1 == null)
+                                {
+                                    <h5 class="mb-16">Commencer l'apprentissage</h5>
+                                    <p class="text-gray-300">Prêt pour un nouveau voyage</p>
+                                    <button @onclick="startCourse" class="btn btn-main rounded-pill py-11 w-100  mt-16">Commencer maintenant</button>
+                                }
+                                else
+                                {
+                                    <h5 class="mb-16">Continuer l'apprentissage</h5>
+                                    <p class="text-gray-300">Vous avez déjà commencé ce cours</p>
+                                    <NavLink href="@continueLink" class="btn btn-main rounded-pill py-11 w-100  mt-16">Continuer à regarder</NavLink>
+                                }
                             }
                         </div>
                     </div>
@@ -206,12 +223,13 @@
     string? EtudiantId = "";
     private bool IsActive { get; set; } = false;
     private bool ShowIcons { get; set; } = false;
+    bool hasSubscription = false;
     private void ToggleShare()
     {
         IsActive = !IsActive;
         ShowIcons = !ShowIcons;
     }
-    private Cours cours ;
+    private Cours cours;
     private IEnumerable<Section> sections = new List<Section>();
     public int nbVid = 0;
     CoursCommence coursCommence1;
@@ -228,7 +246,8 @@
             Role = user.FindFirst(ClaimTypes.Role)?.Value;
         }
         coursCommence1 = await CoursCommenceService.GetByEtudiantAndCoursAsync(EtudiantId, coursId);
-        if (coursCommence1!=null){
+        if (coursCommence1 != null)
+        {
             continueLink = NavigationManager.GetUriWithQueryParameters(
        NavigationManager.ToAbsoluteUri("courses/etudiant/watch").AbsoluteUri,
        new Dictionary<string, object?> { ["coursCommenceId"] = coursCommence1.Id });
@@ -239,21 +258,27 @@
         {
             nbVid += s.Videos.Count();
         }
+        hasSubscription = await AbonnementAchete.IsAbonnementAchete(EtudiantId);
+
     }
-    private async Task startCourse(){
-       
+    private async Task startCourse()
+    {
+
         if (!string.IsNullOrEmpty(EtudiantId))
         {
             CoursCommence coursCommence = new CoursCommence()
-            {
-                CoursId = coursId,
-                DateDebut = DateTime.UtcNow,
-                EtudiantId = EtudiantId
-            };
+                {
+                    CoursId = coursId,
+                    DateDebut = DateTime.UtcNow,
+                    EtudiantId = EtudiantId
+                };
             await CoursCommenceService.AddAsync(coursCommence);
-        }else {
+        }
+        else
+        {
             Console.WriteLine("null");
         }
         NavigationManager.NavigateTo("/courses/etudiant/started");
     }
+
 }

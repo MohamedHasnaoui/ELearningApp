@@ -8,9 +8,9 @@
     <!-- Breadcrumb Start -->
     <div class="breadcrumb mb-24">
         <ul class="flex-align gap-4">
-            <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+            <li><NavLink href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</NavLink></li>
             <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-            <li><span class="text-main-600 fw-normal text-15">Create Account</span></li>
+            <li><span class="text-main-600 fw-normal text-15">Créer un Compte</span></li>
         </ul>
     </div>
     <!-- Breadcrumb End -->
@@ -18,38 +18,38 @@
 
 <!-- Create Course Step List Start -->
 <ul class="step-list mb-24">
-    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  active">
+    <li class="step-list__item py-15 px-20 text-14 text-heading fw-medium flex-center gap-7  active">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Course Details
-        <span class="line position-relative"></span>
+        Détails du Cours
+        <span class="line position-relative w-20"></span>
     </li>
-    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7">
+    <li class="step-list__item py-15 px-20 text-14 text-heading fw-medium flex-center gap-7">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Section Details
-        <span class="line position-relative"></span>
+        Détails des Sections
+        <span class="line position-relative w-20"></span>
     </li>
-    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
+    <li class="step-list__item py-15 px-20 text-14 text-heading fw-medium flex-center gap-7  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Upload Videos
-        <span class="line position-relative"></span>
+        Téléverser des Vidéos
+        <span class="line position-relative w-20"></span>
     </li>
-    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
+    <li class="step-list__item py-15 px-20 text-14 text-heading fw-medium flex-center gap-7  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Create Quiz
-        <span class="line position-relative"></span>
+        Créer un Quiz
+        <span class="line position-relative w-20"></span>
     </li>
-    <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
+    <li class="step-list__item py-15 px-20 text-14 text-heading fw-medium flex-center gap-7  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Publish Course
-        <span class="line position-relative"></span>
+        Publier le Cours
+        <span class="line position-relative w-20"></span>
     </li>
 </ul>
 <!-- Create Course Step List End -->
 <!-- Course Tab Start -->
 <div class="card">
     <div class="card-header border-bottom border-gray-100 flex-align gap-8">
-        <h5 class="mb-0">Course Details</h5>
-        <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Course Details">
+        <h5 class="mb-0">Détails du Cours</h5>
+        <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Détails du Cours">
             <i class="ph-fill ph-question"></i>
         </button>
     </div>
@@ -58,14 +58,14 @@
             <div class="row gy-20 ">
                 <div class="col-xxl-3 col-md-4 col-sm-5 d-flex flex-column align-content-center justify-content-center">
                     <div class="mb-20">
-                        <label class="h5 fw-semibold font-heading mb-0">Thumbnail Image <span class="text-13 text-gray-400 fw-medium">(Required)</span> </label>
+                        <label class="h5 fw-semibold font-heading mb-0">Image de la Miniature <span class="text-13 text-gray-400 fw-medium">(Requis)</span> </label>
                     </div>
                     <div id="fileUpload" class="fileUpload image-upload">
                         <label for="coursImg" class="file-upload image-upload__box w-100 d-flex justify-content-center align-items-center">
                             <div class="image-upload__boxInner align-items-center">
                                 <i class="ph ph-image mb-8 image-upload__icon"></i>
-                                <h5 class="mb-4">Drag or <span class="text-main-600"> Browse</span></h5>
-                                <p class="text-13">PNG, JPEG (max 5mb size)</p>
+                                <h5 class="mb-4">Glisser ou <span class="text-main-600"> Parcourir</span></h5>
+                                <p class="text-13">PNG, JPEG (taille max 5mb)</p>
                             </div>
                             <InputFile type="file" id="coursImg" onchange="HandleThumbnailImageChange" accept=".png,.jpg,.jpeg" hidden />
                         </label>
@@ -82,7 +82,7 @@
                         <div class="col-sm-12">
                             <label for="courseTitle" class="h5 mb-8 fw-semibold font-heading">Titre du cours</label>
                             <div class="position-relative">
-                                <input @bind="Title" @bind:event="oninput" type="text" class="text-counter placeholder-13 form-control py-11 pe-76" maxlength="100" id="courseTitle" placeholder="Name of the Lesson" />
+                                <input @bind="Title" @bind:event="oninput" type="text" class="text-counter placeholder-13 form-control py-11 pe-76" maxlength="100" id="courseTitle" placeholder="Nom de la Leçon" />
                                 <div class="text-gray-400 position-absolute inset-inline-end-0 top-50 translate-middle-y me-16">
                                     <span id="current">@Title?.Length</span>
                                     <span id="maximum">/ 100</span>
@@ -96,10 +96,10 @@
                             }
                         </div>
                         <div class="col-sm-6">
-                            <label for="courseCategory" class="h5 mb-8 fw-semibold font-heading">Course Category </label>
+                            <label for="courseCategory" class="h5 mb-8 fw-semibold font-heading">Catégorie du Cours</label>
                             <div class="position-relative">
                                 <select @bind="CategoryIdB" id="courseCategory" class="form-select py-9 placeholder-13 text-15">
-                                    <option value="0" disabled selected>Enter course category</option>
+                                    <option value="0" disabled selected>Choisir une catégorie</option>
                                     @foreach (var c in categoryCoursList)
                                     {
                                         <option value="@c.Id">@c.Name</option>
@@ -114,10 +114,10 @@
                             }
                         </div>
                         <div class="col-sm-6">
-                            <label for="courseLevel" class="h5 mb-8 fw-semibold font-heading">Course Level</label>
+                            <label for="courseLevel" class="h5 mb-8 fw-semibold font-heading">Niveau du Cours</label>
                             <div class="position-relative">
                                 <select @bind="Level" id="courseLevel" class="form-select py-9 placeholder-13 text-15">
-                                    <option value="" disabled selected>Select course level</option>
+                                    <option value="" disabled selected>Sélectionner le niveau</option>
                                     <option value="0">Débutant</option>
                                     <option value="1">Intermédiaire</option>
                                     <option value="2">Avancé</option>
@@ -131,8 +131,8 @@
                             }
                         </div>
                         <div class="col-sm-6">
-                            <label for="CourseDescription" class="h5 mb-8 fw-semibold font-heading">Cours Description</label>
-                            <textarea @bind="Description" id="CourseDescription" class="form-control" placeholder="Enter Course description"></textarea>
+                            <label for="CourseDescription" class="h5 mb-8 fw-semibold font-heading">Description du Cours</label>
+                            <textarea @bind="Description" id="CourseDescription" class="form-control" placeholder="Entrez la description du cours"></textarea>
                             @if (!string.IsNullOrEmpty(DescriptionError))
                             {
                                 <div class="text-danger my-3 text-sm" role="alert">
@@ -141,7 +141,7 @@
                             }
                         </div>
                         <div class="col-sm-6">
-                            <label for="courseLesson" class="h5 mb-8 fw-semibold font-heading">Total Sections</label>
+                            <label for="courseLesson" class="h5 mb-8 fw-semibold font-heading">Total des Sections</label>
                             <input @bind="TotalSections" @bind:event="oninput" type="number" class="text-counter placeholder-13 form-control py-11 pe-76" min="1" max="10" />
                             @if (!string.IsNullOrEmpty(TotalSectionsError))
                             {
@@ -153,17 +153,13 @@
                     </div>
                 </div>
                 <div class="flex-align justify-content-end gap-8">
-                    <button type="button" @onclick="HandleCancel" class="btn btn-outline-main  rounded-pill py-9">Cancel</button>
-                    <button type="button" @onclick="HandleContinueClick" class="btn btn-main rounded-pill py-9">Continue</button>
+                    <button type="button" @onclick="HandleCancel" class="btn btn-outline-main  rounded-pill py-9">Annuler</button>
+                    <button type="button" @onclick="HandleContinueClick" class="btn btn-main rounded-pill py-9">Continuer</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
-
-
-
-
 
 @code {
     [Parameter]
@@ -177,22 +173,23 @@
     private IBrowserFile ThumbnailImage;
     public string Title;
     public int CategoryId = 0;
-    public int? CategoryIdB {
-        set {
-
+    public int? CategoryIdB
+    {
+        set
+        {
             CategoryId = value.Value;
         }
         get
         {
             return CategoryId;
         }
-    } 
+    }
     public string? Category = "";
     public string Level;
     public string levelString = "";
     public string Description;
     public int TotalSections = 1;
-    public string coursImgUrl ;
+    public string coursImgUrl;
     private string imgPublicId;
 
     // Error messages
@@ -216,20 +213,20 @@
             var allowedTypes = new[] { "image/png", "image/jpeg" };
             if (!allowedTypes.Contains(file.ContentType))
             {
-                ThumbnailImageError = "Only PNG and JPEG files are allowed.";
+                ThumbnailImageError = "Seuls les fichiers PNG et JPEG sont autorisés.";
                 return;
             }
 
             if (file.Size > 5 * 1024 * 1024) // 5MB limit
             {
-                ThumbnailImageError = "File size must be less than 5MB.";
+                ThumbnailImageError = "La taille du fichier doit être inférieure à 5MB.";
                 return;
             }
 
             ThumbnailImage = file;
             Stream stream = file.OpenReadStream();
             var res = await CloudinaryService.UploadImageAsync(stream, file.Name);
-            coursImgUrl = res.SecureUrl.ToString() ;
+            coursImgUrl = res.SecureUrl.ToString();
             if (!string.IsNullOrEmpty(imgPublicId))
             {
                 await CloudinaryService.DeleteAsync(imgPublicId, CloudinaryDotNet.Actions.ResourceType.Image);
@@ -239,18 +236,18 @@
         }
         else
         {
-            ThumbnailImageError = "Thumbnail image is required.";
+            ThumbnailImageError = "L'image de la miniature est requise.";
         }
     }
 
     private async Task ValidateForm()
     {
-        ThumbnailImageError = ThumbnailImage == null ? "Thumbnail image is required" : "";
-        TitleError = string.IsNullOrEmpty(Title) ? "Course title is required" : "";
-        CategoryIdError = CategoryId == 0 ? "Course category is required" : "";
-        LevelError = string.IsNullOrEmpty(Level) ? "Course level is required" : "";
-        DescriptionError = string.IsNullOrEmpty(Description) ? "Course description is required" : "";
-        TotalSectionsError = TotalSections < 1 || TotalSections > 10 ? "Total sections must be between 1 and 10" : "";
+        ThumbnailImageError = ThumbnailImage == null ? "L'image de la miniature est requise" : "";
+        TitleError = string.IsNullOrEmpty(Title) ? "Le titre du cours est requis" : "";
+        CategoryIdError = CategoryId == 0 ? "La catégorie du cours est requise" : "";
+        LevelError = string.IsNullOrEmpty(Level) ? "Le niveau du cours est requis" : "";
+        DescriptionError = string.IsNullOrEmpty(Description) ? "La description du cours est requise" : "";
+        TotalSectionsError = TotalSections < 1 || TotalSections > 10 ? "Le nombre de sections doit être entre 1 et 10" : "";
         Console.WriteLine(ThumbnailImageError);
     }
 
@@ -267,12 +264,12 @@
     private async Task HandleContinueClick()
     {
         await ValidateForm();
-        if ( await IsFormValid())
+        if (await IsFormValid())
         {
-            Category =( await CategoryCoursService.GetCategoryByIdAsync(CategoryId)).Name;
-            if (Level == "0") levelString = "Debutant";
-            else if (Level == "1") levelString = "Intermidiare";
-            else if (Level == "2") levelString = "Avance";
+            Category = (await CategoryCoursService.GetCategoryByIdAsync(CategoryId)).Name;
+            if (Level == "0") levelString = "Débutant";
+            else if (Level == "1") levelString = "Intermédiaire";
+            else if (Level == "2") levelString = "Avancé";
             await UpdateNumberSections.InvokeAsync(TotalSections);
             await OnContinueButtonClick.InvokeAsync(0);
         }
@@ -300,7 +297,7 @@
                 Nom = Title,
                 CoursImg = coursImgUrl,
                 CoursImgPublicId = imgPublicId,
-                Niveau = (Niveau) int.Parse(Level)
+                Niveau = (Niveau)int.Parse(Level)
             };
         await coursService.CreateAsync(cours);
         return cours;
@@ -329,6 +326,4 @@
             console.log("changed1");
 
     });
-
-
 </script>

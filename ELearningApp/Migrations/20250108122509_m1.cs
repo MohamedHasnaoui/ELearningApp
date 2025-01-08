@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ELearningApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Merge2 : Migration
+    public partial class m1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -187,7 +187,7 @@ namespace ELearningApp.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -307,6 +307,59 @@ namespace ELearningApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MentorFollows",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EtudiantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EnseignantId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MentorFollows", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MentorFollows_Enseignants_EnseignantId",
+                        column: x => x.EnseignantId,
+                        principalTable: "Enseignants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MentorFollows_Etudiants_EtudiantId",
+                        column: x => x.EtudiantId,
+                        principalTable: "Etudiants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MentorRatings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Valeur = table.Column<int>(type: "int", nullable: false),
+                    EnseignantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EtudiantId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MentorRatings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MentorRatings_Enseignants_EnseignantId",
+                        column: x => x.EnseignantId,
+                        principalTable: "Enseignants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MentorRatings_Etudiants_EtudiantId",
+                        column: x => x.EtudiantId,
+                        principalTable: "Etudiants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Certificats",
                 columns: table => new
                 {
@@ -330,7 +383,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -360,7 +413,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -407,7 +460,7 @@ namespace ELearningApp.Migrations
                         column: x => x.EtudiantId,
                         principalTable: "Etudiants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -477,7 +530,7 @@ namespace ELearningApp.Migrations
                         column: x => x.ExamenId,
                         principalTable: "Examens",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -550,7 +603,7 @@ namespace ELearningApp.Migrations
                         column: x => x.VideoId,
                         principalTable: "Videos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -579,6 +632,16 @@ namespace ELearningApp.Migrations
                         principalTable: "CommentairesVideo",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Abonnements",
+                columns: new[] { "Id", "Caracteristiques", "Description", "Duree", "IsRecommanded", "Prix", "Type" },
+                values: new object[,]
+                {
+                    { 1, "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing", "Perfect plan for students", 1, false, 199, 0 },
+                    { 2, "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community", "For users who want to do more", 1, true, 299, 1 },
+                    { 3, "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community", "Your entire friends in one place", 1, false, 499, 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -692,6 +755,26 @@ namespace ELearningApp.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_MentorFollows_EnseignantId",
+                table: "MentorFollows",
+                column: "EnseignantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MentorFollows_EtudiantId",
+                table: "MentorFollows",
+                column: "EtudiantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MentorRatings_EnseignantId",
+                table: "MentorRatings",
+                column: "EnseignantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MentorRatings_EtudiantId",
+                table: "MentorRatings",
+                column: "EtudiantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Questions_ExamenId",
                 table: "Questions",
                 column: "ExamenId");
@@ -770,6 +853,12 @@ namespace ELearningApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "CoursCommences");
+
+            migrationBuilder.DropTable(
+                name: "MentorFollows");
+
+            migrationBuilder.DropTable(
+                name: "MentorRatings");
 
             migrationBuilder.DropTable(
                 name: "Ratings");

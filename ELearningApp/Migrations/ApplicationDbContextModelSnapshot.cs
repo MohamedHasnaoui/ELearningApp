@@ -141,6 +141,38 @@ namespace ELearningApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Abonnements", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing",
+                            Description = "Perfect plan for students",
+                            Duree = 1,
+                            IsRecommanded = false,
+                            Prix = 199,
+                            Type = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community",
+                            Description = "For users who want to do more",
+                            Duree = 1,
+                            IsRecommanded = true,
+                            Prix = 299,
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community",
+                            Description = "Your entire friends in one place",
+                            Duree = 1,
+                            IsRecommanded = false,
+                            Prix = 499,
+                            Type = 2
+                        });
                 });
 
             modelBuilder.Entity("ELearningApp.Model.AbonnementAchete", b =>
@@ -429,6 +461,59 @@ namespace ELearningApp.Migrations
                         .IsUnique();
 
                     b.ToTable("Examens");
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.MentorFollow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("EnseignantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("EtudiantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnseignantId");
+
+                    b.HasIndex("EtudiantId");
+
+                    b.ToTable("MentorFollows");
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.MentorRating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("EnseignantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("EtudiantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Valeur")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnseignantId");
+
+                    b.HasIndex("EtudiantId");
+
+                    b.ToTable("MentorRatings");
                 });
 
             modelBuilder.Entity("ELearningApp.Model.Question", b =>
@@ -876,6 +961,44 @@ namespace ELearningApp.Migrations
                     b.Navigation("Cours");
                 });
 
+            modelBuilder.Entity("ELearningApp.Model.MentorFollow", b =>
+                {
+                    b.HasOne("ELearningApp.Model.Enseignant", "Enseignant")
+                        .WithMany("Followers")
+                        .HasForeignKey("EnseignantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ELearningApp.Model.Etudiant", "Etudiant")
+                        .WithMany("Following")
+                        .HasForeignKey("EtudiantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enseignant");
+
+                    b.Navigation("Etudiant");
+                });
+
+            modelBuilder.Entity("ELearningApp.Model.MentorRating", b =>
+                {
+                    b.HasOne("ELearningApp.Model.Enseignant", "Enseignant")
+                        .WithMany("Ratings")
+                        .HasForeignKey("EnseignantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ELearningApp.Model.Etudiant", "Etudiant")
+                        .WithMany("Ratings")
+                        .HasForeignKey("EtudiantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enseignant");
+
+                    b.Navigation("Etudiant");
+                });
+
             modelBuilder.Entity("ELearningApp.Model.Question", b =>
                 {
                     b.HasOne("ELearningApp.Model.Examen", "Examen")
@@ -1088,6 +1211,10 @@ namespace ELearningApp.Migrations
             modelBuilder.Entity("ELearningApp.Model.Enseignant", b =>
                 {
                     b.Navigation("CoursCrees");
+
+                    b.Navigation("Followers");
+
+                    b.Navigation("Ratings");
                 });
 
             modelBuilder.Entity("ELearningApp.Model.Etudiant", b =>
@@ -1097,6 +1224,10 @@ namespace ELearningApp.Migrations
                     b.Navigation("Certificats");
 
                     b.Navigation("CoursCommences");
+
+                    b.Navigation("Following");
+
+                    b.Navigation("Ratings");
 
                     b.Navigation("Soumissions");
                 });
