@@ -12,7 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Log in</PageTitle>
+<PageTitle>Connexion</PageTitle>
 <div class="auth-left bg-main-50 flex-center p-24">
     <img src="assets/images/thumbs/auth-img1.png" alt="">
 </div>
@@ -21,10 +21,10 @@
         <a href="/courses/etudiant/decouvrir" class="auth-right__logo">
             <img src="assets/images/logo/logo.png" alt="">
         </a>
-        <h2 class="mb-8">Welcome to Back! &#128075;</h2>
-        <p class="text-gray-600 text-15 mb-32">Please sign in to your account and start the adventure</p>
+        <h2 class="mb-8">Bienvenue de retour ! &#128075;</h2>
+        <p class="text-gray-600 text-15 mb-32">Veuillez vous connecter à votre compte et commencer l'aventure</p>
 
-		<EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+        <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
             <DataAnnotationsValidator />
             @if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -32,19 +32,19 @@
                     @errorMessage
                 </div>
             }
-            
+
             <div class="mb-24">
-                <label for="Input.Email" class="form-label mb-8 h6">Email or Username</label>
+                <label for="Input.Email" class="form-label mb-8 h6">Email ou Nom d'utilisateur</label>
                 <div class="position-relative">
-                    <InputText @bind-Value="Input.UserNameOrEmail" id="Input.Email" class="form-control py-11 ps-40" placeholder="name@example.com" />
+                    <InputText @bind-Value="Input.UserNameOrEmail" id="Input.Email" class="form-control py-11 ps-40" placeholder="nom@exemple.com" />
                     <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-user"></i></span>
                 </div>
                 <ValidationMessage For="() => Input.UserNameOrEmail" class="text-danger" />
             </div>
             <div class="mb-24">
-                <label for="current-password" class="form-label mb-8 h6">Current Password</label>
+                <label for="current-password" class="form-label mb-8 h6">Mot de passe actuel</label>
                 <div class="position-relative">
-                    <InputText type="password" @bind-Value="Input.Password" id="current-password" class="form-control py-11 ps-40" placeholder="password" />
+                    <InputText type="password" @bind-Value="Input.Password" id="current-password" class="form-control py-11 ps-40" placeholder="mot de passe" />
                     <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#current-password"></span>
                     <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-lock"></i></span>
                 </div>
@@ -53,22 +53,22 @@
             <div class="mb-32 flex-between flex-wrap gap-8">
                 <div class="form-check mb-0 flex-shrink-0">
                     <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input flex-shrink-0 rounded-4" id="remember" />
-                    <label class="form-check-label text-15 flex-grow-1" for="remember">Remember Me </label>
+                    <label class="form-check-label text-15 flex-grow-1" for="remember">Se souvenir de moi</label>
                 </div>
-                <a href="ForgotPassword" class="text-main-600 hover-text-decoration-underline text-15 fw-medium">Forgot Password?</a>
+                <a href="ForgotPassword" class="text-main-600 hover-text-decoration-underline text-15 fw-medium">Mot de passe oublié ?</a>
             </div>
-            <button type="submit" class="btn btn-main rounded-pill w-100">Sign In</button>
+            <button type="submit" class="btn btn-main rounded-pill w-100">Se connecter</button>
             <p class="mt-32 text-gray-600 text-center">
-                New on our platform?
-                <a href="/Register" class="text-main-600 hover-text-decoration-underline">Create an account</a>
+                Nouveau sur notre plateforme ?
+                <a href="/Register" class="text-main-600 hover-text-decoration-underline">Créer un compte</a>
             </p>
             <p class="mt-32 text-gray-600 text-center">
-                Go to Menu
+                Aller au menu
                 <a href="/courses/etudiant/decouvrir" class="text-main-600 hover-text-decoration-underline">Menu</a>
             </p>
 
             <div class="divider my-32 position-relative text-center">
-                <span class="divider__text text-gray-600 text-13 fw-medium px-26 bg-white">or</span>
+                <span class="divider__text text-gray-600 text-13 fw-medium px-26 bg-white">ou</span>
             </div>
 
             <ul class="flex-align gap-10 flex-wrap justify-content-center">
@@ -133,13 +133,12 @@
             var result = await SignInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                Logger.LogInformation("User logged in.");
+                Logger.LogInformation("Utilisateur connecté.");
                 RedirectManager.RedirectTo("/");
                 return;
             }
         }
-        errorMessage = "Error: Invalid login attempt.";
-
+        errorMessage = "Erreur : Tentative de connexion invalide.";
     }
 
     private sealed class InputModel
@@ -151,7 +150,7 @@
         [DataType(DataType.Password)]
         public string Password { get; set; } = "";
 
-        [Display(Name = "Remember me?")]
+        [Display(Name = "Se souvenir de moi ?")]
         public bool RememberMe { get; set; }
     }
 }

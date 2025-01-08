@@ -8,8 +8,7 @@
 @using System.Text
 @using System.Text.Encodings.Web
 
-@rendermode InteractiveServer 
-
+@rendermode InteractiveServer
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserStore<ApplicationUser> UserStore
@@ -20,25 +19,25 @@
 @inject IdentityRedirectManager RedirectManager
 
 
-<PageTitle>Register</PageTitle>
+<PageTitle>Inscription</PageTitle>
 
 <div class="auth-left bg-main-50 flex-center p-24">
     <img src="assets/images/thumbs/auth-img1.png" alt="">
 </div>
 <div class="auth-right py-40 px-24 flex-center flex-column">
     <div class="auth-right__inner mx-auto w-100">
-        <a href="/courses/etudiant/decouvrir" class="auth-right__logo">
+        <a href="/courses/etudiant/decouvrir" class="auth-right__logo mb-10">
             <img src="assets/images/logo/logo.png" alt="">
         </a>
-        <h2 class="mb-8">Sign Up</h2>
-        <p class="text-gray-600 text-15 mb-32">Please sign up to your account and start the adventure</p>
+        <h2 class="mb-8">S'inscrire</h2>
+        <p class="text-gray-600 text-15 mb-32">Veuillez vous inscrire à votre compte et commencer l'aventure</p>
 
         <EditForm Model="Input" OnValidSubmit="RegisterUser">
             <DataAnnotationsValidator />
             @if (!string.IsNullOrEmpty(Message))
             {
                 <div class="alert alert-danger" role="alert">
-                    @Message 
+                    @Message
                 </div>
             }
             @if (!string.IsNullOrEmpty(resultMessage))
@@ -53,19 +52,19 @@
                     <i class="ph ph-user"></i>
                 </span>
                 <InputSelect @bind-Value="Input.UserType" class="form-control py-11 ps-40" id="userType">
-                    <option value="Etudiant">Etudiant</option>
+                    <option value="Etudiant">Étudiant</option>
                     <option value="Enseignant">Enseignant</option>
                 </InputSelect>
             </div>
             @if (Input.UserType == "Enseignant")
             {
                 <div class="mb-24">
-                    <label for="Input.Speciality" class="form-label mb-8 h6"> Spécialité</label>
+                    <label for="Input.Speciality" class="form-label mb-8 h6">Spécialité</label>
                     <div class="position-relative">
                         <InputText @bind-Value="Input.Speciality" id="Input.Speciality" class="form-control py-11 ps-40" placeholder="Spécialité" />
                         <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-swatches"></i></span>
                     </div>
-                @if (formSubmitted && string.IsNullOrWhiteSpace(Input.Speciality))
+                    @if (formSubmitted && string.IsNullOrWhiteSpace(Input.Speciality))
                     {
                         <span class="text-danger">La spécialité est obligatoire pour les enseignants.</span>
                     }
@@ -74,41 +73,41 @@
             }
 
             <div class="mb-24">
-                <label for="Input.UserName" class="form-label mb-8 h6"> Username</label>
+                <label for="Input.UserName" class="form-label mb-8 h6">Nom d'utilisateur</label>
                 <div class="position-relative">
-                    <InputText @bind-Value="Input.UserName" id="Input.UserName" class="form-control py-11 ps-40" placeholder="user name" />
+                    <InputText @bind-Value="Input.UserName" id="Input.UserName" class="form-control py-11 ps-40" placeholder="nom d'utilisateur" />
                     <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-user"></i></span>
                 </div>
                 <ValidationMessage For="() => Input.UserName" class="text-danger" />
             </div>
             <div class="mb-24">
-                <label for="Input.Email" class="form-label mb-8 h6">Email </label>
+                <label for="Input.Email" class="form-label mb-8 h6">Email</label>
                 <div class="position-relative">
-                    <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control py-11 ps-40" placeholder="name@example.com" />
+                    <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control py-11 ps-40" placeholder="nom@exemple.com" />
                     <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-envelope"></i></span>
                 </div>
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
             <div class="mb-24">
-                <label for="current-password" class="form-label mb-8 h6">Current Password</label>
+                <label for="current-password" class="form-label mb-8 h6">Mot de passe actuel</label>
                 <div class="position-relative">
-                    <InputText type="password" @bind-Value="Input.Password" id="current-password" class="form-control py-11 ps-40" placeholder="password" />
+                    <InputText type="password" @bind-Value="Input.Password" id="current-password" class="form-control py-11 ps-40" placeholder="mot de passe" />
                     <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash"
                           id="toggle-password-current"
                           onclick="togglePasswordVisibility('current-password', 'toggle-password-current')"></span>
                     <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex"><i class="ph ph-lock"></i></span>
                 </div>
-                <span class="text-gray-900 text-15 mt-4">Must be at least 8 characters</span>
+                <span class="text-gray-900 text-15 mt-4">Doit contenir au moins 8 caractères</span>
                 <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
-            <button type="submit" @onclick="()=>formSubmitted=string.IsNullOrWhiteSpace(Input.Speciality)" class="btn btn-main rounded-pill w-100">Sign Up</button>
+            <button type="submit" @onclick="()=>formSubmitted=string.IsNullOrWhiteSpace(Input.Speciality)" class="btn btn-main rounded-pill w-100">S'inscrire</button>
             <p class="mt-32 text-gray-600 text-center">
-                Already have an account?
-                <a href="/Login" class="text-main-600 hover-text-decoration-underline"> Log In</a>
+                Vous avez déjà un compte ?
+                <a href="/Login" class="text-main-600 hover-text-decoration-underline">Se connecter</a>
             </p>
 
             <div class="divider my-32 position-relative text-center">
-                <span class="divider__text text-gray-600 text-13 fw-medium px-26 bg-white">or</span>
+                <span class="divider__text text-gray-600 text-13 fw-medium px-26 bg-white">ou</span>
             </div>
 
             <ul class="flex-align gap-10 flex-wrap justify-content-center">
@@ -153,8 +152,8 @@
 @code {
     private IEnumerable<IdentityError>? identityErrors;
     private InputModel Input { get; set; } = new InputModel();
-    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description)).Replace("_"," ")}";
-    private string? resultMessage="";
+    private string? Message => identityErrors is null ? null : $"Erreur : {string.Join(", ", identityErrors.Select(error => error.Description)).Replace("_", " ")}";
+    private string? resultMessage = "";
     private string? ReturnUrl { get; set; } = "/";
     private bool formSubmitted = false;
 
@@ -210,7 +209,7 @@
         }
 
         user.FormalUserName = Input.UserName;
-        await UserStore.SetUserNameAsync(user, Input.UserName.Replace(" ","_"), CancellationToken.None);
+        await UserStore.SetUserNameAsync(user, Input.UserName.Replace(" ", "_"), CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
@@ -226,7 +225,7 @@
         {
             foreach (var error in roleResult.Errors)
             {
-                Console.WriteLine($"Error assigning role: {error.Description}");
+                Console.WriteLine($"Erreur lors de l'attribution du rôle : {error.Description}");
             }
             return;
         }
@@ -238,17 +237,10 @@
             new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
 
         var email = Input.Email;
-        var subject = "Verification email";
+        var subject = "Vérification de l'email";
         var htmlMessage = GenerateEmailConfirmationMessage(HtmlEncoder.Default.Encode(callbackUrl), Input.UserName);
         await EmailSender.SendEmailAsync(email, subject, htmlMessage);
 
-        // if (UserManager.Options.SignIn.RequireConfirmedAccount)
-        // {
-        //     Console.WriteLine("here");
-
-        // }
-
-        // await SignInManager.SignInAsync(user, isPersistent: false);
         NavigationManager.NavigateTo($"RegisterConfirmation?email={Uri.EscapeDataString(Input.Email)}&returnUrl={Uri.EscapeDataString(ReturnUrl)}");
 
     }
@@ -318,12 +310,12 @@
     </head>
     <body>
         <div class='container'>
-            <div class='header'>Welcome to Our App, {userName}! &#128075;</div>
-            <div class='description'>Thank you for registering with us. Please confirm your email address by clicking the button below:</div>
-            <a href='{confirmationLink}' class='button'>Confirm Email</a>
-            <div class='description'>If the button above doesn't work, <a href='{confirmationLink}'>Click here</a></div>
+            <div class='header'>Bienvenue sur notre application, {userName} ! &#128075;</div>
+            <div class='description'>Merci de vous être inscrit. Veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous :</div>
+            <a href='{confirmationLink}' class='button'>Confirmer l'email</a>
+            <div class='description'>Si le bouton ci-dessus ne fonctionne pas, <a href='{confirmationLink}'>cliquez ici</a></div>
             <div class='footer'>
-                <p>If you didn't create an account, please ignore this email.</p>
+                <p>Si vous n'avez pas créé de compte, veuillez ignorer cet e-mail.</p>
             </div>
         </div>
     </body>
@@ -335,9 +327,8 @@
     {
         if (!UserManager.SupportsUserEmail)
         {
-            throw new NotSupportedException("The default UI requires a user store with email support.");
+            throw new NotSupportedException("L'interface utilisateur par défaut nécessite un magasin d'utilisateurs avec prise en charge des e-mails.");
         }
         return (IUserEmailStore<ApplicationUser>)UserStore;
     }
 }
-
