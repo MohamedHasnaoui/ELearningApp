@@ -1,5 +1,5 @@
 @using Microsoft.AspNetCore.Authorization
-@rendermode InteractiveServer 
+@rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 @inject IJSRuntime JSRuntime
 @inject ApplicationDbContext Context
@@ -21,7 +21,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="mb-2">@TotaleCours+</h4>
-                            <span class="text-gray-600">Courses</span>
+                            <span class="text-gray-600">Cours</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-600 text-white text-2xl"><i class="ph-fill ph-book-open"></i></span>
                                 <div id="complete-courseAdmin" class="remove-tooltip-title rounded-tooltip-value"></div>
@@ -33,7 +33,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="mb-2">@TotaleCertificat+</h4>
-                            <span class="text-gray-600">Certificate Given</span>
+                            <span class="text-gray-600">Certificats délivrés</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-two-600 text-white text-2xl"><i class="ph-fill ph-certificate"></i></span>
                                 <div id="earned-certificateAdmin" class="remove-tooltip-title rounded-tooltip-value"></div>
@@ -45,7 +45,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="mb-2">@TotaleUser+</h4>
-                            <span class="text-gray-600">Community </span>
+                            <span class="text-gray-600">Communauté</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-warning-600 text-white text-2xl"><i class="ph-fill ph-users-three"></i></span>
                                 <div id="community-supportAdmin" class="remove-tooltip-title rounded-tooltip-value"></div>
@@ -65,7 +65,7 @@
                                 <h4 class="mb-2">00 MAD</h4>
 
                             }
-                            <span class="text-gray-600">Money Earned</span>
+                            <span class="text-gray-600">Argent gagné</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-56 h-56 flex-center rounded-circle bg-purple-600 text-white text-2xl">
                                     <i class="ph-fill ph-credit-card"></i>
@@ -82,22 +82,22 @@
             <div class="card mt-24">
                 <div class="card-body">
                     <div class="mb-20 flex-between flex-wrap gap-8">
-                        <h4 class="mb-0">Users Statistics</h4>
+                        <h4 class="mb-0">Statistiques des utilisateurs</h4>
                         <div class="flex-align gap-16 flex-wrap">
                             <div class="flex-align flex-wrap gap-16">
                                 <div class="flex-align flex-wrap gap-8">
                                     <span class="w-8 h-8 rounded-circle bg-main-600"></span>
-                                    <span class="text-13 text-gray-600">Students</span>
+                                    <span class="text-13 text-gray-600">Étudiants</span>
                                 </div>
                                 <div class="flex-align flex-wrap gap-8">
                                     <span class="w-8 h-8 rounded-circle bg-main-two-600"></span>
-                                    <span class="text-13 text-gray-600">Mentors</span>
+                                    <span class="text-13 text-gray-600">Enseignant</span> <!-- Modifié ici -->
                                 </div>
                             </div>
                             <select @bind="SelectedChartTypeValue" class="form-select form-control text-13 px-8 pe-24 py-8 rounded-8 w-auto">
-                                <option value="1">Yearly</option>
-                                <option value="2">Monthly</option>
-                                <option value="3">Today</option>
+                                <option value="1">Cette Année</option>
+                                <option value="2">Ce Mois</option>
+                                <option value="3">Aujourd'hui</option>
                             </select>
                         </div>
                     </div>
@@ -105,14 +105,16 @@
                     {
                         <div id="doubleLineChartYearly" class="tooltip-style y-value-left"></div>
                     }
-                    else if (SelectedChartTypeValue == "2"){
+                    else if (SelectedChartTypeValue == "2")
+                    {
                         <div id="doubleLineChartMonthly" class="tooltip-style y-value-left"></div>
                     }
                     else if (SelectedChartTypeValue == "3")
                     {
                         <div id="doubleLineChartToday" class="tooltip-style y-value-left"></div>
                     }
-                    else{
+                    else
+                    {
                         <div id="doubleLineChartYearly" class="tooltip-style y-value-left"></div>
                     }
                 </div>
@@ -132,12 +134,12 @@
                         </div>
 
                         <div class="calendar__week week">
-                            <div class="calendar__week-text">Su</div>
-                            <div class="calendar__week-text">Mo</div>
-                            <div class="calendar__week-text">Tu</div>
-                            <div class="calendar__week-text">We</div>
-                            <div class="calendar__week-text">Th</div>
-                            <div class="calendar__week-text">Fr</div>
+                            <div class="calendar__week-text">Di</div>
+                            <div class="calendar__week-text">Lu</div>
+                            <div class="calendar__week-text">Ma</div>
+                            <div class="calendar__week-text">Me</div>
+                            <div class="calendar__week-text">Je</div>
+                            <div class="calendar__week-text">Ve</div>
                             <div class="calendar__week-text">Sa</div>
                         </div>
                         <div class="days"></div>
@@ -148,7 +150,7 @@
             <!-- Assignment Start -->
             <div class="card mt-24">
                 <div class="card-header border-bottom border-gray-100 flex-between gap-8 flex-wrap">
-                    <h5 class="mb-0">User Distribution</h5>
+                    <h5 class="mb-0">Répartition des utilisateurs</h5>
                     <div class="dropdown flex-shrink-0">
                         <button class="text-gray-400 text-xl d-flex rounded-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ph-fill ph-dots-three-outline"></i>
@@ -160,12 +162,12 @@
                                         <ul>
                                             <li class="mb-0">
                                                 <a href="/Etudiants" class="py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
-                                                    <span class="text"> <i class="ph ph-user me-4"></i> Students</span>
+                                                    <span class="text"> <i class="ph ph-user me-4"></i> Étudiants</span>
                                                 </a>
                                             </li>
                                             <li class="mb-0">
                                                 <a href="/Enseignant" class="py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
-                                                    <span class="text"> <i class="ph ph-user me-4"></i> Mentors</span>
+                                                    <span class="text"> <i class="ph ph-user me-4"></i> Enseignant</span> <!-- Modifié ici -->
                                                 </a>
                                             </li>
                                         </ul>
@@ -183,12 +185,12 @@
                     <div class="Mycontainer gap-8 flex-wrap mt-24">
                         <div class="flex-align flex-column">
                             <span class="w-12 h-12 bg-white border border-3 border-main-600 rounded-circle"></span>
-                            <span class="text-13 my-4 text-main-600">Mentors</span>
+                            <span class="text-13 my-4 text-main-600">Enseignant</span>
                             <h6 class="mb-0">@PercentageMentors%</h6>
                         </div>
                         <div class="flex-align flex-column">
                             <span class="w-12 h-12 bg-white border border-3 border-main-two-600 rounded-circle"></span>
-                            <span class="text-13 my-4 text-main-two-600">Students</span>
+                            <span class="text-13 my-4 text-main-two-600">Étudiants</span>
                             <h6 class="mb-0">@PercentageStudents%</h6>
                         </div>
                     </div>
@@ -312,11 +314,11 @@
                 var options = {
                 series: [
                     {
-                        name: 'Students',
+                        name: 'Étudiants',
                         data: StudentsAxe,
                     },
                     {
-                        name: 'Mentors',
+                        name: 'Enseignant',
                         data: MentorsAxe,
                     },
                 ],
@@ -439,7 +441,7 @@
                 var chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
                 chart.render();
             }
-        
+
             createLineChart('doubleLineChartYearly', '#27CFA7');
         }
         window.initializeDoubleChartMonthly = function (StudentsAxe,MentorsAxe,formattedOutput){
@@ -447,11 +449,11 @@
                 var options = {
                 series: [
                     {
-                        name: 'Students',
+                        name: 'Étudiants',
                         data: StudentsAxe,
                     },
                     {
-                        name: 'Mentors',
+                        name: 'Enseignant',
                         data: MentorsAxe,
                     },
                 ],
@@ -582,11 +584,11 @@
                 var options = {
                 series: [
                     {
-                        name: 'Students',
+                        name: 'Étudiants',
                         data: StudentsAxe,
                     },
                     {
-                        name: 'Mentors',
+                        name: 'Enseignant',
                         data: MentorsAxe,
                     },
                 ],

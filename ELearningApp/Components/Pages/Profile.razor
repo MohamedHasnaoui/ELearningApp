@@ -13,7 +13,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ICloudinaryService CloudinaryService
 @inject IUserService UserService
-
+@inject ApplicationDbContext _context
 
 
 <PageTitle>Profile</PageTitle>
@@ -24,9 +24,9 @@
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
             <ul class="flex-align gap-4">
-                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
                 <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                <li><span class="text-main-600 fw-normal text-15">Profile</span></li>
+                <li><span class="text-main-600 fw-normal text-15">Profil</span></li>
             </ul>
         </div>
         <!-- Breadcrumb End -->
@@ -34,7 +34,7 @@
         <div class="card overflow-hidden">
             <div class="card-body p-0">
                 <div class="cover-img position-relative">
-                    <label for="coverImageUpload" class="btn border-gray-200 text-gray-200 fw-normal hover-bg-gray-400 rounded-pill py-4 px-14 position-absolute inset-block-start-0 inset-inline-end-0 mt-24 me-24">Edit Cover</label>
+                    <label for="coverImageUpload" class="btn border-gray-200 text-gray-200 fw-normal hover-bg-gray-400 rounded-pill py-4 px-14 position-absolute inset-block-start-0 inset-inline-end-0 mt-24 me-24">Modifier la couverture</label>
                     <div class="avatar-upload">
                         <InputFile onchange="HandleProfilelImageChange" type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg" />
                         <div class="avatar-preview">
@@ -47,7 +47,7 @@
                 <div class="setting-profile px-24">
                     <div class="flex-between">
                         <div class="d-flex align-items-end flex-wrap mb-32 gap-24">
-                            <img src='@(AuthenticatedUser?.imgProfile ?? "assets/images/thumbs/setting-profile-img.jpg")'  alt="" class="w-120 h-120 rounded-circle border border-white">
+                            <img src='@(AuthenticatedUser?.imgProfile ?? "assets/images/thumbs/setting-profile-img.jpg")' alt="" class="w-120 h-120 rounded-circle border border-white">
                             <div>
                                 <h4 class="mb-8">@AuthenticatedUser.FormalUserName</h4>
                                 <div class="setting-profile__infos flex-align flex-wrap gap-16">
@@ -64,7 +64,7 @@
                                     </div>
                                     <div class="flex-align gap-6">
                                         <span class="text-gray-600 d-flex text-lg"><i class="ph ph-calendar-dots"></i></span>
-                                        <span class="text-gray-600 d-flex text-15">Join @formattedDate</span>
+                                        <span class="text-gray-600 d-flex text-15">Rejoint le @formattedDate</span>
                                     </div>
                                 </div>
                             </div>
@@ -72,13 +72,13 @@
                     </div>
                     <ul class="nav common-tab style-two nav-pills mb-0" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="pills-profile-tab" onclick="setActiveTab('pills-profile')" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Profile</button>
+                            <button class="nav-link active" id="pills-profile-tab" onclick="setActiveTab('pills-profile')" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Profil</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-details-tab" onclick="setActiveTab('pills-details')" data-bs-toggle="pill" data-bs-target="#pills-details" type="button" role="tab" aria-controls="pills-details" aria-selected="true">My Details</button>
+                            <button class="nav-link" id="pills-details-tab" onclick="setActiveTab('pills-details')" data-bs-toggle="pill" data-bs-target="#pills-details" type="button" role="tab" aria-controls="pills-details" aria-selected="true">Mes détails</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-password-tab" onclick="setActiveTab('pills-password')" data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab" aria-controls="pills-password" aria-selected="false">Password</button>
+                            <button class="nav-link" id="pills-password-tab" onclick="setActiveTab('pills-password')" data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab" aria-controls="pills-password" aria-selected="false">Mot de passe</button>
                         </li>
                         @if (!isEnseignant)
                         {
@@ -89,7 +89,7 @@
                         @if (!isAdmin && !isEnseignant)
                         {
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Billing</button>
+                                <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Facturation</button>
                             </li>
                         }
                     </ul>
@@ -106,8 +106,8 @@
             <div class="tab-pane fade " id="pills-details" role="tabpanel" aria-labelledby="pills-details-tab" tabindex="0">
                 <div class="card mt-24">
                     <div class="card-header border-bottom">
-                        <h4 class="mb-4">My Details</h4>
-                        <p class="text-gray-600 text-15">Please fill full details about yourself</p>
+                        <h4 class="mb-4">Mes détails</h4>
+                        <p class="text-gray-600 text-15">Veuillez remplir tous les détails vous concernant</p>
                     </div>
                     <div class="card-body">
                         <StatusMessage Message="@profileMessage" />
@@ -115,8 +115,8 @@
                             <DataAnnotationsValidator />
                             <div class="row gy-4">
                                 <div class="col-sm-6 col-xs-6">
-                                    <label for="fname" class="form-label mb-8 h6">User Name</label>
-                                    <InputText @bind-Value="Input.UserName" id="fname" class="form-control py-11" placeholder="Enter User Name" />
+                                    <label for="fname" class="form-label mb-8 h6">Nom d'utilisateur</label>
+                                    <InputText @bind-Value="Input.UserName" id="fname" class="form-control py-11" placeholder="Entrez votre nom d'utilisateur" />
                                     <ValidationMessage For="() => Input.UserName" class="text-danger" />
                                 </div>
                                 <div class="col-sm-6 col-xs-6">
@@ -124,12 +124,12 @@
                                     <input type="text" class="form-control py-11" id="lname" value="@AuthenticatedUser.Email" disabled>
                                 </div>
                                 <div class="col-sm-6 col-xs-6">
-                                    <label for="address" class="form-label mb-8 h6">Address</label>
-                                    <InputText @bind-Value="Input.Address" id="address" class="form-control py-11" placeholder="Enter your country and city (e.g., Morroco, Meknes)" />
+                                    <label for="address" class="form-label mb-8 h6">Adresse</label>
+                                    <InputText @bind-Value="Input.Address" id="address" class="form-control py-11" placeholder="Entrez votre pays et ville (ex: Maroc, Meknès)" />
                                     <ValidationMessage For="() => Input.Address" class="text-danger" />
                                 </div>
                                 <div class="col-sm-6 col-xs-6">
-                                    <label for="phone" class="form-label mb-8 h6">Phone Number</label>
+                                    <label for="phone" class="form-label mb-8 h6">Numéro de téléphone</label>
 
                                     <!-- Country Code Dropdown -->
                                     <div class="input-group mb-3">
@@ -141,14 +141,14 @@
                                         </InputSelect>
 
                                         <!-- Phone Number Input -->
-                                        <InputText type="number" @bind-Value="Input.PhoneNumber" id="phone" class="form-control py-11" placeholder="Enter your phone number" />
+                                        <InputText type="number" @bind-Value="Input.PhoneNumber" id="phone" class="form-control py-11" placeholder="Entrez votre numéro de téléphone" />
                                     </div>
 
                                     <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
                                 </div>
 
                                 <div class="col-12">
-                                    <label for="imageUpload" class="form-label mb-8 h6">Your Photo</label>
+                                    <label for="imageUpload" class="form-label mb-8 h6">Votre photo</label>
                                     <div class="flex-align gap-22">
                                         <div class="avatar-upload flex-shrink-0">
                                             <InputFile OnChange="HandleProfilelImageChange" type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
@@ -160,8 +160,8 @@
                                         <div class="avatar-upload-box text-center position-relative flex-grow-1 py-24 px-4 rounded-16 border border-main-300 border-dashed bg-main-50 hover-bg-main-100 hover-border-main-400 transition-2 cursor-pointer">
                                             <label for="imageUpload" class="position-absolute inset-block-start-0 inset-inline-start-0 w-100 h-100 rounded-16 cursor-pointer z-1"></label>
                                             <span class="text-32 icon text-main-600 d-inline-flex"><i class="ph ph-upload"></i></span>
-                                            <span class="text-13 d-block text-gray-400 text my-8">Click to upload or drag and drop</span>
-                                            <span class="text-13 d-block text-main-600">SVG, PNG, JPEG OR GIF (max 1080px1200px)</span>
+                                            <span class="text-13 d-block text-gray-400 text my-8">Cliquez pour télécharger ou glisser-déposer</span>
+                                            <span class="text-13 d-block text-main-600">SVG, PNG, JPEG OU GIF (max 1080px1200px)</span>
                                         </div>
                                     </div>
                                 </div>
@@ -172,8 +172,8 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="flex-align justify-content-end gap-8">
-                                        <button type="reset" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-9">Cancel</button>
-                                        <button type="submit" class="btn btn-main rounded-pill py-9">Save  Changes</button>
+                                        <button type="reset" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-9">Annuler</button>
+                                        <button type="submit" class="btn btn-main rounded-pill py-9">Enregistrer les modifications</button>
                                     </div>
                                 </div>
                             </div>
@@ -186,8 +186,8 @@
             <div class="tab-pane fade" id="pills-password" role="tabpanel" aria-labelledby="pills-password-tab" tabindex="0">
                 <div class="card mt-24">
                     <div class="card-header border-bottom">
-                        <h4 class="mb-4">Password Settings</h4>
-                        <p class="text-gray-600 text-15">Please fill full details about yourself</p>
+                        <h4 class="mb-4">Paramètres du mot de passe</h4>
+                        <p class="text-gray-600 text-15">Veuillez remplir tous les détails vous concernant</p>
                     </div>
                     <div class="card-body">
                         <StatusMessage Message="@passwordMessage" />
@@ -197,25 +197,25 @@
                                 <div class="col-md-6">
                                     <div class="row gy-4">
                                         <div class="col-12">
-                                            <label for="current-password" class="form-label mb-8 h6">Current Password</label>
+                                            <label for="current-password" class="form-label mb-8 h6">Mot de passe actuel</label>
                                             <div class="position-relative">
-                                                <InputText type="password" @bind-Value="Input.OldPassword" id="current-password" class="form-control py-11" placeholder="Enter Current Password" />
+                                                <InputText type="password" @bind-Value="Input.OldPassword" id="current-password" class="form-control py-11" placeholder="Entrez le mot de passe actuel" />
                                                 <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#current-password"></span>
                                                 <ValidationMessage For="() => Input.OldPassword" class="text-danger" />
                                             </div>
                                         </div>
                                         <div class="col-12">
-                                            <label for="new-password" class="form-label mb-8 h6">New Password</label>
+                                            <label for="new-password" class="form-label mb-8 h6">Nouveau mot de passe</label>
                                             <div class="position-relative">
-                                                <InputText type="password" @bind-Value="Input.NewPassword" id="new-password" class="form-control py-11" placeholder="Enter New Password" />
+                                                <InputText type="password" @bind-Value="Input.NewPassword" id="new-password" class="form-control py-11" placeholder="Entrez le nouveau mot de passe" />
                                                 <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#new-password"></span>
                                                 <ValidationMessage For="() => Input.NewPassword" class="text-danger" />
                                             </div>
                                         </div>
                                         <div class="col-12">
-                                            <label for="confirm-password" class="form-label mb-8 h6">Confirm Password</label>
+                                            <label for="confirm-password" class="form-label mb-8 h6">Confirmez le mot de passe</label>
                                             <div class="position-relative">
-                                                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="confirm-password" class="form-control py-11" placeholder="Enter Confirm Password" />
+                                                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="confirm-password" class="form-control py-11" placeholder="Confirmez le mot de passe" />
                                                 <span class="toggle-password position-absolute top-50 inset-inline-end-0 me-16 translate-middle-y ph ph-eye-slash" id="#confirm-password"></span>
                                                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
 
@@ -224,7 +224,7 @@
                                         @if (errors.Any())
                                         {
                                             <div class="col-12">
-                                                <label class="form-label mb-8 h6">Password Requirements:</label>
+                                                <label class="form-label mb-8 h6">Exigences du mot de passe :</label>
                                                 <ul class="list-inside">
                                                     @foreach (var error in errors)
                                                     {
@@ -238,8 +238,8 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="flex-align justify-content-end gap-8">
-                                        <button type="reset" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-9">Cancel</button>
-                                        <button type="submit" class="btn btn-main rounded-pill py-9">Save Changes</button>
+                                        <button type="reset" class="btn btn-outline-main bg-main-100 border-main-100 text-main-600 rounded-pill py-9">Annuler</button>
+                                        <button type="submit" class="btn btn-main rounded-pill py-9">Enregistrer les modifications</button>
                                     </div>
                                 </div>
                             </EditForm>
@@ -264,8 +264,9 @@
         </div>
     </div>
 }
-else{
-    <h1 class="alert alert-danger">User Authenticated is null!!!!!!!!!!!</h1>
+else
+{
+    <h1 class="alert alert-danger">L'utilisateur authentifié est null!!!!!!!!!!!</h1>
 }
 
 <script>
@@ -301,31 +302,29 @@ else{
     private List<string> errors = new List<string>();
     private readonly Dictionary<string, string> countryCodes = new Dictionary<string, string>
     {
-        { "212", "Mor (+212)" },
-        { "966", "Saudi Arabia (+966)" },
-        { "20", "Egypt (+20)" },
-        { "1", "USA (+1)" },
-        { "44", "UK (+44)" },
-        { "91", "India (+91)" },
+        { "212", "Maroc (+212)" },
+        { "966", "Arabie Saoudite (+966)" },
+        { "20", "Égypte (+20)" },
+        { "1", "États-Unis (+1)" },
+        { "44", "Royaume-Uni (+44)" },
+        { "91", "Inde (+91)" },
         { "33", "France (+33)" },
-        { "61", "Australia (+61)" },
-        { "971", "United Arab Emirates (+971)" },
-        { "962", "Jordan (+962)" },
+        { "61", "Australie (+61)" },
+        { "971", "Émirats Arabes Unis (+971)" },
+        { "962", "Jordanie (+962)" },
         { "968", "Oman (+968)" },
-        { "965", "Kuwait (+965)" },
+        { "965", "Koweït (+965)" },
         { "974", "Qatar (+974)" },
-        { "973", "Bahrain (+973)" },
-        { "964", "Iraq (+964)" },
-        { "249", "Sudan (+249)" },
-        { "218", "Libya (+218)" }
+        { "973", "Bahreïn (+973)" },
+        { "964", "Irak (+964)" },
+        { "249", "Soudan (+249)" },
+        { "218", "Libye (+218)" }
     };
     private Enseignant? enseignant { get; set; }
     private Etudiant? etudiant { get; set; }
-    private DateTime parsedDate  { get; set; }
+    private DateTime parsedDate { get; set; }
     private string? originalDate { get; set; }
     private string? formattedDate { get; set; }
-
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -341,7 +340,7 @@ else{
         if (AuthenticatedUser is Enseignant)
         {
             enseignant = AuthenticatedUser as Enseignant;
-            // You can now access teacher-specific attributes
+            // Vous pouvez maintenant accéder aux attributs spécifiques à l'enseignant
         }
         else if (AuthenticatedUser is Etudiant)
         {
@@ -356,20 +355,19 @@ else{
         string[] formats = { "M/d/yyyy h:mm:ss tt", "MM/dd/yyyy HH:mm:ss" };
         parsedDate = DateTime.ParseExact(AuthenticatedUser.joinDate.ToString(), formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None);
 
-        // Store the original and formatted dates
+        // Stocker les dates originales et formatées
         originalDate = parsedDate.ToString("MM/dd/yyyy hh:mm:ss tt", System.Globalization.CultureInfo.InvariantCulture);
-        formattedDate = parsedDate.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture); // Display in "Month Year" format
-
+        formattedDate = parsedDate.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture); // Afficher au format "Mois Année"
     }
+
     private async Task OnValidSubmitAsync()
     {
-
         if (Input.PhoneNumber != AuthenticatedUser.PhoneNumber)
         {
             var setPhoneResult = await UserManager.SetPhoneNumberAsync(AuthenticatedUser, Input.PhoneNumber);
             if (!setPhoneResult.Succeeded)
             {
-                profileMessage="Error: Failed to set phone number.";
+                profileMessage = "Erreur : Échec de la définition du numéro de téléphone.";
                 return;
             }
         }
@@ -378,13 +376,13 @@ else{
             var userNameExist = await UserManager.FindByNameAsync(Input.UserName.Replace(" ", "_"));
             if (userNameExist != null)
             {
-                profileMessage = "Error: This user name already taken";
+                profileMessage = "Erreur : Ce nom d'utilisateur est déjà pris.";
                 return;
             }
             var setUserNameResult = await UserManager.SetUserNameAsync(AuthenticatedUser, Input.UserName.Replace(" ", "_"));
             if (!setUserNameResult.Succeeded)
             {
-                profileMessage = "Error: Failed to set user name.";
+                profileMessage = "Erreur : Échec de la définition du nom d'utilisateur.";
                 return;
             }
             else
@@ -405,81 +403,79 @@ else{
         {
             AuthenticatedUser.PhoneNumberCode = Input.CountryCode;
         }
-        await UserManager.UpdateAsync(AuthenticatedUser);
+        _context.Users.Update(AuthenticatedUser);
+        await _context.SaveChangesAsync();
         await SignInManager.RefreshSignInAsync(AuthenticatedUser);
-        profileMessage = "Your profile has been updated";
+        profileMessage = "Votre profil a été mis à jour.";
     }
+
     private async Task OnValidSubmitChangePasswordAsync()
     {
         errors.Clear();
 
-        // Manual validation
+        // Validation manuelle
         if (string.IsNullOrWhiteSpace(Input.OldPassword))
         {
-            errors.Add("Current password is required.");
+            errors.Add("Le mot de passe actuel est requis.");
         }
 
         if (string.IsNullOrWhiteSpace(Input.NewPassword))
         {
-            errors.Add("New password is required.");
+            errors.Add("Le nouveau mot de passe est requis.");
         }
         else
         {
             if (Input.NewPassword.Length < 6)
             {
-                errors.Add("New password must be at least 6 characters long.");
+                errors.Add("Le nouveau mot de passe doit contenir au moins 6 caractères.");
             }
 
             if (!Input.NewPassword.Any(char.IsDigit))
             {
-                errors.Add("New password must have at least one digit ('0'-'9').");
+                errors.Add("Le nouveau mot de passe doit contenir au moins un chiffre ('0'-'9').");
             }
 
             if (!Input.NewPassword.Any(char.IsUpper))
             {
-                errors.Add("New password must have at least one uppercase letter ('A'-'Z').");
+                errors.Add("Le nouveau mot de passe doit contenir au moins une lettre majuscule ('A'-'Z').");
             }
 
             if (!Input.NewPassword.Any(ch => !char.IsLetterOrDigit(ch)))
             {
-                errors.Add("New password must have at least one non-alphanumeric character.");
+                errors.Add("Le nouveau mot de passe doit contenir au moins un caractère non alphanumérique.");
             }
         }
 
         if (Input.NewPassword != Input.ConfirmPassword)
         {
-            errors.Add("New password and confirmation password do not match.");
+            errors.Add("Le nouveau mot de passe et la confirmation ne correspondent pas.");
         }
 
-
-        // If there are validation errors, return without proceeding
+        // S'il y a des erreurs de validation, retourner sans continuer
         if (errors.Any())
         {
-
             return;
         }
         if (AuthenticatedUser != null)
         {
-
             var changePasswordResult = await UserManager.ChangePasswordAsync(AuthenticatedUser, Input.OldPassword, Input.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                passwordMessage = $"Error: {string.Join(",", changePasswordResult.Errors.Select(error => error.Description))}";
+                passwordMessage = $"Erreur : {string.Join(",", changePasswordResult.Errors.Select(error => error.Description))}";
                 return;
             }
 
             await SignInManager.RefreshSignInAsync(AuthenticatedUser);
 
-            passwordMessage="Your password has been changed";
+            passwordMessage = "Votre mot de passe a été modifié.";
         }
     }
-
 
     private sealed class InputModel
     {
         [Phone]
-        [Display(Name = "Phone number")]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be 10 digits.")]
+        [Display(Name = "Numéro de téléphone")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Le numéro de téléphone doit contenir 10 chiffres.")]
         public string? PhoneNumber { get; set; }
         public string? CountryCode { get; set; }
 
@@ -489,23 +485,21 @@ else{
         public string? UserName { get; set; }
 
         [Display(Name = "Adresse")]
-        [RegularExpression(@"^[a-zA-Z\s]+,\s[a-zA-Z\s]+$", ErrorMessage = "Address must be in 'Country, City' format.")]
+        [RegularExpression(@"^[a-zA-Z\s]+,\s[a-zA-Z\s]+$", ErrorMessage = "L'adresse doit être au format 'Pays, Ville'.")]
         public string? Address { get; set; }
-        [StringLength(500, ErrorMessage = "Bio cannot exceed 500 characters.")]
+        [StringLength(500, ErrorMessage = "La bio ne peut pas dépasser 500 caractères.")]
         public string? Bio { get; set; }
 
         public string OldPassword { get; set; } = "";
 
-
         public string NewPassword { get; set; } = "";
-
 
         public string ConfirmPassword { get; set; } = "";
     }
 
     private async Task HandleProfilelImageChange(InputFileChangeEventArgs e)
     {
-        Console.WriteLine("changed");
+        Console.WriteLine("changé");
         var file = e.File;
         if (file != null)
         {
@@ -515,9 +509,7 @@ else{
             AuthenticatedUser.imgCover = res.SecureUrl.ToString();
             await UserService.UpdateUserAsync(AuthenticatedUser);
         }
-        
     }
-    
 }
 <script>
     document.addEventListener("DOMContentLoaded", function() {

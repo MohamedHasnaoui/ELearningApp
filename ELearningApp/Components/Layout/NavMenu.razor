@@ -4,9 +4,9 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <aside class="sidebar">
-    <!-- sidebar close btn -->
+    <!-- Bouton de fermeture de la barre latérale -->
     <button type="button" class="sidebar-close-btn text-gray-500 hover-text-white hover-bg-main-600 text-md w-24 h-24 border border-gray-100 hover-border-main-600 d-xl-none d-flex flex-center rounded-circle position-absolute"><i class="ph ph-x"></i></button>
-    <!-- sidebar close btn -->
+    <!-- Bouton de fermeture de la barre latérale -->
 
     <a href="/" class="sidebar__logo text-center position-sticky inset-block-start-0 bg-white w-100 z-1 p-10">
         <img src="assets/images/logo/logo.png" alt="Logo">
@@ -20,42 +20,42 @@
                     <li class="sidebar-menu__item">
                         <a href="/" class="sidebar-menu__link">
                             <span class="icon"><i class="ph ph-squares-four"></i></span>
-                            <span class="text">Dashboard</span>
+                            <span class="text">Tableau de bord</span>
                         </a>
                     </li>
                 }
                 <li class="sidebar-menu__item has-dropdown">
                     <a href="javascript:void(0)" class="sidebar-menu__link">
                         <span class="icon"><i class="ph ph-graduation-cap"></i></span>
-                        <span class="text">Courses</span>
+                        <span class="text">Cours</span>
                     </a>
-                    <!-- Submenu start -->
+                    <!-- Sous-menu début -->
                     <ul class="sidebar-submenu">
                         <li class="sidebar-submenu__item">
-                            <NavLink href="/courses/etudiant/decouvrir" class="sidebar-submenu__link">Decouvrir</NavLink>
+                            <NavLink href="/courses/etudiant/decouvrir" class="sidebar-submenu__link">Découvrir</NavLink>
                         </li>
                         @if (isEtudiant)
                         {
                             <li class="sidebar-submenu__item">
-                                <NavLink href="/courses/etudiant/started" class="sidebar-submenu__link"> Student Courses </NavLink>
+                                <NavLink href="/courses/etudiant/started" class="sidebar-submenu__link">Mes Cours</NavLink>
                             </li>
                         }
                         @if (isEnseignant)
                         {
                             <li class="sidebar-submenu__item">
-                                <NavLink href="/courses/enseignant/mycourses" class="sidebar-submenu__link"> My Courses </NavLink>
+                                <NavLink href="/courses/enseignant/mycourses" class="sidebar-submenu__link">Mes Cours</NavLink>
                             </li>
                             <li class="sidebar-submenu__item">
-                                <NavLink href="/courses/enseignant/create" class="sidebar-submenu__link"> Create Course </NavLink>
+                                <NavLink href="/courses/enseignant/create" class="sidebar-submenu__link">Créer un Cours</NavLink>
                             </li>
                         }
                     </ul>
-                    <!-- Submenu End -->
+                    <!-- Sous-menu fin -->
                 </li>
                 <li class="sidebar-menu__item ">
                     <a href="/Etudiants" class="sidebar-menu__link">
                         <span class="icon"><i class="ph ph-users-three"></i></span>
-                        <span class="text">Students</span>
+                        <span class="text">Étudiants</span>
                     </a>
                 </li>
                 @if (isEnseignant)
@@ -63,14 +63,14 @@
                     <li class="sidebar-menu__item">
                         <NavLink href="/mesEtudiants" class="sidebar-menu__link">
                             <span class="icon"><i class="ph ph-users-three"></i></span>
-                            <span class="text">Mes Etudiants</span>
+                            <span class="text">Mes Étudiants</span>
                         </NavLink>
                     </li>
                 }
                 <li class="sidebar-menu__item">
                     <a href="/Enseignant" class="sidebar-menu__link">
                         <span class="icon"><i class="ph ph-users"></i></span>
-                        <span class="text">Mentors</span>
+                        <span class="text">Enseignant </span>
                     </a>
                 </li>
                 @if (!isEnseignant)
@@ -78,7 +78,7 @@
                     <li class="sidebar-menu__item">
                         <NavLink href="/AbonnementPage" class="sidebar-menu__link">
                             <span class="icon"><i class="ph ph-coins"></i></span>
-                            <span class="text">Pricing</span>
+                            <span class="text">Tarifs</span>
                         </NavLink>
                     </li>
                 }
@@ -90,19 +90,19 @@
                                  src="assets/images/icons/stripe.jpg"
                                  alt="icon"
                                  style="width: 30px; height: 30px;" />
-                            <span class="text text-sm ">Payment par Stripe</span>
+                            <span class="text text-sm ">Paiement par Stripe</span>
                         </a>
                     </li>
                 }
                 <li class="sidebar-menu__item">
                     <hr />
                 </li>
-                @if (isAuthenticated )
+                @if (isAuthenticated)
                 {
                     <li class="sidebar-menu__item">
                         <a href="/Profile" class="sidebar-menu__link">
                             <span class="icon"><i class="ph ph-gear"></i></span>
-                            <span class="text">Account Settings</span>
+                            <span class="text">Paramètres du compte</span>
                         </a>
                     </li>
                     <li class="sidebar-menu__item">
@@ -111,7 +111,7 @@
                             <input type="hidden" name="ReturnUrl" value="@currentUrl" />
                             <button type="submit" class="d-flex align-items-center gap-8 text-15 text-gray-300 hover-text-danger-600">
                                 <span class="text-2xl text-danger-600 d-flex"><i class="ph ph-sign-out"></i></span>
-                                <span class="text">Log Out</span>
+                                <span class="text">Déconnexion</span>
                             </button>
                         </form>
                     </li>
@@ -121,18 +121,18 @@
                     <li class="sidebar-menu__item has-dropdown">
                         <a href="javascript:void(0)" class="sidebar-menu__link">
                             <span class="icon"><i class="ph ph-shield-check"></i></span>
-                            <span class="text">Login</span>
+                            <span class="text">Connexion</span>
                         </a>
-                        <!-- Submenu start -->
+                        <!-- Sous-menu début -->
                         <ul class="sidebar-submenu">
                             <li class="sidebar-submenu__item">
-                                <a href="/Login" class="sidebar-submenu__link">Sign In</a>
+                                <a href="/Login" class="sidebar-submenu__link">Se connecter</a>
                             </li>
                             <li class="sidebar-submenu__item">
-                                <a href="/Register" class="sidebar-submenu__link">Sign Up</a>
+                                <a href="/Register" class="sidebar-submenu__link">S'inscrire</a>
                             </li>
                         </ul>
-                        <!-- Submenu End -->
+                        <!-- Sous-menu fin -->
                     </li>
                 }
 
@@ -142,16 +142,16 @@
         {
             <div class="p-20 pt-80">
                 <div class="bg-main-50 p-20 pt-0 rounded-16 text-center mt-74">
-                <span class="border border-5 bg-white mx-auto border-primary-50 w-114 h-114 rounded-circle flex-center text-success-600 text-2xl translate-n74">
-                    <img src="assets/images/icons/certificate.png" alt="" class="centerised-img">
-                </span>
-                <div class="mt-n74">
-                    <h5 class="mb-4 mt-22">Get Pro Certificate</h5>
-                    <p class="">Explore 400+ courses with lifetime members</p>
-                    <a href="/AbonnementPage" class="btn btn-main mt-16 rounded-pill">Get Access</a>
+                    <span class="border border-5 bg-white mx-auto border-primary-50 w-114 h-114 rounded-circle flex-center text-success-600 text-2xl translate-n74">
+                        <img src="assets/images/icons/certificate.png" alt="" class="centerised-img">
+                    </span>
+                    <div class="mt-n74">
+                        <h5 class="mb-4 mt-22">Obtenez un certificat Pro</h5>
+                        <p class="">Explorez 400+ cours avec un accès à vie</p>
+                        <a href="/AbonnementPage" class="btn btn-main mt-16 rounded-pill">Obtenir l'accès</a>
+                    </div>
                 </div>
             </div>
-        </div>
         }
     </div>
 
@@ -168,11 +168,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Get the authentication state
+        // Obtenir l'état d'authentification
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        // Check if the user is in the "Admin" role
+        // Vérifier si l'utilisateur est dans le rôle "Admin"
         isAdmin = user.IsInRole("Admin");
         isEnseignant = user.IsInRole("Enseignant");
         isEtudiant = user.IsInRole("Etudiant");
@@ -193,4 +193,3 @@
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
-
