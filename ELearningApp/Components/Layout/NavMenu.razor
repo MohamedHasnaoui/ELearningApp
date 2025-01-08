@@ -8,7 +8,7 @@
     <button type="button" class="sidebar-close-btn text-gray-500 hover-text-white hover-bg-main-600 text-md w-24 h-24 border border-gray-100 hover-border-main-600 d-xl-none d-flex flex-center rounded-circle position-absolute"><i class="ph ph-x"></i></button>
     <!-- sidebar close btn -->
 
-    <a href="/" class="sidebar__logo text-center position-sticky inset-block-start-0 bg-white w-100 z-1 ">
+    <a href="/" class="sidebar__logo text-center position-sticky inset-block-start-0 bg-white w-100 z-1 p-10">
         <img src="assets/images/logo/logo.png" alt="Logo">
     </a>
 
@@ -52,18 +52,6 @@
                     </ul>
                     <!-- Submenu End -->
                 </li>
-                @if (isAdmin)
-                {
-                    <li class="sidebar-menu__item">
-                        <a href="https://stripe.com/" target="_blank" class="sidebar-menu__link">
-                            <img class="rounded-circle"
-                            src="assets/images/icons/stripe.jpeg"
-                            alt="icon"
-                            style="width: 30px; height: 30px;" />
-                            <span class="text text-sm ">Payment par Stripe</span>
-                        </a>
-                    </li>
-                }
                 <li class="sidebar-menu__item ">
                     <a href="/Etudiants" class="sidebar-menu__link">
                         <span class="icon"><i class="ph ph-users-three"></i></span>
@@ -99,7 +87,7 @@
                     <li class="sidebar-menu__item">
                         <a href="https://stripe.com/" target="_blank" class="sidebar-menu__link">
                             <img class="rounded-circle"
-                                 src="assets/images/icons/stripe.jpeg"
+                                 src="assets/images/icons/stripe.jpg"
                                  alt="icon"
                                  style="width: 30px; height: 30px;" />
                             <span class="text text-sm ">Payment par Stripe</span>
