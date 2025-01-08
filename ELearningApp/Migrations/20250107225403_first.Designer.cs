@@ -4,6 +4,7 @@ using ELearningApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250107225403_first")]
+    partial class first
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,38 +144,6 @@ namespace ELearningApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Abonnements", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing",
-                            Description = "Perfect plan for students",
-                            Duree = 1,
-                            IsRecommanded = false,
-                            Prix = 199,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community",
-                            Description = "For users who want to do more",
-                            Duree = 1,
-                            IsRecommanded = true,
-                            Prix = 299,
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community",
-                            Description = "Your entire friends in one place",
-                            Duree = 1,
-                            IsRecommanded = false,
-                            Prix = 499,
-                            Type = 2
-                        });
                 });
 
             modelBuilder.Entity("ELearningApp.Model.AbonnementAchete", b =>

@@ -15,7 +15,29 @@ namespace ELearningApp.Services
         {
             _context = context;
         }
+        public async Task<int[]> GetCoursesCreatedLast10DaysAsync()
+        {
+            var today = DateTime.Now.Date;
+            var last10Days = Enumerable.Range(0, 10)
+                .Select(i => today.AddDays(-i)) // Get the last 10 days
+                .ToList();
 
+            var courseCounts = await _context.Cours
+                .Where(c => c.CreatedAt >= today.AddDays(-10)) // Filter courses created in the last 10 days
+                .GroupBy(c => c.CreatedAt.Date) // Group courses by their creation date
+                .Select(g => new { CreatedDate = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var result = new int[10];
+
+            foreach (var day in last10Days)
+            {
+                var countForDay = courseCounts.FirstOrDefault(c => c.CreatedDate == day)?.Count ?? 0;
+                result[last10Days.IndexOf(day)] = countForDay;
+            }
+
+            return result;
+        }
         public async Task<Cours?> GetByIdAsync(int id)
         {
             return await _context.Cours

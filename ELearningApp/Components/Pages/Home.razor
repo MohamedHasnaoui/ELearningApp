@@ -1,4 +1,5 @@
 ﻿@page "/"
+@attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -9,7 +10,7 @@
 <PageTitle>Home</PageTitle>
 
 <AuthorizeView Roles="Etudiant">
-    <Authorized >
+    <Authorized>
         <DashboardEtudiant />
     </Authorized>
 </AuthorizeView>
@@ -19,13 +20,18 @@
         <DashboardEnseignant />
     </Authorized>
 </AuthorizeView>
-@code{
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <DashboardAdmin />
+    </Authorized>
+</AuthorizeView>
+@code {
     [CascadingParameter]
     public ApplicationUser? AuthenticatedUser { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        
-        
+
+
     }
 }

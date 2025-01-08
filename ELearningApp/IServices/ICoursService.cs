@@ -5,6 +5,7 @@ namespace ELearningApp.IServices
 {
     public interface ICoursService
     {
+        Task<int[]> GetCoursesCreatedLast10DaysAsync();
         Task<Cours> GetByIdAsync(int id);
         Task<IEnumerable<Cours>> GetAllAsync(int pageNumber, int pageSize);
         Task<IEnumerable<Cours>> GetCoursByCategoryIdAsync(int categoryId, int pageNumber, int pageSize);

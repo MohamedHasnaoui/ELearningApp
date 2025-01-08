@@ -3,6 +3,7 @@ using ELearningApp.Components;
 using ELearningApp.Components.Account;
 using ELearningApp.Data;
 using ELearningApp.IServices;
+using ELearningApp.Model;
 using ELearningApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,9 +11,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-async Task InitializeRoles(IServiceProvider serviceProvider)
+async Task SeedDataAsync(IServiceProvider serviceProvider)
 {
+    // Get the RoleManager and UserManager services
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     // Définissez les rôles requis
     string[] roleNames = { "Etudiant", "Enseignant" };
@@ -24,11 +27,126 @@ async Task InitializeRoles(IServiceProvider serviceProvider)
             await roleManager.CreateAsync(new IdentityRole(roleName));
         }
     }
+
+    // Check if the admin role exists
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+
+    // Check if the admin user exists
+    var adminUser = await userManager.FindByEmailAsync("admin@gmail.com");
+    if (adminUser == null)
+    {
+        adminUser = new ApplicationUser
+        {
+            UserName = "Admin",
+            FormalUserName = "Admin",
+            Email = "admin@gmail.com",
+            Bio = "I'm the Admin",
+            PhoneNumber = "0606060606",
+            PhoneNumberCode = "212",
+            Adress = "Morroco, Meknes",
+            EmailConfirmed = true
+        };
+        await userManager.CreateAsync(adminUser, "Admin1/");
+        await userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+
+    var enseignantUser = await userManager.FindByEmailAsync("enseignantmain@gmail.com");
+    if (adminUser == null)
+    {
+        adminUser = new ApplicationUser
+        {
+            UserName = "Enseignant",
+            FormalUserName = "Enseignant",
+            Email = "enseignantmain@gmail.com",
+            Bio = "I'm the enseignant",
+            PhoneNumber = "0606060606",
+            PhoneNumberCode = "212",
+            Adress = "Morroco, Meknes",
+            EmailConfirmed = true
+        };
+        await userManager.CreateAsync(adminUser, "Enseignant1/");
+        await userManager.AddToRoleAsync(adminUser, "Enseignant");
+    }
+
+    var etudiantUser = await userManager.FindByEmailAsync("etudiantmain@gmail.com");
+    if (adminUser == null)
+    {
+        adminUser = new ApplicationUser
+        {
+            UserName = "Etudiant",
+            FormalUserName = "Etudiant",
+            Email = "etudiantmain@gmail.com",
+            Bio = "I'm the etudiant",
+            PhoneNumber = "0606060606",
+            PhoneNumberCode = "212",
+            Adress = "Morroco, Meknes",
+            EmailConfirmed = true
+        };
+        await userManager.CreateAsync(adminUser, "Etudiant1/");
+        await userManager.AddToRoleAsync(adminUser, "Etudiant");
+    }
+
+
+
+    // Seed 15 enseignants
+    for (int i = 1; i <= 15; i++)
+    {
+        var enseignant = new Enseignant
+        {
+            Email = $"enseignant{i}@example.com",
+            UserName = $"enseignant{i}",
+            FormalUserName = $"enseignant{i}",
+            EmailConfirmed = true,
+            PhoneNumber = $"060000000{i}",
+            PhoneNumberCode = "212",
+            Bio = "I'm a Product Designer based in Melbourne, Australia. I specialise in UX/UI design, brand strategy, and Webflow development. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
+            speciality = $"Speciality {i}",
+            Adress = "Morroco, Meknes"
+        };
+
+        if (await userManager.FindByEmailAsync(enseignant.Email) == null)
+        {
+            await userManager.CreateAsync(enseignant, "Password@123");
+            await userManager.AddToRoleAsync(enseignant, "Enseignant");
+        }
+    }
+
+
+    // Seed 15 etudiants
+    for (int i = 1; i <= 15; i++)
+    {
+        var etudiant = new Etudiant
+        {
+            Email = $"etudiant{i}@example.com",
+            UserName = $"etudiant{i}",
+            FormalUserName = $"etudiant{i}",
+            EmailConfirmed = true,
+            PhoneNumber = $"060000000{i}",
+            Adress = "Morroco, Meknes",
+            PhoneNumberCode = "212",
+            Bio = "Hi! I’m Alex, a 17-year-old student at Green Valley High. I love coding, basketball, and sci-fi books. My dream is to become a software engineer and create tech that makes a difference!",
+
+        };
+
+        if (await userManager.FindByEmailAsync(etudiant.Email) == null)
+        {
+            await userManager.CreateAsync(etudiant, "Password@123");
+            await userManager.AddToRoleAsync(etudiant, "Etudiant");
+        }
+
+    }
 }
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/courses/etudiant/decouvrir";
+    options.AccessDeniedPath = "/courses/etudiant/decouvrir";
+});
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -91,7 +209,8 @@ builder.Services.AddTransient<ISectionService, SectionService>();
 builder.Services.AddTransient<ISoumissionService, SoumissionService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-
+builder.Services.AddScoped<IEnseignantService, EnseignantService>();
+builder.Services.AddScoped<IEtudiantService, EtudiantService>();
 //AbonnementService
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IAbonnementService, AbonnementService>();
@@ -134,7 +253,7 @@ app.MapAdditionalIdentityEndpoints();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await InitializeRoles(services);
+    await SeedDataAsync(services);
 }
 
 
