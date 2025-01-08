@@ -3,6 +3,8 @@
 @inject IEtudiantService EtudiantService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
+@inject ICoursCommenceService CoursCommenceService
+@inject ICertificatService CertificatService
 <PageTitle>Students</PageTitle>
 <div class="dashboard-body">
     <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
@@ -74,10 +76,10 @@
                                     <span class="h6 mb-0 fw-medium text-gray-300">@etudiant.Email</span>
                                 </td>
                                 <td>
-                                    <span class="h6 mb-0 fw-medium text-gray-300">@(i++)</span>
+                                    <span class="h6 mb-0 fw-medium text-gray-300">@courseCounts[etudiant.Id]</span>
                                 </td>
                                 <td>
-                                    <span class="h6 mb-0 fw-medium text-gray-300">@(i+2)</span>
+                                    <span class="h6 mb-0 fw-medium text-gray-300">@(certificateCounts[etudiant.Id])</span>
                                 </td>
                                 @if (isAdmin)
                                 {
@@ -125,6 +127,9 @@
     private int TotalCount;
     private int pageNbs;
     private int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+    private Dictionary<string, int> courseCounts = new();
+    private Dictionary<string, int> certificateCounts = new();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -146,6 +151,13 @@
             TotalCount = result.TotalCount;
             pageNbs = (TotalCount - 1) / PageSize + 1;
             CurrentPage = pageNumber;
+            foreach (var etudiant in etudiants)
+            {
+                var count = await CoursCommenceService.GetByEtudiantIdAsync(etudiant.Id);
+                courseCounts[etudiant.Id] = count.Count();
+                var count2 = await CertificatService.GetByEtudiantIdAsync(etudiant.Id);
+                certificateCounts[etudiant.Id] = count2.Count();
+            }
 
         }
         catch (Exception ex)

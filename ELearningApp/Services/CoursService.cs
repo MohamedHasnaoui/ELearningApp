@@ -84,6 +84,14 @@ namespace ELearningApp.Services
                 .Take(pageSize)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Cours>> GetAllCoursByEnseignantAsync(string enseignantId)
+        {
+            return await _context.Cours
+                .Where(c => c.EnseignantId == enseignantId) // Filter by EnseignantId (CreateurId)
+                .Include(c => c.Category)
+                .ToListAsync();
+        }
+
         public async Task<List<Cours>> GetTop3RatedCoursByEnseignantIdAsync(string enseignantId)
         {
             return await _context.Cours

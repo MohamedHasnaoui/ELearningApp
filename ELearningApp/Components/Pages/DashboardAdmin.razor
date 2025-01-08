@@ -8,6 +8,8 @@
 @inject IUserService UserService
 @inject ICertificatService CertificatService
 @inject ICoursService CoursService
+@inject IPayment StripeService
+
 <div class="dashboard-body">
 
     <div class="row gy-4">
@@ -54,7 +56,15 @@
                 <div class="col-xxl-3 col-sm-6">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="mb-2">$580.00</h4>
+                            @if (paymentSummary.HasValue)
+                            {
+                                <h4 class="mb-2">@paymentSummary.Value.totalAmount MAD</h4>
+                            }
+                            else
+                            {
+                                <h4 class="mb-2">00 MAD</h4>
+
+                            }
                             <span class="text-gray-600">Money Earned</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-56 h-56 flex-center rounded-circle bg-purple-600 text-white text-2xl">
@@ -226,6 +236,7 @@
     {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
+    private (decimal totalAmount, decimal lastAmount, DateTime lastPaymentDate)? paymentSummary;
 
     protected override async Task OnInitializedAsync()
     {
@@ -260,6 +271,7 @@
         
         if (firstRender)
         {
+            paymentSummary = await StripeService.GetPaymentSummaryAsync();
             CertificatEarnedLast10Day = await CertificatService.GetCertificatsIssuedLast10DaysAsync();
             CoursesCreateLast10Day = await CoursService.GetCoursesCreatedLast10DaysAsync();
             await JSRuntime.InvokeVoidAsync("initializeCallCalander");
@@ -269,7 +281,6 @@
         }
         else{
             await OnSelectedChartTypeChanged();
-
         }
     }
 
@@ -868,7 +879,6 @@
         // Call the function for each chart with the desired ID and color
         createChart('complete-courseAdmin', '#2FB2AB',AxeCours);
         createChart('earned-certificateAdmin', '#27CFA7',AxeCertificate);
-        createChart('course-progressAdmin', '#6142FF',AxeUsers);
         createChart('community-supportAdmin', '#FA902F',AxeUsers);
         }
         window.initializeCallCalander = function (){
