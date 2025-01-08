@@ -211,14 +211,9 @@
 
         // Check if the user is in the "Admin" role
         isAdmin = user.IsInRole("Admin");
-        isEnseignant = user.IsInRole("Enseignant");
         isEtudiant = user.IsInRole("Etudiant");
         isAuthenticated = user.Identity.IsAuthenticated;
-        if (isEnseignant)
-        {
-            NavManager.NavigateTo("/Login");
-            return;
-        }
+        
         if (user.Identity?.IsAuthenticated == true)
         {
             EtudiantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

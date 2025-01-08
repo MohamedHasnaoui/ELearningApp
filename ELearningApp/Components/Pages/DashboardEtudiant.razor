@@ -118,9 +118,33 @@
                 <!-- Hour Spent Card End -->
             </div>
             <div class="col-lg-3">
-               
-                <!-- Donut Chart Start -->
+
+                <!-- Calendar Start -->
                 <div class="card">
+                    <div class="card-body">
+                        <div class="calendar">
+                            <div class="calendar__header">
+                                <button type="button" class="calendar__arrow left"><i class="ph ph-caret-left"></i></button>
+                                <p class="display h6 mb-0">""</p>
+                                <button type="button" class="calendar__arrow right"><i class="ph ph-caret-right"></i></button>
+                            </div>
+
+                            <div class="calendar__week week">
+                                <div class="calendar__week-text">Su</div>
+                                <div class="calendar__week-text">Mo</div>
+                                <div class="calendar__week-text">Tu</div>
+                                <div class="calendar__week-text">We</div>
+                                <div class="calendar__week-text">Th</div>
+                                <div class="calendar__week-text">Fr</div>
+                                <div class="calendar__week-text">Sa</div>
+                            </div>
+                            <div class="days"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Calendar End -->
+                <!-- Donut Chart Start -->
+                <div class="card mt-24">
                     <div class="card h-100">
                         <div class="card-header border-bottom border-gray-100 flex-between flex-wrap gap-8">
                             <h5 class="mb-0">Activité Totale</h5>
@@ -172,6 +196,7 @@
     </div>
     <script src="assets/js/apexcharts.min.js"></script>
     <script @key="StudyStatistique">
+
         function initChart(){
         var options = {
         series: [{
@@ -257,6 +282,8 @@
         chart.render();
         }
         initChart();
+
+        //Calender
     </script>
 }
 @code {
@@ -290,8 +317,13 @@
             await JSRuntime.InvokeVoidAsync("initChart");
             nullStat = false;
         }
+        if(firstRender){
+            await JSRuntime.InvokeVoidAsync("initializeCallCalander");
+
+        }
 
     }
+    
     private string watchCours(CoursCommence cc)
     {
         return NavigationManager.GetUriWithQueryParameters(
@@ -299,3 +331,88 @@
         new Dictionary<string, object?> { ["coursCommenceId"] = cc.Id });
     }
 }
+<script>
+
+        window.initializeCallCalander = function (){
+                let display = document.querySelector(".display");
+    let days = document.querySelector(".days");
+    let previous = document.querySelector(".left");
+    let next = document.querySelector(".right");
+
+    let date = new Date();
+
+    let year = date.getFullYear();
+    let month = date.getMonth();
+
+    function displayCalendar() {
+      const firstDay = new Date(year, month, 1);
+
+      const lastDay = new Date(year, month + 1, 0);
+
+      const firstDayIndex = firstDay.getDay(); //4
+
+      const numberOfDays = lastDay.getDate(); //31
+
+      let formattedDate = date.toLocaleString("en-US", {
+        month: "long",
+        year: "numeric"
+      });
+
+      display.innerHTML = `${formattedDate}`;
+
+      for (let x = 1; x <= firstDayIndex; x++) {
+        const div = document.createElement("div");
+        div.innerHTML += "";
+
+        days.appendChild(div);
+      }
+
+      for (let i = 1; i <= numberOfDays; i++) {
+        let div = document.createElement("div");
+        let currentDate = new Date(year, month, i);
+
+        div.dataset.date = currentDate.toDateString();
+
+        div.innerHTML += i;
+        days.appendChild(div);
+        if (
+          currentDate.getFullYear() === new Date().getFullYear() &&
+          currentDate.getMonth() === new Date().getMonth() &&
+          currentDate.getDate() === new Date().getDate()
+        ) {
+          div.classList.add("current-date");
+        }
+      }
+    }
+
+    // Call the function to display the calendar
+    displayCalendar();
+
+    previous.addEventListener("click", () => {
+      days.innerHTML = "";
+
+      if (month < 0) {
+        month = 11;
+        year = year - 1;
+      }
+      month = month - 1;
+      date.setMonth(month);
+      displayCalendar();
+    });
+
+    next.addEventListener("click", () => {
+      days.innerHTML = "";
+
+      if (month > 11) {
+        month = 0;
+        year = year + 1;
+      }
+
+      month = month + 1;
+      date.setMonth(month);
+
+      displayCalendar();
+    });
+
+        }
+</script>

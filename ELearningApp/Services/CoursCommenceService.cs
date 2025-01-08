@@ -13,6 +13,33 @@ namespace ELearningApp.Services
         {
             _context = context;
         }
+        public async Task<int[]> GetMonthlyCoursCommenceByEnseignantAsync(string enseignantId)
+        {
+            var currentYear = DateTime.Now.Year;
+
+            // Group cours commencés by month and count for the specific enseignant
+            var monthlyCoursCommences = await _context.CoursCommences
+                .Include(cc => cc.Cours)
+                .Where(cc => cc.Cours.EnseignantId == enseignantId && cc.DateDebut.Year == currentYear)
+                .GroupBy(cc => cc.DateDebut.Month)
+                .Select(group => new
+                {
+                    Month = group.Key,
+                    Count = group.Count()
+                })
+                .ToListAsync();
+
+            // Initialize an array with 12 months set to 0
+            var monthlyCounts = new int[12];
+
+            // Fill the counts based on the months
+            foreach (var coursCommence in monthlyCoursCommences)
+            {
+                monthlyCounts[coursCommence.Month - 1] = coursCommence.Count;
+            }
+
+            return monthlyCounts;
+        }
 
         public async Task<IEnumerable<CoursCommence>> GetAllAsync()
         {
@@ -146,6 +173,7 @@ namespace ELearningApp.Services
             );
             return fullResult;
         }
+
 
     }
 }

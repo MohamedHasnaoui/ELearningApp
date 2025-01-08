@@ -8,7 +8,7 @@
     <button type="button" class="sidebar-close-btn text-gray-500 hover-text-white hover-bg-main-600 text-md w-24 h-24 border border-gray-100 hover-border-main-600 d-xl-none d-flex flex-center rounded-circle position-absolute"><i class="ph ph-x"></i></button>
     <!-- sidebar close btn -->
 
-    <a href="index.html" class="sidebar__logo text-center p-20 position-sticky inset-block-start-0 bg-white w-100 z-1 pb-10">
+    <a href="/" class="sidebar__logo text-center position-sticky inset-block-start-0 bg-white w-100 z-1 ">
         <img src="assets/images/logo/logo.png" alt="Logo">
     </a>
 
@@ -52,16 +52,18 @@
                     </ul>
                     <!-- Submenu End -->
                 </li>
-
-                <li class="sidebar-menu__item">
-                    <a href="https://stripe.com/" target="_blank" class="sidebar-menu__link">
-                        <img class="rounded-circle"
-                        src="assets/images/icons/stripe.jpeg"
-                        alt="icon"
-                        style="width: 30px; height: 30px;" />
-                        <span class="text text-sm ">Payment par Stripe</span>
-                    </a>
-                </li>
+                @if (isAdmin)
+                {
+                    <li class="sidebar-menu__item">
+                        <a href="https://stripe.com/" target="_blank" class="sidebar-menu__link">
+                            <img class="rounded-circle"
+                            src="assets/images/icons/stripe.jpeg"
+                            alt="icon"
+                            style="width: 30px; height: 30px;" />
+                            <span class="text text-sm ">Payment par Stripe</span>
+                        </a>
+                    </li>
+                }
                 <li class="sidebar-menu__item ">
                     <a href="/Etudiants" class="sidebar-menu__link">
                         <span class="icon"><i class="ph ph-users-three"></i></span>
@@ -92,10 +94,22 @@
                         </NavLink>
                     </li>
                 }
+                @if (isAdmin)
+                {
+                    <li class="sidebar-menu__item">
+                        <a href="https://stripe.com/" target="_blank" class="sidebar-menu__link">
+                            <img class="rounded-circle"
+                                 src="assets/images/icons/stripe.jpeg"
+                                 alt="icon"
+                                 style="width: 30px; height: 30px;" />
+                            <span class="text text-sm ">Payment par Stripe</span>
+                        </a>
+                    </li>
+                }
                 <li class="sidebar-menu__item">
                     <hr />
                 </li>
-                @if (isAuthenticated && AuthenticatedUser != null)
+                @if (isAuthenticated )
                 {
                     <li class="sidebar-menu__item">
                         <a href="/Profile" class="sidebar-menu__link">
@@ -136,8 +150,10 @@
 
             </ul>
         </div>
-        <div class="p-20 pt-80">
-            <div class="bg-main-50 p-20 pt-0 rounded-16 text-center mt-74">
+        @if (!isEnseignant)
+        {
+            <div class="p-20 pt-80">
+                <div class="bg-main-50 p-20 pt-0 rounded-16 text-center mt-74">
                 <span class="border border-5 bg-white mx-auto border-primary-50 w-114 h-114 rounded-circle flex-center text-success-600 text-2xl translate-n74">
                     <img src="assets/images/icons/certificate.png" alt="" class="centerised-img">
                 </span>
@@ -148,6 +164,7 @@
                 </div>
             </div>
         </div>
+        }
     </div>
 
 </aside>

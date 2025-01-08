@@ -1,9 +1,12 @@
 ﻿@inject ICoursService CoursService
 @inject IEnseignantService EnseignantService
+@inject IJSRuntime JSRuntime
+
 @attribute [Authorize(Roles = "Enseignant")]
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICoursCommenceService CoursCommenceService
 @rendermode InteractiveServer
 
 
@@ -11,45 +14,6 @@
 
     <div class="row gy-4">
         <div class="col-lg-9">
-            <!-- Widgets Start -->
-            <div class="row gy-3">
-                <div class="col-12 col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="mb-2">@TotalCours+</h4>
-                            <span class="text-gray-600">Total Cours</span>
-                            <div class="flex-between gap-8 mt-16">
-                                <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-600 text-white text-2xl"><i class="ph-fill ph-book-open"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="mb-2">@TotalEvaluations+</h4>
-                            <span class="text-gray-600">Total Evaluation</span>
-                            <div class="flex-between gap-8 mt-16">
-                                <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-purple-600 text-white text-2xl"> <i class="ph-fill ph-graduation-cap"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="mb-2">@TotalEtudiants+</h4>
-                            <span class="text-gray-600">Total Etudiant</span>
-                            <div class="flex-between gap-8 mt-16">
-                                <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-warning-600 text-white text-2xl"><i class="ph-fill ph-users-three"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Widgets End -->
 
             <!-- Top Course Start -->
             @*             <div class="card mt-24">
@@ -87,6 +51,7 @@
 
             <div class="dashboard-body bg-white card border  mt-24 ">
                 <!-- Titre ajouté au-dessus du champ de filtre -->
+                <div class="d-flex align-items-start justify-content-between">
                 <h4 class="mb-4">Statistiques de Top 5 Cours</h4>
 
                 <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8  p-4">
@@ -96,13 +61,13 @@
                             <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
                                 <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
                                 <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnSortOptionChanged">
-                                    <option value="all">Tous</option>
-                                    <option value="evaluation">Evaluation</option>
+                                    <option selected value="evaluation">Evaluation</option>
                                     <option value="etudiants">Etudiants</option>
                                 </select>
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
                 @if (isLoading)
                 {
@@ -158,10 +123,24 @@
                     <p>Aucun cours trouvé pour cet enseignant.</p>
                 }
             </div>
-            <div class="card border dashboard-body  mt-24 p-6">
-                <ChartEtudiant />
-
+            <!-- Top Course Start -->
+            <div class="card mt-24">
+                <div class="card-body">
+                    <div class="mb-20 flex-between flex-wrap gap-8">
+                        <h4 class="mb-0">Nombre d'Etudiants Inscrits par annee</h4>
+                        <div class="flex-align gap-16 flex-wrap">
+                            <div class="flex-align flex-wrap gap-16">
+                                <div class="flex-align flex-wrap gap-8">
+                                    <span class="w-8 h-8 rounded-circle bg-black"></span>
+                                    <span class="text-13 text-gray-600">Etudiants</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="doubleLineChartYearly" class="tooltip-style y-value-left"></div>
+                </div>
             </div>
+            <!-- Top Course End -->
 
             <!-- Top Course End -->
             <!-- Top Course Start -->
@@ -180,8 +159,66 @@
                 </div>
             </div>
             <!-- Top Course End -->
+           
         </div>
+        <div class="col-lg-3">
+            <!-- Calendar Start -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="calendar">
+                        <div class="calendar__header">
+                            <button type="button" class="calendar__arrow left"><i class="ph ph-caret-left"></i></button>
+                            <p class="display h6 mb-0">""</p>
+                            <button type="button" class="calendar__arrow right"><i class="ph ph-caret-right"></i></button>
+                        </div>
 
+                        <div class="calendar__week week">
+                            <div class="calendar__week-text">Su</div>
+                            <div class="calendar__week-text">Mo</div>
+                            <div class="calendar__week-text">Tu</div>
+                            <div class="calendar__week-text">We</div>
+                            <div class="calendar__week-text">Th</div>
+                            <div class="calendar__week-text">Fr</div>
+                            <div class="calendar__week-text">Sa</div>
+                        </div>
+                        <div class="days"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Calendar End -->
+            <!-- Assignment Start -->
+            <div class="card mt-24">
+                <div class="card-body">
+                    <h4 class="mb-2">@TotalCours+</h4>
+                    <span class="text-gray-600">Total Cours</span>
+                    <div class="flex-between gap-8 mt-16">
+                        <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-600 text-white text-2xl"><i class="ph-fill ph-book-open"></i></span>
+                    </div>
+                </div>
+            </div>
+            <!-- Assignment End -->
+            <div class="card mt-24">
+                <div class="card-body">
+                    <h4 class="mb-2">@TotalEvaluations+</h4>
+                    <span class="text-gray-600">Total Evaluation</span>
+                    <div class="flex-between gap-8 mt-16">
+                        <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-purple-600 text-white text-2xl"> <i class="ph-fill ph-graduation-cap"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-24">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="mb-2">@TotalEtudiants+</h4>
+                        <span class="text-gray-600">Total Etudiant</span>
+                        <div class="flex-between gap-8 mt-16">
+                            <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-warning-600 text-white text-2xl"><i class="ph-fill ph-users-three"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -196,6 +233,9 @@
     private double TotalEvaluations;
     private string? ErrorMessage;
     private string sortOption = "evaluation"; // Variable to hold the selected sorting option
+    private int[] MonthlyJoindStudents { get; set; } = new int[12];
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -210,6 +250,7 @@
 
                 if (!string.IsNullOrEmpty(EnseignantId))
                 {
+                    MonthlyJoindStudents = await CoursCommenceService.GetMonthlyCoursCommenceByEnseignantAsync(EnseignantId);
                     isLoading = true;
                     topCours = await CoursService.GetTop5EvaluationCoursByEnseignantAsync(EnseignantId);
                     Top3cours = await CoursService.GetTop3RatedCoursByEnseignantIdAsync(EnseignantId);
@@ -285,4 +326,233 @@
                                        "bg-info-50 text-info-600",
                                        "bg-danger-50 text-danger-600",
         };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initializeDoubleChart", MonthlyJoindStudents);
+            await JSRuntime.InvokeVoidAsync("initializeCallCalander");
+        }
+    }
 }
+<script>
+    window.initializeDoubleChart = function (MonthlyJoindStudents){
+            function createLineChart(chartId, chartColor) {
+                const Mydata = Array(12).fill(0);
+                var options = {
+                series: [
+                    {
+                        name: 'Etudiants',
+                        data: JSON.stringify(MonthlyJoindStudents) === JSON.stringify(Mydata)
+                            ? [8, 15, 9, 20, 10, 33, 13, 22, 8, 17, 10, 15]
+                            : MonthlyJoindStudents,
+                    },
+                ],
+                chart: {
+                    type: 'area',
+                    width: '100%',
+                    height: 300,
+                    sparkline: {
+                        enabled: false // Remove whitespace
+                    },
+                    toolbar: {
+                        show: false
+                    },
+                    padding: {
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0
+                    }
+                },
+                colors: [ chartColor],  // Set the color of the series
+                dataLabels: {
+                    enabled: false,
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 1,
+                    colors: [chartColor],
+                    lineCap: 'round',
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.9,  // Decrease this value to reduce opacity
+                        opacityTo: 0.2,    // Decrease this value to reduce opacity
+                        stops: [0, 100]
+                    }
+                },
+                grid: {
+                    show: true,
+                    borderColor: '#E6E6E6',
+                    strokeDashArray: 3,
+                    position: 'back',
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    row: {
+                        colors: undefined,
+                        opacity: 0.5
+                    },
+                    column: {
+                        colors: undefined,
+                        opacity: 0.5
+                    },
+                    padding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                },
+                // Customize the circle marker color on hover
+                markers: {
+                    colors: [ chartColor],
+                    strokeWidth: 3,
+                    size: 0,
+                    hover: {
+                        size: 8
+                    }
+                },
+                    xaxis: {
+                        labels: {
+                            show: false
+                        },
+                        categories: [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `Jun`, `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`],
+                        tooltip: {
+                            enabled: false,
+                        },
+                        labels: {
+                            formatter: function (value) {
+                                return value;
+                            },
+                            style: {
+                                fontSize: "14px"
+                            }
+                        },
+                    },
+                    yaxis: {
+                            labels: {
+                                formatter: function (value) {
+                                    return + value ;
+                                },
+                                style: {
+                                    fontSize: "14px"
+                                }
+                            },
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd/MM/yy HH:mm'
+                        },
+                    },
+                    legend: {
+                        show: false,
+                        position: 'top',
+                        horizontalAlign: 'right',
+                        offsetX: -10,
+                        offsetY: -0
+                    }
+                };
+
+                var chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
+                chart.render();
+            }
+
+            createLineChart('doubleLineChartYearly', '#000000');
+        }
+
+    window.initializeCallCalander = function (){
+                let display = document.querySelector(".display");
+    let days = document.querySelector(".days");
+    let previous = document.querySelector(".left");
+    let next = document.querySelector(".right");
+
+    let date = new Date();
+
+    let year = date.getFullYear();
+    let month = date.getMonth();
+
+    function displayCalendar() {
+      const firstDay = new Date(year, month, 1);
+
+      const lastDay = new Date(year, month + 1, 0);
+
+      const firstDayIndex = firstDay.getDay(); //4
+
+      const numberOfDays = lastDay.getDate(); //31
+
+      let formattedDate = date.toLocaleString("en-US", {
+        month: "long",
+        year: "numeric"
+      });
+
+      display.innerHTML = `${formattedDate}`;
+
+      for (let x = 1; x <= firstDayIndex; x++) {
+        const div = document.createElement("div");
+        div.innerHTML += "";
+
+        days.appendChild(div);
+      }
+
+      for (let i = 1; i <= numberOfDays; i++) {
+        let div = document.createElement("div");
+        let currentDate = new Date(year, month, i);
+
+        div.dataset.date = currentDate.toDateString();
+
+        div.innerHTML += i;
+        days.appendChild(div);
+        if (
+          currentDate.getFullYear() === new Date().getFullYear() &&
+          currentDate.getMonth() === new Date().getMonth() &&
+          currentDate.getDate() === new Date().getDate()
+        ) {
+          div.classList.add("current-date");
+        }
+      }
+    }
+
+    // Call the function to display the calendar
+    displayCalendar();
+
+    previous.addEventListener("click", () => {
+      days.innerHTML = "";
+
+      if (month < 0) {
+        month = 11;
+        year = year - 1;
+      }
+      month = month - 1;
+      date.setMonth(month);
+      displayCalendar();
+    });
+
+    next.addEventListener("click", () => {
+      days.innerHTML = "";
+
+      if (month > 11) {
+        month = 0;
+        year = year + 1;
+      }
+
+      month = month + 1;
+      date.setMonth(month);
+
+      displayCalendar();
+    });
+
+        }
+</script>

@@ -15,6 +15,7 @@
 @inject IUserService UserService
 
 
+
 <PageTitle>Profile</PageTitle>
 
 @if (AuthenticatedUser != null)
@@ -46,7 +47,7 @@
                 <div class="setting-profile px-24">
                     <div class="flex-between">
                         <div class="d-flex align-items-end flex-wrap mb-32 gap-24">
-                            <img src="assets/images/thumbs/setting-profile-img.jpg" alt="" class="w-120 h-120 rounded-circle border border-white">
+                            <img src='@(AuthenticatedUser?.imgProfile ?? "assets/images/thumbs/setting-profile-img.jpg")'  alt="" class="w-120 h-120 rounded-circle border border-white">
                             <div>
                                 <h4 class="mb-8">@AuthenticatedUser.FormalUserName</h4>
                                 <div class="setting-profile__infos flex-align flex-wrap gap-16">
@@ -79,13 +80,13 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pills-password-tab" onclick="setActiveTab('pills-password')" data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab" aria-controls="pills-password" aria-selected="false">Password</button>
                         </li>
-                        @if (enseignant is null)
+                        @if (!isEnseignant)
                         {
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-plan-tab" onclick="setActiveTab('pills-plan')" data-bs-toggle="pill" data-bs-target="#pills-plan" type="button" role="tab" aria-controls="pills-plan" aria-selected="false">Plan</button>
                             </li>
                         }
-                        @if (!isAdmin && enseignant is null)
+                        @if (!isAdmin && !isEnseignant)
                         {
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Billing</button>
@@ -247,13 +248,13 @@
                 </div>
             </div>
             <!-- Password Tab End -->
-            @if (enseignant is null)
+            @if (!isEnseignant)
             {
                 <!-- Plan Tab Start -->
                 <PlanTab />
                 <!-- Plan Tab End -->
             }
-            @if (!isAdmin && enseignant is null)
+            @if (!isAdmin && !isEnseignant)
             {
                 <!-- Billing Tab Start -->
                 <Billing />
@@ -291,6 +292,7 @@ else{
     private string? passwordMessage;
     private bool hasPassword;
     private bool isAdmin;
+    private bool isEnseignant;
 
     [CascadingParameter]
     public ApplicationUser? AuthenticatedUser { get; set; }
@@ -332,6 +334,8 @@ else{
         var user = authState.User;
         Console.WriteLine("11111111111111111111111111");
         isAdmin = user.IsInRole("Admin");
+        isEnseignant = user.IsInRole("Enseignant");
+
         hasPassword = await UserManager.HasPasswordAsync(AuthenticatedUser);
 
         if (AuthenticatedUser is Enseignant)
