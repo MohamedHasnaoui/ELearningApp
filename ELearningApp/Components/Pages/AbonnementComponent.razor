@@ -237,6 +237,13 @@
                 }
                 estAchete = true;
             }
+            else{
+                abonnements = await AbonnementService.GetAllAbonnementsAsync();
+            }
+        }
+        else
+        {
+            abonnements = await AbonnementService.GetAllAbonnementsAsync();
         }
 
 
