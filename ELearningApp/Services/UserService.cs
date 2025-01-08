@@ -3,6 +3,7 @@ using ELearningApp.Data;
 using ELearningApp.IServices;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
@@ -20,6 +21,29 @@ namespace ELearningApp.Services
             _userManager = userManager;
             _authenticationStateProvider = authenticationStateProvider;
             _dbContext = dbContext;
+        }
+        public async Task<int[]> GetUsersJoinedLast10DaysAsync()
+        {
+            var today = DateTime.Now.Date;
+            var last10Days = Enumerable.Range(0, 10)
+                .Select(i => today.AddDays(-i)) // Get the last 10 days
+                .ToList();
+
+            var userCounts = await _userManager.Users
+                .Where(u => u.joinDate >= today.AddDays(-10)) // Filter users created in the last 10 days
+                .GroupBy(u => u.joinDate.Date) // Group users by their join date
+                .Select(g => new { JoinDate = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var result = new int[10];
+
+            foreach (var day in last10Days)
+            {
+                var countForDay = userCounts.FirstOrDefault(u => u.JoinDate == day)?.Count ?? 0;
+                result[last10Days.IndexOf(day)] = countForDay;
+            }
+
+            return result;
         }
         public async Task<ApplicationUser?> GetAuthenticatedUserAsync()
         {

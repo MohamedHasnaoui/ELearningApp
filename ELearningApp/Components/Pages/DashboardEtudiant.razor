@@ -4,6 +4,8 @@
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IUserService UserService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
 
 @if (coursCommences != null && StudyStatistique != null && AuthenticatedUser != null)
 {
@@ -411,8 +413,11 @@
             nbCourseCompleted = await CoursCommenceService.CountByEtudiantIdCompletedAsync(AuthenticatedUser.Id);
             nbCourseEnCours = await CoursCommenceService.CountByEtudiantIdOnGoingAsync(AuthenticatedUser.Id);
             somme = nbCourseCompleted + nbCourseEnCours;
-            pourcentageCompeleted = nbCourseCompleted * 100 / somme;
-            pourcentageOnGoing = nbCourseEnCours * 100 / somme;
+            if (somme != 0)
+            {
+                pourcentageCompeleted = nbCourseCompleted * 100 / somme;
+                pourcentageOnGoing = nbCourseEnCours * 100 / somme;
+            }
         }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)

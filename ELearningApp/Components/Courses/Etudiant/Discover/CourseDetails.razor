@@ -4,10 +4,13 @@
 @inject NavigationManager NavigationManager
 @inject ICoursCommenceService CoursCommenceService
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
 @inject IAbonnementAchete AbonnementAchete
 @rendermode InteractiveServer
-@if (cours != null)
-{
+<PageTitle>Detail Cours</PageTitle>
+
+@if(cours!=null){
     <div class="dashboard-body">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">

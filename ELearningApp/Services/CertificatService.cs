@@ -13,7 +13,29 @@ namespace ELearningApp.Services
         {
             _context = context;
         }
+        public async Task<int[]> GetCertificatsIssuedLast10DaysAsync()
+        {
+            var today = DateTime.Now.Date;
+            var last10Days = Enumerable.Range(0, 10)
+                .Select(i => today.AddDays(-i)) // Get the last 10 days
+                .ToList();
 
+            var certificatCounts = await _context.Certificats
+                .Where(c => c.DateObtention >= today.AddDays(-10)) // Filter certificates created in the last 10 days
+                .GroupBy(c => c.DateObtention.Date) // Group certificates by their creation date
+                .Select(g => new { CreatedDate = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var result = new int[10];
+
+            foreach (var day in last10Days)
+            {
+                var countForDay = certificatCounts.FirstOrDefault(c => c.CreatedDate == day)?.Count ?? 0;
+                result[last10Days.IndexOf(day)] = countForDay;
+            }
+
+            return result;
+        }
         public async Task<IEnumerable<Certificat>> GetAllAsync()
         {
             return await _context.Certificats

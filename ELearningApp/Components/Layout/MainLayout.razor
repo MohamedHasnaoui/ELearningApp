@@ -1,6 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
 @inject IUserService UserService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 <body>
 
@@ -15,7 +18,9 @@
     <div class="side-overlay"></div>
     <!--==================== Sidebar Overlay End ====================-->
     <!-- ============================ Sidebar Start ============================ -->
-    <NavMenu />
+
+    <NavMenu AuthenticatedUser="AuthenticatedUser" />
+
     <!-- ============================ Sidebar End  ============================ -->
 
     <div class="dashboard-main-wrapper">
@@ -36,9 +41,18 @@
 </body>
 @code {
     private ApplicationUser? AuthenticatedUser;
+    private bool isAuthenticated;
 
+    
     protected override async Task OnInitializedAsync()
     {
+        // Get the authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is in the "Admin" role
+        isAuthenticated = user.Identity.IsAuthenticated;
         AuthenticatedUser = await UserService.GetAuthenticatedUserAsync();
     }
 }
+

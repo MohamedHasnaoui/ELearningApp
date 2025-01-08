@@ -35,9 +35,15 @@ else
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+    // [Inject]
+    // private IdentityRedirectManager RedirectManager { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        externalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToArray();
+        RedirectManager.RedirectTo("/Login");
     }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     externalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToArray();
+    // }
 }

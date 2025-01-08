@@ -25,7 +25,8 @@ namespace ELearningApp.Data
         public DbSet<AbonnementTemp> AbonnementTemps { get; set; }
         public DbSet<AbonnementAchete> AbonnementsAchetes { get; set; }
         public DbSet<Rating> Ratings { get; set; }
-
+        public DbSet<MentorRating> MentorRatings { get; set; }
+        public DbSet<MentorFollow> MentorFollows { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -35,8 +36,38 @@ namespace ELearningApp.Data
             /* builder.Entity<AbonnementAchete>()
              .HasKey(a => new { a.IdEtudiant, a.IdAbonnement });*/
 
-           
-
+            builder.Entity<Abonnement>().HasData(
+        new Abonnement
+        {
+            Id = 1,
+            Type = TypeAbonnement.Basique,
+            Duree = DureeAbonnement.an,
+            Prix = 199,
+            IsRecommanded = false,
+            Description = "Perfect plan for students",
+            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing"
+        },
+        new Abonnement
+        {
+            Id = 2,
+            Type = TypeAbonnement.Standard,
+            Duree = DureeAbonnement.an,
+            Prix = 299,
+            IsRecommanded = true,
+            Description = "For users who want to do more",
+            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community"
+        },
+        new Abonnement
+        {
+            Id = 3,
+            Type = TypeAbonnement.Premium,
+            Duree = DureeAbonnement.an,
+            Prix = 499,
+            IsRecommanded = false,
+            Description = "Your entire friends in one place",
+            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community"
+        }
+    );
             // Map Enseignant to its table
             builder.Entity<Enseignant>().ToTable("Enseignants");
             builder.Entity<Abonnement>().ToTable("Abonnements");

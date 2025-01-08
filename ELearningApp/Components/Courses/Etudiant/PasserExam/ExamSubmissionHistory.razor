@@ -3,10 +3,13 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IExamenService ExamenService
 @inject ICertificatService CertificatService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
-@if (soumissions != null && examen != null)
-{
+<PageTitle>Submition History</PageTitle>
+
+@if(soumissions != null && examen != null){
     <div class="dashboard-body">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-0">

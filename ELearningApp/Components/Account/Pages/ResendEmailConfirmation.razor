@@ -38,7 +38,13 @@
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
+    // [Inject]
+    // private IdentityRedirectManager RedirectManager { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        RedirectManager.RedirectTo("/Login");
+    }
     private async Task OnValidSubmitAsync()
     {
         var user = await UserManager.FindByEmailAsync(Input.Email!);

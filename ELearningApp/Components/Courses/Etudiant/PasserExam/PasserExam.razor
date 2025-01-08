@@ -5,6 +5,10 @@
 @inject ISoumissionService SoumissionService
 @inject NavigationManager NavigationManager
 @inject ICertificatService CertificatService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
+<PageTitle>Exam</PageTitle>
+
 <div class="dashboard-body">
 	<!-- Breadcrumb Start -->
 	<div class="breadcrumb">

@@ -1,7 +1,10 @@
 ﻿@page "/etudiant/certificat"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 @inject ICertificatService CertificatService
+<PageTitle>Certificate</PageTitle>
 @if (certificat != null)
 {
     <div class="dashboard-body">
