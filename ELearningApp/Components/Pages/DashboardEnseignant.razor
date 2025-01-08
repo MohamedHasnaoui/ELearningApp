@@ -87,6 +87,7 @@
 
             <div class="dashboard-body bg-white card border  mt-24 ">
                 <!-- Titre ajouté au-dessus du champ de filtre -->
+                <div class="d-flex align-items-start justify-content-between">
                 <h4 class="mb-4">Statistiques de Top 5 Cours</h4>
 
                 <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8  p-4">
@@ -96,13 +97,13 @@
                             <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
                                 <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
                                 <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnSortOptionChanged">
-                                    <option value="all">Tous</option>
-                                    <option value="evaluation">Evaluation</option>
+                                    <option selected value="evaluation">Evaluation</option>
                                     <option value="etudiants">Etudiants</option>
                                 </select>
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
                 @if (isLoading)
                 {
