@@ -214,7 +214,7 @@
         </div>
 
     </div>
-    
+
 </div>
 
 
@@ -317,6 +317,11 @@
 
                 }
                 estAchete = true;
+            }
+            else
+            {
+                abonnements = await AbonnementService.GetAllAbonnementsAsync();
+
             }
         }
 
