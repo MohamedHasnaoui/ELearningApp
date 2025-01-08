@@ -1,8 +1,12 @@
 ﻿@page "/courses/etudiant/started"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ICoursCommenceService CoursCommenceService
 @inject IJSRuntime JSRuntime
+<PageTitle>Started Courses</PageTitle>
+
 <div class="dashboard-body">
     <div class="card">
         <div class="card-body">

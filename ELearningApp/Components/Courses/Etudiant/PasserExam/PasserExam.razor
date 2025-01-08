@@ -5,6 +5,10 @@
 @inject ISoumissionService SoumissionService
 @inject NavigationManager NavigationManager
 @inject ICertificatService CertificatService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Etudiant")]
+<PageTitle>Exam</PageTitle>
+
 <div class="dashboard-body">
 	<div class="card mt-24">
 		<div class="card-body">

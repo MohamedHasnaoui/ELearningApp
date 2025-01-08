@@ -8,6 +8,8 @@
 @inject ICloudinaryService CloudinaryService
 @inject IVideoService VideoService
 @inject IJSRuntime JSRuntime
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Enseignant")]
 @rendermode InteractiveServer
 @if (cours != null)
 {

@@ -1,15 +1,19 @@
 ﻿@page "/Profile"
+@attribute [Authorize]
 @using ELearningApp.Components.Account
 @using ELearningApp.Components.Authentication.Shared
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>Home</PageTitle>
+
+<PageTitle>Profile</PageTitle>
 
 @if (AuthenticatedUser != null)
 {
@@ -20,7 +24,7 @@
             <ul class="flex-align gap-4">
                 <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
                 <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-                <li><span class="text-main-600 fw-normal text-15">Setting</span></li>
+                <li><span class="text-main-600 fw-normal text-15">Profile</span></li>
             </ul>
         </div>
         <!-- Breadcrumb End -->
@@ -74,12 +78,18 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pills-password-tab" onclick="setActiveTab('pills-password')" data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab" aria-controls="pills-password" aria-selected="false">Password</button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-plan-tab" onclick="setActiveTab('pills-plan')" data-bs-toggle="pill" data-bs-target="#pills-plan" type="button" role="tab" aria-controls="pills-plan" aria-selected="false">Plan</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Billing</button>
-                        </li>
+                        @if (enseignant is null)
+                        {
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-plan-tab" onclick="setActiveTab('pills-plan')" data-bs-toggle="pill" data-bs-target="#pills-plan" type="button" role="tab" aria-controls="pills-plan" aria-selected="false">Plan</button>
+                            </li>
+                        }
+                        @if (!isAdmin && enseignant is null)
+                        {
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Billing</button>
+                            </li>
+                        }
                     </ul>
                 </div>
 
@@ -236,12 +246,18 @@
                 </div>
             </div>
             <!-- Password Tab End -->
-            <!-- Plan Tab Start -->
-            <PlanTab/>
-            <!-- Plan Tab End -->
-            <!-- Billing Tab Start -->
-            <Billing/>
-            <!-- Billing Tab End -->
+            @if (enseignant is null)
+            {
+                <!-- Plan Tab Start -->
+                <PlanTab />
+                <!-- Plan Tab End -->
+            }
+            @if (!isAdmin && enseignant is null)
+            {
+                <!-- Billing Tab Start -->
+                <Billing />
+                <!-- Billing Tab End -->
+            }
 
         </div>
     </div>
@@ -273,6 +289,8 @@ else{
     private string? profileMessage;
     private string? passwordMessage;
     private bool hasPassword;
+    private bool isAdmin;
+
     [CascadingParameter]
     public ApplicationUser? AuthenticatedUser { get; set; }
     [SupplyParameterFromForm]
@@ -311,8 +329,10 @@ else{
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
         Console.WriteLine("11111111111111111111111111");
-
+        isAdmin = user.IsInRole("Admin");
         hasPassword = await UserManager.HasPasswordAsync(AuthenticatedUser);
         if (!hasPassword)
         {

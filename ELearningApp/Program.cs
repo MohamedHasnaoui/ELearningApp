@@ -54,9 +54,9 @@ async Task SeedDataAsync(IServiceProvider serviceProvider)
     }
 
     var enseignantUser = await userManager.FindByEmailAsync("enseignantmain@gmail.com");
-    if (adminUser == null)
+    if (enseignantUser == null)
     {
-        adminUser = new ApplicationUser
+        enseignantUser = new ApplicationUser
         {
             UserName = "Enseignant",
             FormalUserName = "Enseignant",
@@ -67,14 +67,14 @@ async Task SeedDataAsync(IServiceProvider serviceProvider)
             Adress = "Morroco, Meknes",
             EmailConfirmed = true
         };
-        await userManager.CreateAsync(adminUser, "Enseignant1/");
-        await userManager.AddToRoleAsync(adminUser, "Enseignant");
+        await userManager.CreateAsync(enseignantUser, "Enseignant1/");
+        await userManager.AddToRoleAsync(enseignantUser, "Enseignant");
     }
 
     var etudiantUser = await userManager.FindByEmailAsync("etudiantmain@gmail.com");
-    if (adminUser == null)
+    if (etudiantUser == null)
     {
-        adminUser = new ApplicationUser
+        etudiantUser = new ApplicationUser
         {
             UserName = "Etudiant",
             FormalUserName = "Etudiant",
@@ -85,8 +85,8 @@ async Task SeedDataAsync(IServiceProvider serviceProvider)
             Adress = "Morroco, Meknes",
             EmailConfirmed = true
         };
-        await userManager.CreateAsync(adminUser, "Etudiant1/");
-        await userManager.AddToRoleAsync(adminUser, "Etudiant");
+        await userManager.CreateAsync(etudiantUser, "Etudiant1/");
+        await userManager.AddToRoleAsync(etudiantUser, "Etudiant");
     }
 
 

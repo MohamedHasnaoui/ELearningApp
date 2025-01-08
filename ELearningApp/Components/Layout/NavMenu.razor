@@ -1,6 +1,7 @@
 ﻿@implements IDisposable
 
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <aside class="sidebar">
     <!-- sidebar close btn -->
@@ -14,12 +15,15 @@
     <div class="sidebar-menu-wrapper overflow-y-auto scroll-sm">
         <div class="p-20 pt-10">
             <ul class="sidebar-menu">
-                <li class="sidebar-menu__item">
-                    <a href="/" class="sidebar-menu__link">
-                        <span class="icon"><i class="ph ph-squares-four"></i></span>
-                        <span class="text">Dashboard</span>
-                    </a>
-                </li>
+                @if (isAuthenticated)
+                {
+                    <li class="sidebar-menu__item">
+                        <a href="/" class="sidebar-menu__link">
+                            <span class="icon"><i class="ph ph-squares-four"></i></span>
+                            <span class="text">Dashboard</span>
+                        </a>
+                    </li>
+                }
                 <li class="sidebar-menu__item has-dropdown">
                     <a href="javascript:void(0)" class="sidebar-menu__link">
                         <span class="icon"><i class="ph ph-graduation-cap"></i></span>
@@ -30,16 +34,21 @@
                         <li class="sidebar-submenu__item">
                             <NavLink href="/courses/etudiant/decouvrir" class="sidebar-submenu__link">Decouvrir</NavLink>
                         </li>
-                        <li class="sidebar-submenu__item">
-                            <NavLink href="/courses/etudiant/started" class="sidebar-submenu__link"> Student Courses </NavLink>
-                        </li>
-                        <li class="sidebar-submenu__item">
-                            <NavLink href="/courses/enseignant/mycourses" class="sidebar-submenu__link"> My Courses </NavLink>
-                        </li>
-                        <li class="sidebar-submenu__item">
-                            <NavLink href="/courses/enseignant/create" class="sidebar-submenu__link"> Create Course </NavLink>
-                        </li>
-                       
+                        @if (isEtudiant)
+                        {
+                            <li class="sidebar-submenu__item">
+                                <NavLink href="/courses/etudiant/started" class="sidebar-submenu__link"> Student Courses </NavLink>
+                            </li>
+                        }
+                        @if (isEnseignant)
+                        {
+                            <li class="sidebar-submenu__item">
+                                <NavLink href="/courses/enseignant/mycourses" class="sidebar-submenu__link"> My Courses </NavLink>
+                            </li>
+                            <li class="sidebar-submenu__item">
+                                <NavLink href="/courses/enseignant/create" class="sidebar-submenu__link"> Create Course </NavLink>
+                            </li>
+                        }
                     </ul>
                     <!-- Submenu End -->
                 </li>
@@ -47,9 +56,9 @@
                 <li class="sidebar-menu__item">
                     <a href="https://stripe.com/" target="_blank" class="sidebar-menu__link">
                         <img class="rounded-circle"
-                             src="assets/images/icons/stripe.jpeg"
-                             alt="icon"
-                             style="width: 30px; height: 30px;" />
+                        src="assets/images/icons/stripe.jpeg"
+                        alt="icon"
+                        style="width: 30px; height: 30px;" />
                         <span class="text text-sm ">Payment par Stripe</span>
                     </a>
                 </li>
@@ -59,12 +68,15 @@
                         <span class="text">Students</span>
                     </a>
                 </li>
-                <li class="sidebar-menu__item">
-                    <NavLink href="/mesEtudiants" class="sidebar-menu__link">
-                        <span class="icon"><i class="ph ph-users-three"></i></span>
-                        <span class="text">Mes Etudiants</span>
-                    </NavLink>
-                </li>
+                @if (isEnseignant)
+                {
+                    <li class="sidebar-menu__item">
+                        <NavLink href="/mesEtudiants" class="sidebar-menu__link">
+                            <span class="icon"><i class="ph ph-users-three"></i></span>
+                            <span class="text">Mes Etudiants</span>
+                        </NavLink>
+                    </li>
+                }
                 <li class="sidebar-menu__item">
                     <a href="mentors.html" class="sidebar-menu__link">
                         <span class="icon"><i class="ph ph-users"></i></span>
@@ -101,51 +113,56 @@
                         <span class="text">Library</span>
                     </a>
                 </li>
+                @if (!isEnseignant)
+                {
+                    <li class="sidebar-menu__item">
+                        <NavLink href="/AbonnementPage" class="sidebar-menu__link">
+                            <span class="icon"><i class="ph ph-coins"></i></span>
+                            <span class="text">Pricing</span>
+                        </NavLink>
+                    </li>
+                }
                 <li class="sidebar-menu__item">
-                    <NavLink href="/AbonnementPage" class="sidebar-menu__link">
-                        <span class="icon"><i class="ph ph-coins"></i></span>
-                        <span class="text">Pricing</span>
-                    </NavLink>
+                    <hr />
                 </li>
-
-                <li class="sidebar-menu__item">
-                    <span class="text-gray-300 text-sm px-20 pt-20 fw-semibold border-top border-gray-100 d-block text-uppercase">Settings</span>
-                </li>
-                <li class="sidebar-menu__item">
-                    <a href="setting.html" class="sidebar-menu__link">
-                        <span class="icon"><i class="ph ph-gear"></i></span>
-                        <span class="text">Account Settings</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-menu__item has-dropdown">
-                    <a href="javascript:void(0)" class="sidebar-menu__link">
-                        <span class="icon"><i class="ph ph-shield-check"></i></span>
-                        <span class="text">Authetication</span>
-                    </a>
-                    <!-- Submenu start -->
-                    <ul class="sidebar-submenu">
-                        <li class="sidebar-submenu__item">
-                            <a href="sign-in.html" class="sidebar-submenu__link">Sign In</a>
-                        </li>
-                        <li class="sidebar-submenu__item">
-                            <a href="sign-up.html" class="sidebar-submenu__link">Sign Up</a>
-                        </li>
-                        <li class="sidebar-submenu__item">
-                            <a href="forgot-password.html" class="sidebar-submenu__link">Forgot Password</a>
-                        </li>
-                        <li class="sidebar-submenu__item">
-                            <a href="reset-password.html" class="sidebar-submenu__link">Reset Password</a>
-                        </li>
-                        <li class="sidebar-submenu__item">
-                            <a href="verify-email.html" class="sidebar-submenu__link">Verify Email</a>
-                        </li>
-                        <li class="sidebar-submenu__item">
-                            <a href="two-step-verification.html" class="sidebar-submenu__link">Two Step Verification</a>
-                        </li>
-                    </ul>
-                    <!-- Submenu End -->
-                </li>
+                @if (isAuthenticated && AuthenticatedUser != null)
+                {
+                    <li class="sidebar-menu__item">
+                        <a href="/Profile" class="sidebar-menu__link">
+                            <span class="icon"><i class="ph ph-gear"></i></span>
+                            <span class="text">Account Settings</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu__item">
+                        <form action="Account/Logout" method="post" class="py-12 px-20 hover-bg-danger-50 text-gray-300 hover-text-danger-600 rounded-8 flex-align gap-8 fw-medium">
+                            <AntiforgeryToken />
+                            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                            <button type="submit" class="d-flex align-items-center gap-8 text-15 text-gray-300 hover-text-danger-600">
+                                <span class="text-2xl text-danger-600 d-flex"><i class="ph ph-sign-out"></i></span>
+                                <span class="text">Log Out</span>
+                            </button>
+                        </form>
+                    </li>
+                }
+                @if (!isAuthenticated)
+                {
+                    <li class="sidebar-menu__item has-dropdown">
+                        <a href="javascript:void(0)" class="sidebar-menu__link">
+                            <span class="icon"><i class="ph ph-shield-check"></i></span>
+                            <span class="text">Login</span>
+                        </a>
+                        <!-- Submenu start -->
+                        <ul class="sidebar-submenu">
+                            <li class="sidebar-submenu__item">
+                                <a href="/Login" class="sidebar-submenu__link">Sign In</a>
+                            </li>
+                            <li class="sidebar-submenu__item">
+                                <a href="/Register" class="sidebar-submenu__link">Sign Up</a>
+                            </li>
+                        </ul>
+                        <!-- Submenu End -->
+                    </li>
+                }
 
             </ul>
         </div>
@@ -157,7 +174,7 @@
                 <div class="mt-n74">
                     <h5 class="mb-4 mt-22">Get Pro Certificate</h5>
                     <p class="">Explore 400+ courses with lifetime members</p>
-                    <a href="pricing-plan.html" class="btn btn-main mt-16 rounded-pill">Get Access</a>
+                    <a href="/AbonnementPage" class="btn btn-main mt-16 rounded-pill">Get Access</a>
                 </div>
             </div>
         </div>
@@ -167,12 +184,28 @@
 
 @code {
     private string? currentUrl;
+    [Parameter]
+    public ApplicationUser? AuthenticatedUser { get; set; }
+    private bool isAdmin;
+    private bool isEnseignant;
+    private bool isEtudiant;
+    private bool isAuthenticated;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        // Get the authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is in the "Admin" role
+        isAdmin = user.IsInRole("Admin");
+        isEnseignant = user.IsInRole("Enseignant");
+        isEtudiant = user.IsInRole("Etudiant");
+        isAuthenticated = user.Identity.IsAuthenticated;
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
     }
+
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {

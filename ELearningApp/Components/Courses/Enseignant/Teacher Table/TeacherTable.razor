@@ -1,0 +1,423 @@
+﻿@page "/Enseignant"
+@rendermode InteractiveServer
+@inject IEnseignantService EnseignantService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
+<PageTitle>Teacher</PageTitle>
+
+<div class="dashboard-body">
+    <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
+        <!-- Breadcrumb Start -->
+        <div class="breadcrumb mb-24">
+            <ul class="flex-align gap-4">
+                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+                <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+                <li><span class="text-main-600 fw-normal text-15">Teacher</span></li>
+            </ul>
+        </div>
+        <!-- Breadcrumb End -->
+        <!-- Breadcrumb Right Start -->
+        <div class="flex-align gap-8 flex-wrap">
+
+            <div style="display: @(isAdmin ? "flex" : "none")" class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
+                <span class="text-lg"><i class="ph ph-layout"></i></span>
+                <select class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="async e => await ExportData(e.Value.ToString())">
+                    <option value="" selected>Export</option>
+                    <option value="csv">CSV</option>
+                    <option value="json">JSON</option>
+                </select>
+            </div>
+        </div>
+        <!-- Breadcrumb Right End -->
+    </div>
+
+    @if(isAdmin){
+        <div class="card overflow-hidden">
+            <div class="card-body p-0 overflow-x-auto">
+                <table id="studentTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="fixed-width">
+                                <div class="form-check">
+                                    <input class="form-check-input border-gray-200 rounded-4" type="checkbox" id="selectAll">
+                                </div>
+                            </th>
+                            <th class="h6 text-gray-300">Teacher</th>
+                            <th class="h6 text-gray-300">Email ID</th>
+                            <th class="h6 text-gray-300">Courses</th>
+                            <th class="h6 text-gray-300">Raiting</th>
+                            @if (isAdmin)
+                            {
+                                <th class="h6 text-gray-300">Status</th>
+                                <th class="h6 text-gray-300">Actions</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (enseignants != null)
+                        {
+                            int i = 0;
+                            @foreach (var enseignant in enseignants)
+                            {
+                                <tr>
+                                    <td class="fixed-width">
+                                        <div class="form-check">
+                                            <input class="form-check-input border-gray-200 rounded-4" type="checkbox">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex-align gap-8">
+                                            <a href="/Profile/@enseignant.UserName">
+                                                <img src='@(enseignant.imgProfile ?? "assets/images/thumbs/student-img4.png")' alt="@enseignant.FormalUserName" class="w-40 h-40 rounded-circle">
+                                                <span class="h6 mb-0 fw-medium text-gray-300">@enseignant.FormalUserName</span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="h6 mb-0 fw-medium text-gray-300">@enseignant.Email</span>
+                                    </td>
+                                    <td>
+                                        <span class="h6 mb-0 fw-medium text-gray-300">@(i++)</span>
+                                    </td>
+                                    <td>
+                                        <span class="h6 mb-0 fw-medium text-gray-300">@(i + 2)</span>
+                                    </td>
+                                    @if (isAdmin)
+                                    {
+                                        <td>
+                                            <span class="text-13 py-2 px-8 bg-@(enseignant.EmailConfirmed ?"success":"danger")-50 text-@(enseignant.EmailConfirmed ?"success":"danger")-600 d-inline-flex align-items-center gap-8 rounded-pill">
+                                                <span class="w-6 h-6 bg-@(enseignant.EmailConfirmed ?"success":"danger")-600 rounded-circle flex-shrink-0"></span>
+                                                @(enseignant.EmailConfirmed ? "Allowed" : "Blocked")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button @onclick="() => ToggleBlockUser(enseignant.Id)" class="bg-main-50 text-main-600 py-2 px-14 rounded-pill hover-bg-main-600 hover-text-white">
+                                                @(enseignant.EmailConfirmed ? "Block" : "Unblock")
+                                            </button>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer flex-between flex-wrap">
+                <button id="Mybtn" @onclick="async()=>await move(-1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
+                    <span class="d-flex text-xl"><i class="ph ph-arrow-left"></i></span>
+                    Previous
+                </button>
+                <ul class="pagination flex-align flex-wrap">
+                    <li class="page-item active">
+                        <button class="page-link h-44 w-44 flex-center text-15 rounded-8 fw-medium">@CurrentPage</button>
+                    </li>
+                </ul>
+                <button id="Mybtn" @onclick="async()=>await move(1)" disabled="@(CurrentPage >= pageNbs)" class="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
+                    Next <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
+                </button>
+            </div>
+        </div>
+    }
+    else{
+        <!-- All Mentors Start -->
+        <div class="card mt-24">
+            <div class="card-body">
+                <div class="mb-20 flex-between flex-wrap gap-8">
+                    <h4 class="mb-0">All Mentors</h4>
+
+                    <div class="flex-align gap-8 flex-wrap">
+                        <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-8 focus-border-main-600">
+                            <span class="text-lg"><i class="ph ph-layout"></i></span>
+                            <select class="form-control px-8 py-12 border-0 text-inherit rounded-4 text-center">
+                                <option value="1" selected disabled>Category</option>
+                                <option value="1">Web</option>
+                                <option value="1">Design</option>
+                                <option value="1">App</option>
+                                <option value="1">SEO</option>
+                            </select>
+                        </div>
+                        <div class="position-relative text-gray-500 flex-align gap-4 text-13">
+                            <span class="text-inherit">Sort by: </span>
+                            <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-8 focus-border-main-600">
+                                <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
+                                <select class="form-control px-8 py-12 border-0 text-inherit rounded-4 text-center">
+                                    <option value="1" selected>Popular</option>
+                                    <option value="1">Latest</option>
+                                    <option value="1">Trending</option>
+                                    <option value="1">Matches</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row g-20">
+                    @if (enseignants != null)
+                    {
+                        @foreach (var enseignant in enseignants)
+                        {
+                            <div class="col-xl-3 col-md-4 col-sm-6">
+                                <div class="mentor-card rounded-8 overflow-hidden">
+                                    <div class="mentor-card__cover position-relative">
+                                        <img src=@(enseignant.imgCover ?? "assets/images/thumbs/mentor-cover-img5.png") alt="" class="cover-img">
+                                        <button type="button" class="follow-btn py-2 px-8 flex-align gap-4 text-13 fw-medium text-white border border-white rounded-pill position-absolute inset-block-start-0 inset-inline-end-0 mt-8 me-8 transition-1 active">
+                                            <i class="ph ph-plus d-flex"></i>
+                                            <span class="text">Follow</span>
+                                        </button>
+                                    </div>
+                                    <div class="mentor-card__content text-center">
+                                        <div class="w-56 h-56 rounded-circle overflow-hidden border border-white d-inline-block">
+                                            <a href="/Profile/@enseignant.UserName" class="">
+                                                <img src='@(enseignant.imgProfile ?? "assets/images/thumbs/mentor-img7.png")' alt="" class="mentor-card__img cover-img">
+                                            </a>
+                                        </div>
+                                        <h5 class="mb-0">
+                                            <a href="/Profile/@enseignant.UserName">@enseignant.FormalUserName</a>
+                                        </h5>
+                                        <span class="text-13 text-gray-500">@enseignant.speciality</span>
+
+                                        <p class="mt-20 text-gray-600 text-14 text-line-2">@enseignant.Bio</p>
+
+                                        <div class="mentor-card__rating mt-20 border border-gray-100 px-8 py-6 rounded-8 flex-between flex-wrap">
+                                            <div class="flex-align gap-4">
+                                                <span class="text-15 fw-normal text-main-600 d-flex"><i class="ph-fill ph-book-open"></i></span>
+                                                <span class="text-13 fw-normal text-gray-600">45 Tasks</span>
+                                            </div>
+                                            <div class="flex-align gap-4">
+                                                <span class="text-15 fw-normal text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
+                                                <span class="text-13 fw-normal text-gray-600">4.8</span>
+                                                <span class="text-13 fw-normal text-gray-600">(750 Reviews)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="card-footer flex-between flex-wrap">
+                    <button id="Mybtn" @onclick="async()=>await move(-1)" class="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
+                        <span class="d-flex text-xl"><i class="ph ph-arrow-left"></i></span>
+                        Previous
+                    </button>
+                    <ul class="pagination flex-align flex-wrap">
+                        <li class="page-item active">
+                            <button class="page-link h-44 w-44 flex-center text-15 rounded-8 fw-medium">@CurrentPage</button>
+                        </li>
+                    </ul>
+                    <button id="Mybtn" @onclick="async()=>await move(1)" disabled="@(CurrentPage >= pageNbs)" class="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
+                        Next <span class="d-flex text-xl"><i class="ph ph-arrow-right"></i></span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <!-- All Mentors End -->
+    }
+
+</div>
+@code {
+    public List<Enseignant?> enseignants;
+    private bool isAdmin;
+    private int CurrentPage = 1;
+    private int PageSize = 8;
+    private int TotalCount;
+    private int pageNbs;
+    private int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is in the "Admin" role
+        isAdmin = user.IsInRole("Admin");
+        // etudiants = await EtudiantService.GetAllEtudiantsAsync();
+        await LoadPage(1);
+    }
+    private async Task LoadPage(int pageNumber)
+    {
+        try
+        {
+            var result = await EnseignantService.GetPaginatedEnseignantsAsync(pageNumber, PageSize);
+            enseignants = result.Items;
+            TotalCount = result.TotalCount;
+            pageNbs = (TotalCount - 1) / PageSize + 1;
+            CurrentPage = pageNumber;
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading page: {ex.Message}");
+        }
+    }
+
+    private async Task move(int i)
+    {
+        if ((i == 1 && CurrentPage < TotalPages) || (i == -1 && CurrentPage > 1))
+        {
+            CurrentPage += i;
+            await LoadPage(CurrentPage); // Load new page data
+            StateHasChanged(); // Manually trigger re-render
+            await JSRuntime.InvokeVoidAsync("scrollToTop"); // Optional: Scroll to top
+        }
+    }
+
+
+
+    private async Task ToggleBlockUser(string Id)
+    {
+        var result = EnseignantService.BlockEnseignantAsync(Id);
+    }
+    private async Task ExportData(string format)
+    {
+        await JSRuntime.InvokeVoidAsync("exportData", format);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (isAdmin)
+            {
+                await JSRuntime.InvokeVoidAsync("initializeDataTable", isAdmin);
+                await JSRuntime.InvokeVoidAsync("initializeEventListeners");
+            }
+            await JSRuntime.InvokeVoidAsync("removeSelect");
+
+        }
+    }
+    private void ToggleAllCheckboxes(ChangeEventArgs e)
+    {
+        bool isChecked = (bool)e.Value;
+        // Logic to toggle all checkboxes
+    }
+}
+<script>
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Smooth scroll to top
+    }
+</script>
+<script>
+        window.exportData = function (format) {
+        const table = document.getElementById('studentTable');
+        const data = [];
+        const headers = [];
+
+        // Get the table headers
+        table.querySelectorAll('thead th').forEach(th => {
+            headers.push(th.innerText.trim());
+        });
+
+        // Get only checked rows
+        table.querySelectorAll('tbody tr').forEach(tr => {
+            const checkbox = tr.querySelector('.form-check-input');
+            if (checkbox && checkbox.checked) {
+                const row = {};
+                tr.querySelectorAll('td').forEach((td, index) => {
+                    row[headers[index]] = td.innerText.trim();
+                });
+                data.push(row);
+            }
+        });
+
+        if (data.length === 0) {
+            alert('No rows selected!');
+            return;
+        }
+
+        if (format === 'csv') {
+            downloadCSV(headers.slice(1), data); // Exclude checkbox column
+        } else if (format === 'json') {
+            downloadJSON(data);
+        }
+    };
+
+    function downloadCSV(headers, data) {
+        const csvRows = [];
+
+        // Add headers
+        csvRows.push(headers.join(','));
+
+        // Add rows
+        data.forEach(row => {
+            const rowValues = headers.map(header => `"${row[header] || ''}"`); // Escape values for Excel compatibility
+            csvRows.push(rowValues.join(','));
+        });
+
+        const csv = csvRows.join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'students.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function downloadJSON(data) {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'students.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+        window.initializeDataTable = function (isAdmin) {
+        const table = document.getElementById('studentTable');
+        if (table.querySelectorAll('tbody tr').length > 0) {
+            const columnDefs = [
+                { orderable: false, targets: 0 } // Disable sorting for the checkbox
+            ];
+
+            // Only add these column definitions if the user is an admin
+            if (isAdmin) {
+                columnDefs.push(
+                    { orderable: false, targets: 5 }, // Disable sorting for the Status column
+                    { orderable: false, targets: 6 }  // Disable sorting for the Actions column
+                );
+            }
+
+            new DataTable('#studentTable', {
+                searching: false,
+                lengthChange: false,
+                info: false,
+                paging: false,
+                columnDefs: columnDefs
+            });
+        }
+    };
+
+
+
+
+        window.initializeEventListeners = function () {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function () {
+                document.querySelectorAll('.form-check-input').forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+    };
+    
+        window.removeSelect = function () {
+            const Mybtn = document.getElementById('Mybtn');
+            if (Mybtn) {
+                Mybtn.addEventListener('click', function () {
+                    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+                        checkbox.checked = false; // Set all checkboxes to unchecked
+                    });
+                });
+
+            }
+    };
+
+
+</script>

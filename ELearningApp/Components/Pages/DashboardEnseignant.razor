@@ -1,6 +1,7 @@
 ﻿@inject ICoursService CoursService
 @inject IEnseignantService EnseignantService
-
+@attribute [Authorize(Roles = "Enseignant")]
+@using Microsoft.AspNetCore.Authorization
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer

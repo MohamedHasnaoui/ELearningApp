@@ -1,4 +1,6 @@
 ﻿@page "/courses/enseignant/mycourses"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Enseignant")]
 @inject ICoursService CoursService
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
