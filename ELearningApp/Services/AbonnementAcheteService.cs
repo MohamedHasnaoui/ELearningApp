@@ -73,6 +73,14 @@ namespace ELearningApp.Services
                     a.DateExpiration > DateTime.Now); // Vérifie que la date d'expiration n'est pas atteinte
         }
 
+        public async Task<bool> IsAbonnementAchete(string etudiantId)
+        {
+            return await _context.AbonnementsAchetes
+                .AnyAsync(a =>
+                    a.IdEtudiant == etudiantId &&
+                    a.DateExpiration > DateTime.Now); // Vérifie que la date d'expiration n'est pas atteinte
+        }
+
 
     }
 

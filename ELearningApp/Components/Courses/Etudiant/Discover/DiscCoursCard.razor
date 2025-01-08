@@ -13,7 +13,7 @@
                 <div class="flex-align gap-8 flex-wrap mt-16">
                     <img src="@ensImage" class="w-28 h-28 rounded-circle object-fit-cover" alt="User Image">
                     <div>
-                        <span class="text-gray-600 text-13">Created by <a href="profile.html" class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">@ensName</a> </span>
+                        <span class="text-gray-600 text-13">Créé par <a href="profile.html" class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">@ensName</a> </span>
                     </div>
                 </div>
 
@@ -31,9 +31,9 @@
                 <div class="flex-between gap-4 flex-wrap mt-24">
                     <div class="flex-align gap-4">
                         <span class="text-15 fw-bold text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                        <span class="text-13 fw-bold text-gray-600">@(Rating == null ? 0 : Rating.Value)</span>
+                        <span class="text-13 fw-bold text-gray-600">@(Rating == null ? 0 : Rating.Value.ToString("0.0"))</span>
                     </div>
-                    <button @onclick="viewDetails" class="btn btn-outline-main rounded-pill py-9">View Details</button>
+                    <button @onclick="viewDetails" class="btn btn-outline-main rounded-pill py-9">Voir les détails</button>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
     [Parameter] public string ensName { get; set; }
     [Parameter] public string ensImage { get; set; }
     public int nbsection;
-    private string coursUrl ;
+    private string coursUrl;
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(100);
@@ -60,7 +60,8 @@
        NavigationManager.ToAbsoluteUri("cours/details").AbsoluteUri,
        new Dictionary<string, object?> { ["coursId"] = coursId.Value });
     }
-    protected async Task viewDetails(){
+    protected async Task viewDetails()
+    {
         NavigationManager.NavigateTo(coursUrl);
     }
 }

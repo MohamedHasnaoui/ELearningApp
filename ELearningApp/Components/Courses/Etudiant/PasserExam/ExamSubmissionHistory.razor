@@ -11,16 +11,24 @@
 
 @if(soumissions != null && examen != null){
     <div class="dashboard-body">
+        <!-- Breadcrumb Start -->
+        <div class="breadcrumb mb-0">
+            <ul class="flex-align gap-4">
+                <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</a></li>
+                <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+                <li><span class="text-main-600 fw-normal text-15">dernières soumissions</span></li>
+            </ul>
+        </div>
         <div class="row">
             <div class="col-sm-8">
                 <div class="card mt-24">
                     <div class="card-body">
-                        <h5>Vos derniers Soumissions: @examen.Cours.Nom</h5>
+                        <h5>Vos dernières soumissions : @examen.Cours.Nom</h5>
 
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">Date de Soumission</th>
+                                    <th scope="col">Date de soumission</th>
                                     <th scope="col">Note</th>
                                 </tr>
                             </thead>
@@ -44,7 +52,7 @@
                             </tbody>
                         </table>
                         <div class="flex-align gap-8">
-                            <button @onclick="refaire" type="button" class="btn btn-outline-main rounded-pill py-9">refaire</button>
+                            <button @onclick="refaire" type="button" class="btn btn-outline-main rounded-pill py-9">Refaire</button>
                         </div>
                     </div>
                 </div>
@@ -53,10 +61,13 @@
                 <div class="card mt-24">
                     <div class="card-body">
                         <div class="flex-align justify-content-center gap-8">
-                            @if(certificat!=null){
-                                <button @onclick="goToCertificat" type="button" class="btn btn-success rounded-8 py-9">Telecharger Votre Certificat</button>
-                            }else {
-                                <button type="button" class="btn disabled btn-info rounded-8 py-9">You have no certificate'</button>
+                            @if (certificat != null)
+                            {
+                                <button @onclick="goToCertificat" type="button" class="btn btn-success rounded-8 py-9">Télécharger votre certificat</button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn disabled btn-danger rounded-8 py-9">Vous n'avez pas de certificat</button>
                             }
                         </div>
                     </div>
@@ -81,20 +92,22 @@
         {
             EtudiantId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
-        if (EtudiantId != null && examId!=null)
+        if (EtudiantId != null && examId != null)
         {
             soumissions = await SoumissionService.GetByEtudiantAndExamenIdAsync(EtudiantId, examId);
             examen = await ExamenService.GetByIdAsync(examId);
         }
         certificat = await CertificatService.GetByEtudiantIdCoursIdAsync(EtudiantId, examen.CoursId);
     }
-    private async Task refaire(){
+    private async Task refaire()
+    {
         string link = NavigationManager.GetUriWithQueryParameters(
        NavigationManager.ToAbsoluteUri("cours/etudiant/exam").AbsoluteUri,
        new Dictionary<string, object?> { ["coursId"] = examen.Cours.Id });
         NavigationManager.NavigateTo(link);
     }
-    private async Task goToCertificat(){
+    private async Task goToCertificat()
+    {
         string link = NavigationManager.GetUriWithQueryParameters(
       NavigationManager.ToAbsoluteUri("etudiant/certificat").AbsoluteUri,
       new Dictionary<string, object?> { ["certificatId"] = certificat?.Id });

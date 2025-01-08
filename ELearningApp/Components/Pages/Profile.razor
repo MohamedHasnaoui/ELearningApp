@@ -11,13 +11,14 @@
 @inject IdentityRedirectManager RedirectManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICloudinaryService CloudinaryService
+@inject IUserService UserService
 
 
 <PageTitle>Profile</PageTitle>
 
 @if (AuthenticatedUser != null)
 {
-
     <div class="dashboard-body">
         <!-- Breadcrumb Start -->
         <div class="breadcrumb mb-24">
@@ -34,7 +35,7 @@
                 <div class="cover-img position-relative">
                     <label for="coverImageUpload" class="btn border-gray-200 text-gray-200 fw-normal hover-bg-gray-400 rounded-pill py-4 px-14 position-absolute inset-block-start-0 inset-inline-end-0 mt-24 me-24">Edit Cover</label>
                     <div class="avatar-upload">
-                        <input type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg">
+                        <InputFile onchange="HandleProfilelImageChange" type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg" />
                         <div class="avatar-preview">
                             <div id="coverImagePreview" style="background-image: url('assets/images/thumbs/setting-cover-img.png');">
                             </div>
@@ -149,7 +150,7 @@
                                     <label for="imageUpload" class="form-label mb-8 h6">Your Photo</label>
                                     <div class="flex-align gap-22">
                                         <div class="avatar-upload flex-shrink-0">
-                                            <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg">
+                                            <InputFile OnChange="HandleProfilelImageChange" type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
                                             <div class="avatar-preview">
                                                 <div id="profileImagePreview" style="background-image: url('assets/images/thumbs/setting-profile-img.jpg');">
                                                 </div>
@@ -296,8 +297,6 @@ else{
     public ApplicationUser? AuthenticatedUser { get; set; }
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
     private List<string> errors = new List<string>();
     private readonly Dictionary<string, string> countryCodes = new Dictionary<string, string>
     {
@@ -337,11 +336,7 @@ else{
         isEnseignant = user.IsInRole("Enseignant");
 
         hasPassword = await UserManager.HasPasswordAsync(AuthenticatedUser);
-        if (!hasPassword)
-        {
-            RedirectManager.RedirectToCurrentPageWithStatus("Error: User not have the password.", HttpContext);
 
-        }
         if (AuthenticatedUser is Enseignant)
         {
             enseignant = AuthenticatedUser as Enseignant;
@@ -473,12 +468,12 @@ else{
             }
 
             await SignInManager.RefreshSignInAsync(AuthenticatedUser);
-            
+
             passwordMessage="Your password has been changed";
         }
     }
 
-    
+
     private sealed class InputModel
     {
         [Phone]
@@ -500,13 +495,27 @@ else{
 
         public string OldPassword { get; set; } = "";
 
-        
+
         public string NewPassword { get; set; } = "";
 
-        
+
         public string ConfirmPassword { get; set; } = "";
     }
-    
+
+    private async Task HandleProfilelImageChange(InputFileChangeEventArgs e)
+    {
+        Console.WriteLine("changed");
+        var file = e.File;
+        if (file != null)
+        {
+            var allowedTypes = new[] { "image/png", "image/jpeg" };
+            Stream stream = file.OpenReadStream();
+            var res = await CloudinaryService.UploadImageAsync(stream, file.Name);
+            AuthenticatedUser.imgCover = res.SecureUrl.ToString();
+            await UserService.UpdateUserAsync(AuthenticatedUser);
+        }
+        
+    }
     
 }
 <script>

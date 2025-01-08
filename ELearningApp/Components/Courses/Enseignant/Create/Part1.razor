@@ -5,9 +5,9 @@
     <!-- Breadcrumb Start -->
     <div class="breadcrumb mb-24">
         <ul class="flex-align gap-4">
-            <li><a href="index.html" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+            <li><NavLink href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Accueil</NavLink></li>
             <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
-            <li><span class="text-main-600 fw-normal text-15">Create Account</span></li>
+            <li><span class="text-main-600 fw-normal text-15">Créer un Compte</span></li>
         </ul>
     </div>
     <!-- Breadcrumb End -->
@@ -17,27 +17,27 @@
 <ul class="step-list mb-24">
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7 done">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Course Details
+        Détails du Cours
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7 active">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Section Details
+        Détails des Sections
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Upload Videos
+        Téléverser des Vidéos
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Create Quiz
+        Créer un Quiz
         <span class="line position-relative"></span>
     </li>
     <li class="step-list__item py-15 px-24 text-15 text-heading fw-medium flex-center gap-7  ">
         <span class="icon text-xl d-flex"><i class="ph ph-circle"></i></span>
-        Publish Course
+        Publier le Cours
         <span class="line position-relative"></span>
     </li>
 </ul>
@@ -45,8 +45,8 @@
 <!-- Course Tab Start -->
 <div class="card">
     <div class="card-header border-bottom border-gray-100 flex-align gap-8">
-        <h5 class="mb-0">Sections Details</h5>
-        <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Course Details">
+        <h5 class="mb-0">Détails des Sections</h5>
+        <button type="button" class="text-main-600 text-md d-flex" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Détails du Cours">
             <i class="ph-fill ph-question"></i>
         </button>
     </div>
@@ -60,8 +60,8 @@
                     }
                 </div>
                 <div class="flex-align justify-content-end gap-8">
-                    <button type="button" @onclick="handleBackClique" @onclick:preventDefault class="btn btn-outline-main rounded-pill py-9">Back</button>
-                    <button @onclick="handleContinueClique" @onclick:preventDefault class="btn btn-main rounded-pill py-9">Continue</button>
+                    <button type="button" @onclick="handleBackClique" @onclick:preventDefault class="btn btn-outline-main rounded-pill py-9">Retour</button>
+                    <button @onclick="handleContinueClique" @onclick:preventDefault class="btn btn-main rounded-pill py-9">Continuer</button>
                 </div>
                 @if (!string.IsNullOrEmpty(errorSaving))
                 {
@@ -105,20 +105,21 @@
         }
         else
         {
-            errorSaving = "Please correct the errors in the sections before continuing.";
+            errorSaving = "Veuillez corriger les erreurs dans les sections avant de continuer.";
         }
     }
-    private async Task handleBackClique(){
+    private async Task handleBackClique()
+    {
         await OnBackButtonClick.InvokeAsync(1);
     }
     public async Task<List<Section>> SaveToDateBase(int coursId)
     {
         List<Section> sectionsList = new();
-        foreach (var s in sectionForms){
+        foreach (var s in sectionForms)
+        {
             var res = await s.SaveToDataBase(coursId);
             sectionsList.Add(res);
         }
         return sectionsList;
     }
-
 }

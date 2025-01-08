@@ -1,4 +1,5 @@
 ﻿@inject NavigationManager NavigationManager
+@inject IAbonnementAchete AbonnementAchete
 <div class="col-xxl-3 col-lg-4 col-sm-6">
     <div class="card border border-gray-100">
         <div class="card-body p-8">
@@ -19,14 +20,18 @@
                 <div class="flex-align gap-8 flex-wrap mt-16">
                     <img src="assets/images/thumbs/user-img1.png" class="w-32 h-32 rounded-circle object-fit-cover" alt="User Image">
                     <div>
-                        <span class="text-gray-600 text-13">Created by <button class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">@courscommence.Cours.Enseignant.UserName</button> </span>
+                        <span class="text-gray-600 text-13">Créé par <button class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">@courscommence.Cours.Enseignant.UserName</button> </span>
                         <div class="flex-align gap-4">
                             <span class="text-15 fw-bold text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                            <span class="text-13 fw-bold text-gray-600"> @courscommence.Cours.Evaluation</span>
+                            <span class="text-13 fw-bold text-gray-600"> @courscommence.Cours.Evaluation.ToString("0.0")</span>
                         </div>
                     </div>
                 </div>
-                <NavLink href="@watchlink" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continue Watching</NavLink>
+                @if (hasSubscription){
+                <NavLink href="@watchlink" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continuer à regarder</NavLink>
+                }else{
+                    <NavLink href="/AbonnementPage" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continuer à regarder</NavLink>
+                }
             </div>
         </div>
     </div>
@@ -35,10 +40,12 @@
     [Parameter] public CoursCommence courscommence { get; set; }
     private string watchlink;
     private string detailsLink;
-    protected override void OnInitialized()
+    bool hasSubscription = false;
+    protected override async Task OnInitializedAsync()
     {
         watchlink = NavigationManager.GetUriWithQueryParameters(
          NavigationManager.ToAbsoluteUri("courses/etudiant/watch").AbsoluteUri,
              new Dictionary<string, object?> { ["coursCommenceId"] = courscommence.Id });
+        hasSubscription = await AbonnementAchete.IsAbonnementAchete(courscommence.EtudiantId);
     }
 }
