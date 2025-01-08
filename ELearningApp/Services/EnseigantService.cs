@@ -14,6 +14,7 @@ namespace ELearningApp.Services
         {
             _context = context;
         }
+
         public async Task<(int totalCours, int totalEtudiants, double totalEvaluations)> GetEnseignantStatsAsync(string enseignantId)
         {
             var cours = await _context.Cours

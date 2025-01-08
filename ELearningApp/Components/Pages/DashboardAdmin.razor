@@ -247,8 +247,8 @@
         MonthlyDayJoindMentors = await EnseignantService.GetDailyRegistrationsAsync();
         if (TotaleUser != 0)
         {
-            PercentageStudents = (float)Math.Round(((float)TotaleStudents / TotaleUser)*100, 2);
-            PercentageMentors = (float)Math.Round(((float)TotaleMentors / TotaleUser)*100, 2);
+            PercentageStudents = (float)Math.Round(((float)TotaleStudents / (TotaleStudents + TotaleMentors)) * 100, 2);
+            PercentageMentors = (float)Math.Round(((float)TotaleMentors / (TotaleStudents + TotaleMentors)) * 100, 2);
             PercentageUsers[0] = PercentageMentors;
             PercentageUsers[1] = PercentageStudents;
         }

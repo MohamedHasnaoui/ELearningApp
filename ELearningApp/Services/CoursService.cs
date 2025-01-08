@@ -10,10 +10,14 @@ namespace ELearningApp.Services
     public class CoursService : ICoursService
     {
         private readonly ApplicationDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public CoursService(ApplicationDbContext context)
+
+        public CoursService(ApplicationDbContext context, HttpClient httpClient)
         {
             _context = context;
+            _httpClient = httpClient;
+
         }
         public async Task<int[]> GetCoursesCreatedLast10DaysAsync()
         {
@@ -226,7 +230,7 @@ namespace ELearningApp.Services
                 {
                     Id = c.Id,
                     Nom = c.Nom,
-                    Description = c.Description,
+                    Category = c.Category.Name,
                     Evaluation = c.Evaluation,
                     NombreEtudiants = _context.CoursCommences.Count(cc => cc.CoursId == c.Id),
                     EnseignantNom = c.Enseignant.UserName // Nom de l'enseignant
@@ -247,7 +251,6 @@ namespace ELearningApp.Services
                 {
                     Id = c.Id,
                     Nom = c.Nom,
-                    Description = c.Description,
                     Evaluation = c.Evaluation,
                     NombreEtudiants = _context.CoursCommences.Count(cc => cc.CoursId == c.Id),
                     EnseignantNom = c.Enseignant.UserName // Nom de l'enseignant
@@ -259,6 +262,38 @@ namespace ELearningApp.Services
 
             return topCours;
         }
+
+        public async Task<List<CourseStats>> GetStudentEnrollmentsByTeacherAsync(string enseignantId)
+        {
+            // Récupérer l'année actuelle
+            int currentYear = DateTime.Now.Year;
+
+            // Filtrer les cours commencés pour l'enseignant donné et pour l'année actuelle
+            var results = await _context.CoursCommences
+                .Where(cc => cc.Cours.EnseignantId == enseignantId && cc.DateDebut.Year == currentYear)
+                .GroupBy(cc => new
+                {
+                    Month = cc.DateDebut.Month,
+                    Year = cc.DateDebut.Year
+                })
+                .Select(g => new CourseStats
+                {
+                    Month = g.Key.Month,
+                    Year = g.Key.Year,
+                    // Assurez-vous de compter les étudiants uniques par mois et année
+                    StudentCount = g.Select(cc => cc.EtudiantId).Distinct().Count()  // Utilisation de Distinct pour compter les étudiants uniques
+                })
+                .OrderBy(cs => cs.Month)  // Optionnel, pour trier par mois
+                .ToListAsync();
+
+            // Ajouter un log pour voir les résultats
+            Console.WriteLine("Student Enrollments per Month for current year: " + string.Join(", ", results.Select(cs => $"{cs.Month}/{cs.Year} - {cs.StudentCount}")));
+
+            return results;
+        }
+
+
+
 
 
     }
@@ -275,10 +310,20 @@ namespace ELearningApp.Services
     {
         public int Id { get; set; }
         public string Nom { get; set; }
-        public string? Description { get; set; }
+        public string? Category { get; set; }
         public double Evaluation { get; set; }
         public int NombreEtudiants { get; set; }
         public string? EnseignantNom { get; set; }
     }
+ 
 
+    public class CourseStats
+    {
+        public string CourseName { get; set; }
+        public int Month { get; set; }
+        public int Year { get; set; }
+        public int StudentCount { get; set; }
+        public string MonthName => System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Month);
+
+    }
 }

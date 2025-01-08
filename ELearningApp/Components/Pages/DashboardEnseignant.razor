@@ -1,65 +1,55 @@
 ﻿@inject ICoursService CoursService
+@inject IEnseignantService EnseignantService
+
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 
 
-<div class="dashboard-body">
+<div class="dashboard-body " style="width:100%;" >
 
     <div class="row gy-4">
         <div class="col-lg-9">
             <!-- Widgets Start -->
-            <div class="row gy-4">
-                <div class="col-xxl-3 col-sm-6">
+            <div class="row gy-3">
+                <div class="col-12 col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="mb-2">155+</h4>
-                            <span class="text-gray-600">Completed Courses</span>
+                            <h4 class="mb-2">@TotalCours+</h4>
+                            <span class="text-gray-600">Total Cours</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-600 text-white text-2xl"><i class="ph-fill ph-book-open"></i></span>
-                                <div id="complete-course" class="remove-tooltip-title rounded-tooltip-value"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xxl-3 col-sm-6">
+
+                <div class="col-12 col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="mb-2">39+</h4>
-                            <span class="text-gray-600">Earned Certificate</span>
-                            <div class="flex-between gap-8 mt-16">
-                                <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-main-two-600 text-white text-2xl"><i class="ph-fill ph-certificate"></i></span>
-                                <div id="earned-certificate" class="remove-tooltip-title rounded-tooltip-value"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xxl-3 col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="mb-2">25+</h4>
-                            <span class="text-gray-600">Course in Progress</span>
+                            <h4 class="mb-2">@TotalEvaluations+</h4>
+                            <span class="text-gray-600">Total Evaluation</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-purple-600 text-white text-2xl"> <i class="ph-fill ph-graduation-cap"></i></span>
-                                <div id="course-progress" class="remove-tooltip-title rounded-tooltip-value"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xxl-3 col-sm-6">
+
+                <div class="col-12 col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="mb-2">18k+</h4>
-                            <span class="text-gray-600">Community Support</span>
+                            <h4 class="mb-2">@TotalEtudiants+</h4>
+                            <span class="text-gray-600">Total Etudiant</span>
                             <div class="flex-between gap-8 mt-16">
                                 <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-warning-600 text-white text-2xl"><i class="ph-fill ph-users-three"></i></span>
-                                <div id="community-support" class="remove-tooltip-title rounded-tooltip-value"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Widgets End -->
+
             <!-- Top Course Start -->
             @*             <div class="card mt-24">
                 <div class="card-body">
@@ -85,7 +75,6 @@
                         </div>
                     </div>
 
-                    <div id="doubleLineChart" class="tooltip-style y-value-left"></div>
 
                 </div>
             </div>
@@ -97,19 +86,19 @@
 
             <div class="dashboard-body bg-white card border  mt-24 ">
                 <!-- Titre ajouté au-dessus du champ de filtre -->
-                <div class="flex-between align-items-center mb-24">
-                    <h4 class="mb-4">Top 5 Cours</h4>
-                    <div class="breadcrumb-with-buttons flex-between flex-wrap gap-8">
-                        <div class="flex-align gap-8 flex-wrap">
-                            <div class="position-relative text-gray-500 flex-align gap-4 text-13">
-                                <span class="text-inherit">Selon: </span>
-                                <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
-                                    <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
-                                    <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnSortOptionChanged">
-                                        <option selected value="evaluation">Evaluation</option>
-                                        <option value="etudiants">Etudiants</option>
-                                    </select>
-                                </div>
+                <h4 class="mb-4">Statistiques de Top 5 Cours</h4>
+
+                <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8  p-4">
+                    <div class="flex-align gap-8 flex-wrap">
+                        <div class="position-relative text-gray-500 flex-align gap-4 text-13">
+                            <span class="text-inherit">Ordonner par: </span>
+                            <div class="flex-align text-gray-500 text-13 border border-gray-100 rounded-4 ps-20 focus-border-main-600 bg-white">
+                                <span class="text-lg"><i class="ph ph-funnel-simple"></i></span>
+                                <select id="statusFilter" class="form-control ps-8 pe-20 py-16 border-0 text-inherit rounded-4 text-center" @onchange="OnSortOptionChanged">
+                                    <option value="all">Tous</option>
+                                    <option value="evaluation">Evaluation</option>
+                                    <option value="etudiants">Etudiants</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -129,7 +118,7 @@
                                 <thead class="border border-gray-100 rounded-4">
                                     <tr>
                                         <th style="width: 25%; text-align: center;">Cours</th>
-                                        <th style="width: 25%; text-align: center;">Description</th>
+                                        <th style="width: 25%; text-align: center;">Catégorie</th>
                                         <th style="width: 25%; text-align: center;">Evaluations</th>
                                         <th style="width: 25%; text-align: center;">Etudiants Inscrits</th>
                                     </tr>
@@ -142,7 +131,7 @@
                                                 <span class="h6 mb-0 fw-medium text-gray-300">@cours.Nom</span>
                                             </td>
                                             <td style="text-align: center;">
-                                                <span class="h6 mb-0 fw-medium text-gray-300">@cours.Description</span>
+                                                <span class="h6 mb-0 fw-medium text-gray-300">@cours.Category</span>
                                             </td>
                                             <td style="text-align: center;">
                                                 <span class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
@@ -168,6 +157,10 @@
                     <p>Aucun cours trouvé pour cet enseignant.</p>
                 }
             </div>
+            <div class="card border dashboard-body  mt-24 p-6">
+                <ChartEtudiant />
+
+            </div>
 
             <!-- Top Course End -->
             <!-- Top Course Start -->
@@ -188,113 +181,19 @@
             <!-- Top Course End -->
         </div>
 
-        <div class="col-lg-3">
-            <!-- Calendar Start -->
-            <div class="card">
-                <div class="card-body">
-                    <div class="calendar">
-                        <div class="calendar__header">
-                            <button type="button" class="calendar__arrow left"><i class="ph ph-caret-left"></i></button>
-                            <p class="display h6 mb-0">""</p>
-                            <button type="button" class="calendar__arrow right"><i class="ph ph-caret-right"></i></button>
-                        </div>
-
-                        <div class="calendar__week week">
-                            <div class="calendar__week-text">Su</div>
-                            <div class="calendar__week-text">Mo</div>
-                            <div class="calendar__week-text">Tu</div>
-                            <div class="calendar__week-text">We</div>
-                            <div class="calendar__week-text">Th</div>
-                            <div class="calendar__week-text">Fr</div>
-                            <div class="calendar__week-text">Sa</div>
-                        </div>
-                        <div class="days"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- Calendar End -->
-            <!-- Assignment Start -->
-            <div class="card mt-24">
-                <div class="card-body">
-                    <div class="mb-20 flex-between flex-wrap gap-8">
-                        <h4 class="mb-0">Assignments</h4>
-                        <a href="assignment.html" class="text-13 fw-medium text-main-600 hover-text-decoration-underline">See All</a>
-                    </div>
-                    <div class="p-xl-4 py-16 px-12 flex-between gap-8 rounded-8 border border-gray-100 hover-border-gray-200 transition-1 mb-16">
-                        <div class="flex-align flex-wrap gap-8">
-                            <span class="text-main-600 bg-main-50 w-44 h-44 rounded-circle flex-center text-2xl flex-shrink-0"><i class="ph-fill ph-graduation-cap"></i></span>
-                            <div>
-                                <h6 class="mb-0">Do The Research</h6>
-                                <span class="text-13 text-gray-400">Due in 9 days</span>
-                            </div>
-                        </div>
-                        <a href="assignment.html" class="text-gray-900 hover-text-main-600"><i class="ph ph-caret-right"></i></a>
-                    </div>
-                    <div class="p-xl-4 py-16 px-12 flex-between gap-8 rounded-8 border border-gray-100 hover-border-gray-200 transition-1 mb-16">
-                        <div class="flex-align flex-wrap gap-8">
-                            <span class="text-main-600 bg-main-50 w-44 h-44 rounded-circle flex-center text-2xl flex-shrink-0"><i class="ph ph-code"></i></span>
-                            <div>
-                                <h6 class="mb-0">PHP Dvelopment</h6>
-                                <span class="text-13 text-gray-400">Due in 2 days</span>
-                            </div>
-                        </div>
-                        <a href="assignment.html" class="text-gray-900 hover-text-main-600"><i class="ph ph-caret-right"></i></a>
-                    </div>
-                    <div class="p-xl-4 py-16 px-12 flex-between gap-8 rounded-8 border border-gray-100 hover-border-gray-200 transition-1">
-                        <div class="flex-align flex-wrap gap-8">
-                            <span class="text-main-600 bg-main-50 w-44 h-44 rounded-circle flex-center text-2xl flex-shrink-0"><i class="ph ph-bezier-curve"></i></span>
-                            <div>
-                                <h6 class="mb-0">Graphic Design</h6>
-                                <span class="text-13 text-gray-400">Due in 5 days</span>
-                            </div>
-                        </div>
-                        <a href="assignment.html" class="text-gray-900 hover-text-main-600"><i class="ph ph-caret-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            <!-- Assignment End -->
-            <!-- Progress Bar Start -->
-            <div class="card mt-24">
-                <div class="card-header border-bottom border-gray-100">
-                    <h5 class="mb-0">My Progress</h5>
-                </div>
-                <div class="card-body">
-                    <div id="radialMultipleBar"></div>
-
-                    <div class="">
-                        <h6 class="text-lg mb-16 text-center"> <span class="text-gray-400">Total hour:</span> 6h 32 min</h6>
-                        <div class="flex-between gap-8 flex-wrap">
-                            <div class="flex-align flex-column">
-                                <h6 class="mb-6">60/60</h6>
-                                <span class="w-30 h-3 rounded-pill bg-main-600"></span>
-                                <span class="text-13 mt-6 text-gray-600">Completed</span>
-                            </div>
-                            <div class="flex-align flex-column">
-                                <h6 class="mb-6">60/60</h6>
-                                <span class="w-30 h-3 rounded-pill bg-main-two-600"></span>
-                                <span class="text-13 mt-6 text-gray-600">Completed</span>
-                            </div>
-                            <div class="flex-align flex-column">
-                                <h6 class="mb-6">60/60</h6>
-                                <span class="w-30 h-3 rounded-pill bg-gray-500"></span>
-                                <span class="text-13 mt-6 text-gray-600">Completed</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Progress bar end -->
-        </div>
 
     </div>
 </div>
 
 @code {
-
     private string? EnseignantId;
     private List<TopCoursDto>? topCours;
     List<Cours> Top3cours = new();
     private bool isLoading = true;
+    private int TotalCours;
+    private int TotalEtudiants;
+    private double TotalEvaluations;
+    private string? ErrorMessage;
     private string sortOption = "evaluation"; // Variable to hold the selected sorting option
 
     protected override async Task OnInitializedAsync()
@@ -314,19 +213,37 @@
                     topCours = await CoursService.GetTop5EvaluationCoursByEnseignantAsync(EnseignantId);
                     Top3cours = await CoursService.GetTop3RatedCoursByEnseignantIdAsync(EnseignantId);
                 }
+                if (topCours == null || topCours.Count == 0)
+                {
+                    Console.WriteLine("Aucun cours trouvé pour cet enseignant.");
+                }
+
+                // Récupérer les statistiques pour l'enseignant connecté
+                var stats = await EnseignantService.GetEnseignantStatsAsync(EnseignantId);
+
+                if (stats != default) // Vérification correcte pour un tuple
+                {
+                    TotalCours = stats.totalCours;
+                    TotalEtudiants = stats.totalEtudiants;
+                    TotalEvaluations = stats.totalEvaluations;
+                }
                 else
                 {
-                    Console.WriteLine("ID de l'enseignant introuvable.");
+                    ErrorMessage = "Impossible de récupérer les statistiques de l'enseignant.";
                 }
             }
+
             else
             {
                 Console.WriteLine("Utilisateur non authentifié.");
             }
+
+
+
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur : {ex.Message}");
+            ErrorMessage = $"Une erreur s'est produite : {ex.Message}";
         }
         finally
         {
@@ -366,7 +283,5 @@
                                        "bg-warning-50 text-warning-600",
                                        "bg-info-50 text-info-600",
                                        "bg-danger-50 text-danger-600",
-                                                          };
-
-
+        };
 }
