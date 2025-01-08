@@ -56,7 +56,7 @@ async Task SeedDataAsync(IServiceProvider serviceProvider)
     var enseignantUser = await userManager.FindByEmailAsync("enseignantmain@gmail.com");
     if (enseignantUser == null)
     {
-        enseignantUser = new ApplicationUser
+        enseignantUser = new Enseignant
         {
             UserName = "Enseignant",
             FormalUserName = "Enseignant",
@@ -74,7 +74,7 @@ async Task SeedDataAsync(IServiceProvider serviceProvider)
     var etudiantUser = await userManager.FindByEmailAsync("etudiantmain@gmail.com");
     if (etudiantUser == null)
     {
-        etudiantUser = new ApplicationUser
+        etudiantUser = new Etudiant
         {
             UserName = "Etudiant",
             FormalUserName = "Etudiant",
@@ -211,6 +211,8 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IEnseignantService, EnseignantService>();
 builder.Services.AddScoped<IEtudiantService, EtudiantService>();
+builder.Services.AddScoped<IMentorFollowService, MentorFollowService>();
+builder.Services.AddScoped<IMentorRatingService, MentorRatingService>();
 //AbonnementService
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IAbonnementService, AbonnementService>();

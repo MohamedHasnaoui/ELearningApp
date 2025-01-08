@@ -4,6 +4,11 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
 @inject ICoursService CoursService
+@inject IMentorFollowService MentorFollowService
+@inject IMentorRatingService MentorRatingService
+@inject NavigationManager NavManager
+@inject ApplicationDbContext Context
+
 <PageTitle>Mentors</PageTitle>
 
 <div class="dashboard-body">
@@ -81,7 +86,7 @@
                                         <span class="h6 mb-0 fw-medium text-gray-300">@courseCounts[enseignant.Id]</span>
                                     </td>
                                     <td>
-                                        <span class="h6 mb-0 fw-medium text-gray-300">@(i + 2)</span>
+                                        <span class="h6 mb-0 fw-medium text-gray-300">@Rating[enseignant.Id]</span>
                                     </td>
                                     @if (isAdmin)
                                     {
@@ -137,10 +142,15 @@
                                 <div class="mentor-card rounded-8 overflow-hidden">
                                     <div class="mentor-card__cover position-relative">
                                         <img src=@(enseignant.imgCover ?? "assets/images/thumbs/mentor-cover-img5.png") alt="" class="cover-img">
-                                        <button type="button" class="follow-btn py-2 px-8 flex-align gap-4 text-13 fw-medium text-white border border-white rounded-pill position-absolute inset-block-start-0 inset-inline-end-0 mt-8 me-8 transition-1 active">
-                                            <i class="ph ph-plus d-flex"></i>
-                                            <span class="text">Follow</span>
-                                        </button>
+                                        @if (!isEnseignant)
+                                        {
+                                            <button type="button" @onclick="() => ToggleFollow(enseignant.Id)"
+                                            class="follow-btn py-2 px-8 flex-align gap-4 text-13 fw-medium text-white border border-white rounded-pill position-absolute inset-block-start-0 inset-inline-end-0 mt-8 me-8 transition-1 @((followStatus.ContainsKey(enseignant.Id) && followStatus[enseignant.Id]) ? "active" : "")">
+                                                <i class="ph ph-plus d-flex"></i>
+                                                <span class="text">@GetFollowText(enseignant.Id)</span>
+                                            </button>
+
+                                        }
                                     </div>
                                     <div class="mentor-card__content text-center">
                                         <div class="w-56 h-56 rounded-circle overflow-hidden border border-white d-inline-block">
@@ -162,8 +172,8 @@
                                             </div>
                                             <div class="flex-align gap-4">
                                                 <span class="text-15 fw-normal text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                                                <span class="text-13 fw-normal text-gray-600">4.8</span>
-                                                <span class="text-13 fw-normal text-gray-600">(750 Reviews)</span>
+                                                <span class="text-13 fw-normal text-gray-600">@Rating[enseignant.Id]</span>
+                                                <span class="text-13 fw-normal text-gray-600">(@RatingCounts[enseignant.Id] Reviews)</span>
                                             </div>
                                         </div>
                                     </div>
@@ -196,12 +206,17 @@
 @code {
     public List<Enseignant?> enseignants;
     private bool isAdmin;
+    private bool isEnseignant;
     private int CurrentPage = 1;
     private int PageSize = 8;
     private int TotalCount;
     private int pageNbs;
     private int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
     private Dictionary<string, int> courseCounts = new();
+    private Dictionary<string, double> Rating = new();
+    private Dictionary<string, int> RatingCounts = new();
+    private Dictionary<string, bool> followStatus = new();
+    private string Myid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -211,10 +226,19 @@
 
         // Check if the user is in the "Admin" role
         isAdmin = user.IsInRole("Admin");
-
-
+        isEnseignant = user.IsInRole("Enseignant");
         // etudiants = await EtudiantService.GetAllEtudiantsAsync();
         await LoadPage(1);
+        var myUser = Context.Etudiants.FirstOrDefault(myuser => myuser.UserName == user.Identity.Name);
+        var etudiantId = myUser.Id;
+
+        if (!string.IsNullOrEmpty(etudiantId))
+        {
+            foreach (var mentor in enseignants)
+            {
+                followStatus[mentor.Id] = await MentorFollowService.IsFollowingAsync(etudiantId, mentor.Id);
+            }
+        }
     }
     private async Task LoadPage(int pageNumber)
     {
@@ -229,6 +253,10 @@
             {
                 var count = await CoursService.GetAllCoursByEnseignantAsync(mentor.Id);
                 courseCounts[mentor.Id] = count.Count();
+                var count2 = await MentorRatingService.GetAverageRatingForMentorAsync(mentor.Id);
+                Rating[mentor.Id] = count2;
+                var count3 = await MentorRatingService.GetRatingsByMentorIdAsync(mentor.Id);
+                RatingCounts[mentor.Id] = count3.Count();
             }
         }
         catch (Exception ex)
@@ -271,11 +299,41 @@
 
         }
     }
+    private string GetFollowText(string mentorId)
+    {
+        return followStatus.ContainsKey(mentorId) && followStatus[mentorId] ? "Unfollow" : "Follow";
+    }
     private void ToggleAllCheckboxes(ChangeEventArgs e)
     {
         bool isChecked = (bool)e.Value;
         // Logic to toggle all checkboxes
     }
+    private async Task ToggleFollow(string mentorId)
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            var etudiantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value; // Use the student's ID
+            Console.WriteLine(etudiantId);
+            if (string.IsNullOrEmpty(etudiantId))
+            {
+                NavManager.NavigateTo("/Login");
+                return;
+            }
+
+            // Toggle follow/unfollow
+            await MentorFollowService.ToggleFollowMentorAsync(etudiantId, mentorId);
+
+            // Update the follow status in the dictionary
+            followStatus[mentorId] = !followStatus.ContainsKey(mentorId) || !followStatus[mentorId];
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error toggling follow status: {ex.Message}");
+        }
+    }
+
 }
 <script>
     function scrollToTop() {

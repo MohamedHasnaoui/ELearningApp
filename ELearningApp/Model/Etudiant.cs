@@ -1,4 +1,5 @@
-﻿using ELearningApp.Data;
+﻿using Blazorise;
+using ELearningApp.Data;
 
 namespace ELearningApp.Model
 {
@@ -8,6 +9,8 @@ namespace ELearningApp.Model
         public ICollection<CoursCommence> CoursCommences { get; set; }
         public ICollection<Soumission> Soumissions { get; set; }
         public ICollection<AbonnementAchete> AbonnementsAchetes { get; set; }
+        public ICollection<MentorRating> Ratings { get; set; }
+        public ICollection<MentorFollow> Following { get; set; }
 
         public Etudiant()
         {

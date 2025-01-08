@@ -25,7 +25,8 @@ namespace ELearningApp.Data
         public DbSet<AbonnementTemp> AbonnementTemps { get; set; }
         public DbSet<AbonnementAchete> AbonnementsAchetes { get; set; }
         public DbSet<Rating> Ratings { get; set; }
-
+        public DbSet<MentorRating> MentorRatings { get; set; }
+        public DbSet<MentorFollow> MentorFollows { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -34,7 +35,6 @@ namespace ELearningApp.Data
             builder.Entity<Etudiant>().ToTable("Etudiants");
             /* builder.Entity<AbonnementAchete>()
              .HasKey(a => new { a.IdEtudiant, a.IdAbonnement });*/
-
 
             builder.Entity<Abonnement>().HasData(
         new Abonnement

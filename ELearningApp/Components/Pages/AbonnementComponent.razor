@@ -216,7 +216,7 @@
         isAuthenticated = user.Identity.IsAuthenticated;
         if (isEnseignant)
         {
-            NavManager.NavigateTo("/");
+            NavManager.NavigateTo("/Login");
             return;
         }
         if (user.Identity?.IsAuthenticated == true)
