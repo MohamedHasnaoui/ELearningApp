@@ -40,7 +40,7 @@
                         </div>
                     </div>
                     <div class="card-body p-0 overflow-x-auto scroll-sm scroll-sm-horizontal">
-                        <table class="table style-two mb-0">
+                        <table class="table mb-0">
                             <thead class="border border-start-0 border-end-0">
                                 <tr>
                                     <th style="background-color: white !important">Titre du cours</th>
@@ -306,7 +306,8 @@
             if (somme != 0)
             {
                 pourcentageCompeleted = nbCourseCompleted * 100 / somme;
-                pourcentageOnGoing = nbCourseEnCours * 100 / somme;
+                pourcentageOnGoing = 100 - pourcentageCompeleted;
+
             }
         }
     }
