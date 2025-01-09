@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ELearningApp.Migrations
 {
     /// <inheritdoc />
-    public partial class merge : Migration
+    public partial class Test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -632,16 +632,6 @@ namespace ELearningApp.Migrations
                         principalTable: "CommentairesVideo",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Abonnements",
-                columns: new[] { "Id", "Caracteristiques", "Description", "Duree", "IsRecommanded", "Prix", "Type" },
-                values: new object[,]
-                {
-                    { 1, "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing", "Perfect plan for students", 1, false, 199, 0 },
-                    { 2, "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community", "For users who want to do more", 1, true, 299, 1 },
-                    { 3, "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community", "Your entire friends in one place", 1, false, 499, 2 }
                 });
 
             migrationBuilder.InsertData(

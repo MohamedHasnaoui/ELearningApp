@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250108185410_merge")]
-    partial class merge
+    [Migration("20250109085225_Test")]
+    partial class Test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,38 +144,6 @@ namespace ELearningApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Abonnements", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing",
-                            Description = "Perfect plan for students",
-                            Duree = 1,
-                            IsRecommanded = false,
-                            Prix = 199,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community",
-                            Description = "For users who want to do more",
-                            Duree = 1,
-                            IsRecommanded = true,
-                            Prix = 299,
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Caracteristiques = "Intro video the course, Interactive quizzes, Course curriculum, Community supports, Certificate of completion, Sample lesson showcasing, Access to course community",
-                            Description = "Your entire friends in one place",
-                            Duree = 1,
-                            IsRecommanded = false,
-                            Prix = 499,
-                            Type = 2
-                        });
                 });
 
             modelBuilder.Entity("ELearningApp.Model.AbonnementAchete", b =>
