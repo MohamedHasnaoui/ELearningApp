@@ -5,7 +5,7 @@
 @inject ICoursCommenceService CoursCommenceService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "Etudiant")]
+@* @attribute [Authorize(Roles = "Etudiant")] *@
 @inject IAbonnementAchete AbonnementAchete
 @rendermode InteractiveServer
 <PageTitle>Detail Cours</PageTitle>
@@ -183,6 +183,19 @@
                                     <NavLink href="@continueLink" class="btn btn-main rounded-pill py-11 w-100  mt-16">Continuer à regarder</NavLink>
                                 }
                             }
+                        </div>
+                    </div>
+                }
+                else if (Role == "Enseignant" || Role == "Admin")
+                {
+                    
+                }
+                else{
+                    <div class="card mt-24">
+                        <div class="card-body">
+                            <h5 class="mb-16">Commencer l'apprentissage</h5>
+                            <p class="text-gray-300">Prêt pour un nouveau voyage</p>
+                            <a href="/" class="btn btn-main rounded-pill py-11 w-100  mt-16">Commencer maintenant</a>
                         </div>
                     </div>
                 }
