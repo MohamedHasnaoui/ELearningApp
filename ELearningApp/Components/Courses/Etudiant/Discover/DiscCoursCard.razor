@@ -9,11 +9,17 @@
             </button>
             <div class="p-8">
                 <span class="text-13 py-2 px-10 rounded-pill @categoryStyle mb-16">@Category</span>
-                <h5 class="mb-0"><a href="course-details.html" class="hover-text-main-600">@CoursTitle</a></h5>
+                <h5 class="mb-0">
+                    <a @onclick="viewDetails" class="hover-text-main-600 cursor-pointer hover:underline">
+                        @CoursTitle
+                    </a>
+                </h5>
                 <div class="flex-align gap-8 flex-wrap mt-16">
-                    <img src="@ensImage" class="w-28 h-28 rounded-circle object-fit-cover" alt="User Image">
+                    <img src='@(ensImage ?? "assets/images/thumbs/mentor-img7.png")'
+                         class="w-28 h-28 rounded-circle object-fit-cover"
+                         alt="User Image">
                     <div>
-                        <span class="text-gray-600 text-13">Créé par <a href="profile.html" class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">@ensName</a> </span>
+                        <span class="text-gray-600 text-13">Créé par <a href="/Profile/@ensName" class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">@ensName</a> </span>
                     </div>
                 </div>
 
