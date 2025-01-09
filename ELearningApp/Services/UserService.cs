@@ -64,7 +64,24 @@ namespace ELearningApp.Services
             return _cachedUser;
         }
 
+        public async Task<ApplicationUser?> GetAuthenticatedUser2Async()
+        {
+            if (_cachedUser != null) return _cachedUser;
 
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    _cachedUser = await _userManager.FindByIdAsync(userId);
+                }
+            }
+
+            return _cachedUser;
+        }
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
         {
             return _userManager.Users.ToList();

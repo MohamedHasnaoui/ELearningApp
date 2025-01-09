@@ -52,7 +52,7 @@
 
         // Check if the user is in the "Admin" role
         isAuthenticated = user.Identity.IsAuthenticated;
-        AuthenticatedUser = await UserService.GetAuthenticatedUserAsync();
+        AuthenticatedUser = await UserService.GetAuthenticatedUser2Async();
     }
 }
 

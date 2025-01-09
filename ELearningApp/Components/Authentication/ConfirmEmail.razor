@@ -9,7 +9,7 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Confirm email</PageTitle>
+<PageTitle>Confirmation de l'e-mail</PageTitle>
 
 <div class="auth-left bg-main-50 flex-center p-24">
     <img src="assets/images/thumbs/auth-img1.png" alt="">
@@ -24,7 +24,7 @@
             <div class="alert alert-danger" role="alert">
                 @statusMessage
             </div>
-            <a href="/Register" class="btn btn-main rounded-pill w-100">Go To Re Register</a>
+            <a href="/Register" class="btn btn-main rounded-pill w-100">Aller à la réinscription</a>
         }
     </div>
 </div>
@@ -45,27 +45,26 @@
     {
         if (UserId is null || Code is null)
         {
-            Console.WriteLine("null user or code");
+            Console.WriteLine("Utilisateur ou code nul");
             RedirectManager.RedirectTo("");
         }
 
         var user = await UserManager.FindByIdAsync(UserId);
         if (user is null)
         {
-            Console.WriteLine("Error loading user with ID");
+            Console.WriteLine("Erreur lors du chargement de l'utilisateur avec l'ID");
             HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            statusMessage = $"Error loading user with ID {UserId}";
+            statusMessage = $"Erreur lors du chargement de l'utilisateur avec l'ID {UserId}";
         }
         else
         {
-            Console.WriteLine("Email confirm");
+            Console.WriteLine("Confirmation de l'e-mail");
             var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
             var result = await UserManager.ConfirmEmailAsync(user, code);
-            statusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+            statusMessage = result.Succeeded ? "Merci d'avoir confirmé votre e-mail." : "Erreur lors de la confirmation de votre e-mail.";
             if (result.Succeeded)
             {
                 RedirectManager.RedirectTo("/Login");
-
             }
         }
     }
