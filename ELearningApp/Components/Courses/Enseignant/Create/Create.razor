@@ -71,7 +71,6 @@
     private async Task publishCourse(){
         double dureetotal = 0;
         int nbVid = 0;
-        try{
             Cours cours = await refpart0.SaveToDateBase();
             var sections = await refpart1.SaveToDateBase(cours.Id);
             var res = await refpart2.SaveToDateBase(sections);
@@ -81,8 +80,5 @@
             cours.Duree = dureetotal;
             cours.nbVids = nbVid;
             await CoursService.UpdateAsync(cours);
-        }catch(Exception ex){
-            Console.WriteLine("error while saving to db ....");
-        }
     }
 }
