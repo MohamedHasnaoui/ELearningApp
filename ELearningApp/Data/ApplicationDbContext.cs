@@ -21,6 +21,7 @@ namespace ELearningApp.Data
         public DbSet<CoursCommence> CoursCommences { get; set; }
         public DbSet<Etudiant> Etudiants { get; set; }
         public DbSet<Enseignant> Enseignants { get; set; }
+        public DbSet<Post> Posts { get; set; }
         public DbSet<Abonnement> Abonnements { get; set; }
         public DbSet<AbonnementTemp> AbonnementTemps { get; set; }
         public DbSet<AbonnementAchete> AbonnementsAchetes { get; set; }
@@ -46,6 +47,12 @@ namespace ELearningApp.Data
             .WithMany(e => e.AbonnementsAchetes)
             .HasForeignKey(a => a.IdEtudiant)
             .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Post>()
+    .HasOne(p => p.Enseignant)
+    .WithMany(e => e.Posts)
+    .HasForeignKey(p => p.EnseignantId)
+    .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<AbonnementAchete>()
            .HasOne(a => a.Abonnement)
