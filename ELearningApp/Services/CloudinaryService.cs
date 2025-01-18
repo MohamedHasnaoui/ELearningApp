@@ -54,6 +54,21 @@ namespace ELearningApp.Services
             // Return the URL of the uploaded image
             return uploadResult;
         }
+
+
+        public async Task<string> UploadPostImageAsync(string filePath)
+        {
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(filePath)
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            return uploadResult.SecureUrl.ToString(); // URL sécurisée de l'image
+        }
+
+
+
         public async Task<bool> DeleteAsync(string publicId, ResourceType type)
         {
             var deletionParams = new DeletionParams(publicId)

@@ -4,6 +4,7 @@ using ELearningApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250115102239_Merge")]
+    partial class Merge
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -482,42 +485,6 @@ namespace ELearningApp.Migrations
                     b.HasIndex("EtudiantId");
 
                     b.ToTable("MentorRatings");
-                });
-
-            modelBuilder.Entity("ELearningApp.Model.Post", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("EnseignantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("contenu")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("datePub")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("image")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("titre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("videoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EnseignantId");
-
-                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("ELearningApp.Model.Question", b =>
@@ -1003,17 +970,6 @@ namespace ELearningApp.Migrations
                     b.Navigation("Etudiant");
                 });
 
-            modelBuilder.Entity("ELearningApp.Model.Post", b =>
-                {
-                    b.HasOne("ELearningApp.Model.Enseignant", "Enseignant")
-                        .WithMany("Posts")
-                        .HasForeignKey("EnseignantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Enseignant");
-                });
-
             modelBuilder.Entity("ELearningApp.Model.Question", b =>
                 {
                     b.HasOne("ELearningApp.Model.Examen", "Examen")
@@ -1228,8 +1184,6 @@ namespace ELearningApp.Migrations
                     b.Navigation("CoursCrees");
 
                     b.Navigation("Followers");
-
-                    b.Navigation("Posts");
 
                     b.Navigation("Ratings");
                 });
