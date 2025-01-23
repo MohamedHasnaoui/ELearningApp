@@ -1,0 +1,62 @@
+﻿@inject ICoursCommenceService CoursCommenceService
+@inject ICoursService CoursService
+@inject ICloudinaryService CloudinaryService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+<div class="col-lg-4 col-sm-6">
+    <div class="card border border-gray-100">
+        <div class="card-body p-8">
+            <div class="bg-main-100 rounded-8 overflow-hidden text-center mb-8 h-164 flex-center p-8">
+                <div class="bg-image" style="background-image: url(@coursimg); width: 100%; height: 100%; background-size: cover; background-position: center;">
+                </div>
+            </div>
+            <div class="p-8">
+                <span class="text-13 py-2 px-10 rounded-pill @categoryStyle mb-16">@Category</span>
+                <h5 class="mb-0"><a href="course-details.html" class="hover-text-main-600">@CoursTitle</a></h5>
+
+                <div class="flex-between flex-wrap mt-16">
+                    <div class="flex-align flex-wrap gap-4">
+                        <div class="flex-align">
+                            <img src="assets/images/thumbs/user-img3.png" alt="" class="w-28 h-28 rounded-circle border border-2 border-white">
+                            <img src="assets/images/thumbs/user-img4.png" alt="" class="w-28 h-28 rounded-circle border border-2 border-white ms-n12">
+                            <img src="assets/images/thumbs/user-img1.png" alt="" class="w-28 h-28 rounded-circle border border-2 border-white ms-n12">
+                            <img src="assets/images/thumbs/user-img2.png" alt="" class="w-28 h-28 rounded-circle border border-2 border-white ms-n12">
+                            <img src="assets/images/thumbs/user-img5.png" alt="" class="w-28 h-28 rounded-circle border border-2 border-white ms-n12">
+                        </div>
+                        <span class="text-gray-500 text-15 fw-medium">@studentnb</span>
+                    </div>
+                    <button class="wishlist-btn h-32 w-32 flex-center bg-gray-50 rounded-circle text-danger-600 text-md transition-2"> <i class="ph-fill ph-heart"></i></button>
+                </div>
+
+                <div class="flex-between gap-8 mt-12 pt-12 border-top border-gray-100">
+                    <div class="flex-align gap-4">
+                        <span class="text-sm text-main-600 d-flex"><i class="ph ph-clock"></i></span>
+                        <span class="text-13 text-gray-600">@Duree</span>
+                    </div>
+                    <div class="flex-align gap-4">
+                        <span class="text-15 fw-bold text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
+                        <span class="text-13 fw-bold text-gray-600">@(Rating == null ? 0 : Rating.Value.ToString("0.0")) </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter] public string? CoursTitle { get; set; }
+    [Parameter] public string? Category { get; set; }
+    [Parameter] public double? Rating { get; set; }
+    [Parameter] public string? Duree { get; set; }
+    [Parameter] public int? coursId { get; set; }
+    [Parameter] public string coursimg { get; set; }
+    [Parameter] public string categoryStyle { get; set; }
+    private int studentnb;
+    private bool IsDeleteCourseModalOpen = false;
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(100);
+        if (coursId != null)
+            studentnb = await CoursCommenceService.CountByCoursIdAsync(coursId.Value);
+    }
+   
+}
