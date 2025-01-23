@@ -1,4 +1,5 @@
-$(document).ready(function() {
+window.initEventsJs = function () {
+$(document).ready(function () {
     var date = new Date();
       var d = date.getDate();
       var m = date.getMonth();
@@ -6279,7 +6280,7 @@ function HorizontalPositionCache(getElement) {
 
 })(jQuery);
 
-
+}
 
 
 
