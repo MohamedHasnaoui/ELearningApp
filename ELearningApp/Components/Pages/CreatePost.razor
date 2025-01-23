@@ -1,0 +1,365 @@
+﻿@rendermode InteractiveServer
+@inject ICloudinaryService CloudinaryService
+@inject IUserService UserService
+@inject IPostService PostService
+@inject IVideoService VideoService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if(isEnseignant){
+
+    <div class="card mt-5 p-10">
+
+        <h3>Ajouter un nouveau post</h3>
+
+        <EditForm Model="post" OnValidSubmit="HandleValidSubmit" FormName="createPostForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-12 mt-24">
+                <InputText @bind-Value="post.titre" class="form-control" placeholder="Titre du Post" />
+            </div>
+
+            <div class="editor style-two">
+                <InputTextArea @bind-Value="post.contenu" class="form-control" placeholder="Écrivez quelque chose de nouveau..." />
+            </div>
+            <div>
+
+
+
+
+                @if (!string.IsNullOrEmpty(ThumbnailImageError))
+                {
+                    <div class="text-danger my-3 text-sm" role="alert">
+                        @ThumbnailImageError
+                    </div>
+                }
+            </div>
+
+            <div>
+
+
+                <div class=" d-flex flex-column align-content-center justify-content-center">
+
+
+                    @if (!string.IsNullOrEmpty(coursImgUrl))
+                    {
+                        <div class="uploaded-image-preview position-relative mt-10 ">
+                            <div class="image-upload__boxInner w-100">
+                                <img src="@coursImgUrl" alt="Aperçu de l'image" class="file-upload image-upload__box w-100 " />
+
+                            </div>
+                            <button type="button" @onclick="HandleImageDelete"
+                                    class="delete-item-btn position-absolute top-0 end-0  text-15  hover-bg-gray-50 text-gray-300  rounded-8 fw-normal text-xs d-block text-start">
+                                <span class="delete-icon">
+                                    <i class="fa fa-times"></i>
+                                </span>
+                            </button>
+                        </div>
+                    }
+
+                    @if (Video != null)
+                    {
+                        <div class="upload-card-item p-16 rounded-12 position-relative bg-main-50 mb-20 mt-5 ">
+                            <div class="flex-between flex-wrap gap-4 position-relative">
+                                <div class="flex-align gap-10">
+                                    <img src="@Video.Thumbnail" alt="Thumbnail" class="w-88 h-56 rounded-8">
+                                    <div>
+                                        <p class="text-15 text-gray-500">@Video.Title</p>
+                                        <p class="text-13 text-gray-600">@Video.FormatDuration()</p>
+                                    </div>
+                                </div>
+
+                                <!-- Bouton de suppression -->
+                                <button type="button" @onclick="DeleteVideo"
+                                        class="delete-item-btn position-absolute top-0 end-0 bg-transparent border-0 text-gray-300 p-2 rounded-circle">
+                                    <span class="delete-icon">
+                                        <i class="fa fa-times"></i> <!-- Icône de croix -->
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+
+                    }
+
+                </div>
+
+
+                <!-- Video Upload -->
+                <div class="flex-align flex-wrap gap-8 mt-22 ">
+
+
+                    <p class="text-15 text-gray-500">
+                        <label for="video" class="text-main-600 cursor-pointer flex-center w-26 h-26 text-gray-600 bg-gray-50 hover-bg-gray-100 rounded-circle text-md ">
+                            <i class="ph ph-video-camera"></i>
+                        </label>
+                        <InputFile OnChange="SetVideoFile" id="video" accept="video/mp4,video/x-m4v,video/*" hidden />
+                    </p>
+
+                    <label for="coursImg" class="file-upload  ">
+                        <!-- Image Upload -->
+
+                        <div class="flex-center w-26 h-26 cursor-pointer text-gray-600 bg-gray-50 hover-bg-gray-100 rounded-circle text-md">
+                            <i class="ph ph-image"></i>
+                        </div>
+                        <InputFile type="file" id="coursImg" onchange="HandleThumbnailImageChange" accept=".png,.jpg,.jpeg" hidden />
+                    </label>
+
+                </div>
+                @if (!string.IsNullOrEmpty(uploadingmsg))
+                {
+                    <p class="text-main-600 cursor-pointer">@uploadingmsg</p>
+                }
+
+
+
+            </div>
+
+
+            <button type="submit" class="btn btn-main rounded-pill py-9  mt-22 ">Publier maintenant</button>
+        </EditForm>
+
+
+
+
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success mt-3">
+                @successMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-3">
+                @errorMessage
+            </div>
+        }
+
+    </div>
+
+
+}
+
+@code {
+    private Post post = new Post();
+    private string? EnseignantId = "";
+    private bool isAuthenticated;
+    private bool isEnseignant;
+
+    private bool imageUpload;
+    private string? successMessage;
+    private string? errorMessage;
+    private bool isImageUploaded = false; // Indicateur si une image a été téléchargée
+    private bool isVideoUploaded = false;
+    public string uploadingmsg = "";
+    public Video Video { get; set; }
+
+    // Form fields
+    private IBrowserFile ThumbnailImage;
+
+
+
+    public string coursImgUrl;
+    private string imgPublicId;
+
+    // Error messages
+    private string ThumbnailImageError;
+    private string TitleError;
+    private string DescriptionError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //categoryCoursList = await CategoryCoursService.GetAllCategoriesAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isAuthenticated = user.Identity?.IsAuthenticated == true;
+        isEnseignant = user.IsInRole("Enseignant");
+
+        if (isAuthenticated)
+        {
+            EnseignantId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(EnseignantId))
+            {
+                post.EnseignantId = EnseignantId;
+            }
+        }
+    }
+
+
+    private async Task SetVideoFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File; // Récupère le fichier sélectionné
+        if (file != null && !isImageUploaded)
+        {
+            uploadingmsg = "Téléversement en cours... veuillez patienter";
+            using var stream = file.OpenReadStream(maxAllowedSize: 100000000);
+            var res = await CloudinaryService.UploadVideoAsync(stream, file.Name.Replace(".mp4", ""));
+
+            Video = new Video()
+                {
+                    VidPublicId = res.PublicId,
+                    Title = file.Name.Replace(".mp4", ""),
+                    Duree = res.Duration,
+                    Thumbnail = res.SecureUrl.ToString().Remove(res.SecureUrl.ToString().Length - 3) + "jpg",
+                    VideoUrl = res.SecureUrl.ToString()
+                };
+            uploadingmsg = "Téléversement terminé";
+            post.videoUrl = Video.VideoUrl;
+            post.image = null;
+            isVideoUploaded = true;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteVideo()
+    {
+        if (Video != null)
+        {
+            await CloudinaryService.DeleteAsync(Video.VidPublicId, CloudinaryDotNet.Actions.ResourceType.Video);
+            Video = null;
+            post.videoUrl = null;
+            isVideoUploaded = false;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleThumbnailImageChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null  && !isVideoUploaded)
+        {
+            var allowedTypes = new[] { "image/png", "image/jpeg" };
+            if (!allowedTypes.Contains(file.ContentType))
+            {
+                ThumbnailImageError = "Seuls les fichiers PNG et JPEG sont autorisés.";
+                return;
+            }
+
+            if (file.Size > 5 * 1024 * 1024) // 5MB limit
+            {
+                ThumbnailImageError = "La taille du fichier doit être inférieure à 5MB.";
+                return;
+            }
+
+            ThumbnailImage = file;
+            Stream stream = file.OpenReadStream();
+            var res = await CloudinaryService.UploadImageAsync(stream, file.Name);
+
+            coursImgUrl = res.SecureUrl.ToString(); // L'URL de l'image Cloudinary
+
+            // Lier l'URL de l'image au modèle 'post'
+            post.image = coursImgUrl;
+            post.videoUrl = null;
+            isImageUploaded = true;
+
+            imageUpload=true;
+            if (!string.IsNullOrEmpty(imgPublicId))
+            {
+                await CloudinaryService.DeleteAsync(imgPublicId, CloudinaryDotNet.Actions.ResourceType.Image);
+            }
+            imgPublicId = res.PublicId;
+            ThumbnailImageError = null;
+        }
+        else
+        {
+            ThumbnailImageError = "L'image de la miniature est requise.";
+        }
+    }
+
+ 
+
+   
+
+    
+  
+    private async Task HandleImageDelete()
+    {
+        if (!string.IsNullOrEmpty(imgPublicId))
+        {
+            try
+            {
+                // Supprimer l'image de Cloudinary
+                await CloudinaryService.DeleteAsync(imgPublicId, CloudinaryDotNet.Actions.ResourceType.Image);
+                isImageUploaded = false;
+
+                imgPublicId = null; // Réinitialiser l'identifiant public de l'image
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Erreur lors de la suppression de l'image : {ex.Message}";
+                return;
+            }
+        }
+
+        // Réinitialiser les variables liées à l'image localement
+        coursImgUrl = null;
+        ThumbnailImage = null;
+        imageUpload = false;
+        successMessage = "Image supprimée avec succès.";
+        StateHasChanged(); // Mettre à jour l'interface utilisateur
+    }
+
+
+
+    private async Task HandleValidSubmit()
+    {
+        successMessage = null;
+        errorMessage = null;
+
+        // Validation des champs requis
+        if (string.IsNullOrEmpty(EnseignantId))
+        {
+            errorMessage = "Impossible de récupérer l'ID de l'utilisateur.";
+            return;
+        }
+
+        try
+        {
+            // Création du post
+            await PostService.CreatePostAsync(post);
+
+            ResetForm();
+            successMessage = "Post créé avec succès !";
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Une erreur s'est produite lors de la création du post. Veuillez réessayer.";
+            Console.WriteLine($"Erreur : {ex.Message}");
+        }
+    }
+
+    private void ResetForm()
+    {
+        post = new Post { EnseignantId = EnseignantId };
+    } 
+}
+<script>
+    $(function() {
+        function handleFiles(files) { // Assuming only one file is selected
+            var file = files[0];
+            var fileName = files.name;
+            var fileSize = (file.size / 1024).toFixed(2) + " KB";
+            var fileType = file.type;
+            var preview = fileType.startsWith("image")
+                ? `<img src="${URL.createObjectURL(file)}" alt="${fileName}" class="image-upload__image" height="30">`
+                : ` <span class="image-upload__anotherFileIcon"> <i class="fas fa-file"></i></span>`;
+
+            // Update the content of the file upload area
+            $('.image-upload__boxInner').html(`
+                ${preview}
+            `);
+        }
+         $(`#coursImg`).change(function () {
+            console.log("changed");
+            handleFiles(this.files);
+        });
+            console.log("changed1");
+
+    });
+</script>
