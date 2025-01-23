@@ -16,6 +16,8 @@ namespace ELearningApp.Data
         public DateTime joinDate { get; set; } = DateTime.UtcNow;
         public ICollection<CommentaireVideo> CommentairesVideos { get; set; }
         public ICollection<ReponseCommentaire> ReponsesCommentaires { get; set; }
+        public ICollection<Message> SentMessages { get; set; } = new List<Message>();
+        public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
         public ApplicationUser()
         {
             CommentairesVideos = new HashSet<CommentaireVideo>();
