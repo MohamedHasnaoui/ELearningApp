@@ -2,12 +2,14 @@ using CloudinaryDotNet;
 using ELearningApp.Components;
 using ELearningApp.Components.Account;
 using ELearningApp.Data;
+using ELearningApp.Hubs;
 using ELearningApp.IServices;
 using ELearningApp.Model;
 using ELearningApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -210,10 +212,17 @@ builder.Services.AddAuthentication(options =>
 })
     .AddIdentityCookies();
 
+builder.Services.AddResponseCompression(options =>
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] {"application/octet-stream"})
+    );
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString),
     ServiceLifetime.Transient);
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString),
+    ServiceLifetime.Transient);
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -256,19 +265,30 @@ builder.Services.AddScoped<IEnseignantService, EnseignantService>();
 builder.Services.AddScoped<IEtudiantService, EtudiantService>();
 builder.Services.AddScoped<IMentorFollowService, MentorFollowService>();
 builder.Services.AddScoped<IMentorRatingService, MentorRatingService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddTransient<IRatingService, RatingService>();
+builder.Services.AddSingleton<IMessageHub, MessageHub>();
+
 //AbonnementService
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IAbonnementService, AbonnementService>();
 builder.Services.AddTransient<IPayment, PaymentS>();
 builder.Services.AddTransient<IAbonnementAchete, AbonnementAcheteService>();
 builder.Services.AddTransient<IAbonnementTempService, AbonnementTempService>();
-builder.Services.AddTransient<IRatingService, RatingService>();
 
 /*builder.Services.AddHttpClient<IPayment, PaymentS>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7134/"); // Remplacez par l'URL correcte de votre backend
 });
 */
+builder.Services.AddSignalR().AddHubOptions<MessageHub>(options =>
+{
+    options.EnableDetailedErrors = true;
+});
+builder.Services.AddSignalR(options =>
+{
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+}).AddMessagePackProtocol();
 
 var app = builder.Build();
 app.MapControllers();
@@ -285,9 +305,10 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
@@ -295,12 +316,18 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+//app.MapHub<MessageHub>("/messageHub");
+
+
+// Map SignalR hub
+app.MapHub<MessageHub>("/messageHub");
+
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await SeedDataAsync(services);
     await SeedAbonnementsAsync(services);
 }
-
 
 app.Run();

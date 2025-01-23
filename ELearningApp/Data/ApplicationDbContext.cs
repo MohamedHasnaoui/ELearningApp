@@ -8,6 +8,7 @@ namespace ELearningApp.Data
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
         public DbSet<Cours> Cours { get; set; }
+        public DbSet<Event> Events { get; set; }
         public DbSet<CategoryCours> CategoriesCours { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Video> Videos { get; set; }
@@ -27,6 +28,7 @@ namespace ELearningApp.Data
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<MentorRating> MentorRatings { get; set; }
         public DbSet<MentorFollow> MentorFollows { get; set; }
+        public DbSet<Message> Messages { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -35,8 +37,18 @@ namespace ELearningApp.Data
             builder.Entity<Etudiant>().ToTable("Etudiants");
             /* builder.Entity<AbonnementAchete>()
              .HasKey(a => new { a.IdEtudiant, a.IdAbonnement });*/
+            builder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany(u=>u.SentMessages) // If Sender has a collection of Messages, specify it here, e.g., `.WithMany(u => u.SentMessages)`
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete if necessary
 
-            
+            builder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany(u=>u.ReceivedMessages) // If Receiver has a collection of Messages, specify it here, e.g., `.WithMany(u => u.ReceivedMessages)`
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Map Enseignant to its table
             builder.Entity<Enseignant>().ToTable("Enseignants");
             builder.Entity<Abonnement>().ToTable("Abonnements");
