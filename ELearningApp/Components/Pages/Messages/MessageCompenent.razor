@@ -462,7 +462,6 @@
 
     public async ValueTask DisposeAsync()
     {
-        Console.WriteLine($"DisposeAsync called from {AuthenticatedUser?.FormalUserName}.1111111111111111111111111111111111111111");
 
         if (HubConnection is not null)
         {
