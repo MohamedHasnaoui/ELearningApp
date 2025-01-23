@@ -81,8 +81,14 @@
                     IdEtudiant = EtudiantId,
                     IdAbonnement = abonnementId
                 };
+                // Construct the dynamic endpoint URL
+                string endpoint = "api/payment/webhook";
+                string fullUrl = $"{Navigation.BaseUri.TrimEnd('/')}/{endpoint}";
 
-                var response = await Http.PostAsJsonAsync("https://localhost:7134/api/payment/webhook", requestData);
+                // Make the POST request
+                var response = await Http.PostAsJsonAsync(fullUrl, requestData);
+
+                // var response = await Http.PostAsJsonAsync("https:localhost:7134/api/payment/webhook", requestData);
 
                 if (response.IsSuccessStatusCode)
                 {

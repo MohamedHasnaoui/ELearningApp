@@ -21,9 +21,10 @@ namespace ELearningApp.Controllers
             {
                 return BadRequest(new { Message = "Invalid id or price." });
             }
-
+            var successUrl = $"{Request.Scheme}://{Request.Host}/success?abonnementId={paymentRequest.Id}";
+            var cancelUrl = $"{Request.Scheme}://{Request.Host}/";
             // Appel de la méthode pour créer la session de paiement
-            var url = _paymentService.CreateCheckoutSession(paymentRequest.Id,paymentRequest.plan ,paymentRequest.Prix);
+            var url = _paymentService.CreateCheckoutSession(paymentRequest.Id, paymentRequest.plan, paymentRequest.Prix, successUrl, cancelUrl);
 
             if (string.IsNullOrEmpty(url))
             {
