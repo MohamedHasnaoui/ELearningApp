@@ -25,7 +25,7 @@
                     <div class="avatar-upload">
                         <input type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg">
                         <div class="avatar-preview">
-                            <div id="coverImagePreview" style="background-image: url('@(User?.imgProfile ?? "assets/images/thumbs/setting-cover-img.png")');">
+                            <div id="coverImagePreview" style="background-image: url('@(User?.imgCover ?? "assets/images/thumbs/setting-cover-img.png")');">
                             </div>
                         </div>
                     </div>
@@ -197,7 +197,13 @@
             enseignant = User as Enseignant;
             // You can now access teacher-specific attributes
         }
-        parsedDate = DateTime.ParseExact(User.joinDate.ToString(), "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+        string[] formats = {
+            "M/d/yyyy h:mm:ss tt", "MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "dd-MM-yyyy HH:mm:ss",
+            "MM-dd-yyyy hh:mm:ss tt", "dd MMM yyyy HH:mm:ss", "dd MMMM yyyy HH:mm:ss",
+            "M/d/yyyy HH:mm:ss", "d/M/yyyy HH:mm:ss"
+    };
+        parsedDate = DateTime.ParseExact(User.joinDate.ToString(), formats, System.Globalization.CultureInfo.InvariantCulture);
         originalDate = parsedDate.ToString("MM/dd/yyyy HH:mm:ss");
         formattedDate = parsedDate.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture);
     }
