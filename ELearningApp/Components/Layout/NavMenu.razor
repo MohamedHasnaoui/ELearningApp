@@ -1,9 +1,15 @@
 ﻿@implements IDisposable
-
+@using Microsoft.AspNetCore.SignalR.Client
+@using ELearningApp.Hubs
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IHttpClientFactory HttpClientFactory
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
 
-<aside class="sidebar">
+@rendermode InteractiveServer
+
+<aside class="sidebar @(isShow)">
     <!-- Bouton de fermeture de la barre latérale -->
     <button type="button" class="sidebar-close-btn text-gray-500 hover-text-white hover-bg-main-600 text-md w-24 h-24 border border-gray-100 hover-border-main-600 d-xl-none d-flex flex-center rounded-circle position-absolute"><i class="ph ph-x"></i></button>
     <!-- Bouton de fermeture de la barre latérale -->
@@ -61,10 +67,10 @@
                 @if (isEnseignant)
                 {
                     <li class="sidebar-menu__item">
-                        <NavLink href="/mesEtudiants" class="sidebar-menu__link">
+                        <a href="/mesEtudiants" class="sidebar-menu__link">
                             <span class="icon"><i class="ph ph-users-three"></i></span>
                             <span class="text">Mes Étudiants</span>
-                        </NavLink>
+                        </a>
                     </li>
                 }
                 <li class="sidebar-menu__item">
@@ -73,6 +79,21 @@
                         <span class="text">Enseignant </span>
                     </a>
                 </li>
+                @if (isAuthenticated)
+                {
+                    <li class="sidebar-menu__item">
+                        <a href="/Events" class="sidebar-menu__link">
+                            <span class="icon"><i class="ph ph-calendar-dots"></i></span>
+                            <span class="text">Events</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu__item">
+                        <a href="/Messages" class="sidebar-menu__link">
+                            <span class="icon"><i class="ph ph-chats-teardrop"></i></span>
+                            <span class="text">Messages</span>
+                        </a>
+                    </li>
+                }
                 @if (!isEnseignant)
                 {
                     <li class="sidebar-menu__item">
@@ -166,6 +187,10 @@
     private bool isEtudiant;
     private bool isAuthenticated;
 
+    private string CurrentUserId = string.Empty;
+    private string isShow = string.Empty;
+    private HubConnection? HubConnection;
+
     protected override async Task OnInitializedAsync()
     {
         // Obtenir l'état d'authentification
@@ -177,6 +202,22 @@
         isEnseignant = user.IsInRole("Enseignant");
         isEtudiant = user.IsInRole("Etudiant");
         isAuthenticated = user.Identity.IsAuthenticated;
+        if(AuthenticatedUser !=null)
+        CurrentUserId = AuthenticatedUser.Id;
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/messagehub"))
+        .Build();
+        HubConnection.On<string>("ToglleStatusConnection", async (currentUserId) =>
+        {
+            if (currentUserId == CurrentUserId)
+            {
+                isShow = isShow == "" ? "active" : "";
+
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+        await HubConnection.StartAsync();
+
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
     }
@@ -192,4 +233,44 @@
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
+    public async ValueTask DisposeAsync()
+    {
+
+        if (HubConnection is not null)
+        {
+            try
+            {
+                await HubConnection.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during disconnection: {ex.Message}");
+            }
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initializeDropDownJs");
+
+        }
+    }
 }
+<script>
+    window.initializeDropDownJs = function (){
+        $('.has-dropdown').on('click', function () {
+      $('.has-dropdown').removeClass('activePage');
+      $('.has-dropdown').not($(this)).find('.sidebar-submenu').slideUp(400);
+
+      $(this).find('.sidebar-submenu').slideToggle(400);
+      $(this).toggleClass('activePage');
+    });
+
+
+
+    }
+      
+
+</script>
