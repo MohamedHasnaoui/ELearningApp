@@ -102,6 +102,7 @@
                             <span class="text">Tarifs</span>
                         </NavLink>
                     </li>
+
                 }
                 @if (isAdmin)
                 {
@@ -116,8 +117,17 @@
                     </li>
                 }
                 <li class="sidebar-menu__item">
+                    <a href="/allPosts" class="sidebar-menu__link">
+                        <span class="icon text-md ">
+                            <i class="fas fa-pen"></i>
+                        </span>
+                        <span class="text">Les Posts</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu__item">
                     <hr />
                 </li>
+
                 @if (isAuthenticated)
                 {
                     <li class="sidebar-menu__item">
@@ -126,6 +136,7 @@
                             <span class="text">Paramètres du compte</span>
                         </a>
                     </li>
+                    
                     <li class="sidebar-menu__item">
                         <form action="Account/Logout" method="post" class="py-12 px-20 hover-bg-danger-50 text-gray-300 hover-text-danger-600 rounded-8 flex-align gap-8 fw-medium">
                             <AntiforgeryToken />
@@ -137,6 +148,7 @@
                         </form>
                     </li>
                 }
+              
                 @if (!isAuthenticated)
                 {
                     <li class="sidebar-menu__item has-dropdown">
@@ -155,6 +167,7 @@
                         </ul>
                         <!-- Sous-menu fin -->
                     </li>
+                   
                 }
 
             </ul>

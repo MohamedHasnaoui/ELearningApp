@@ -1,0 +1,132 @@
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IPostService PostService
+@inject NavigationManager Navigation
+@inject ICloudinaryService CloudinaryService
+@rendermode InteractiveServer
+
+
+@if(isEnseignant){
+ <div class="card mt-5 p-5">
+        if (Posts == null || !Posts.Any())
+        {
+        <p>Aucun post trouvé.</p>
+        }
+        else
+        {
+        <div class="card-body p-16 ">
+            <h3>Mes Posts</h3>
+            @foreach (var post in Posts)
+            {
+                <div class="rounded-8  p-16  border border-gray-100">
+                    <h6 class="mb-12">Titre: @post.titre</h6>
+                    <div class="recent-post rounded-8 border border-gray-100d-flex gap-12 mb-16">
+                        <div class="position-relative w-100 p-15 rounded-10 " style="border-left: 4px solid red;">
+                            <p class="text-gray-600 text-line-3">@post.contenu</p>
+                            <div class="flex-column  gap-8 mt-24">
+                                <div>
+                                    <img src="assets/images/thumbs/user-img1.png" alt="" class="w-32 h-32 rounded-circle cover-img">
+                                    <span class="text-gray-600 text-13">@post.Enseignant?.FormalUserName</span>
+                                </div>
+                                <p class="text-gray">
+                                    <small>Date de publication : @post.datePub.ToString("dd/MM/yyyy")</small>
+                                </p>
+                                @if (!string.IsNullOrEmpty(post.image))
+                                {
+                                    <div class="image-upload p-3 w-100 text-center">
+                                        <img src="@post.image" alt="" class="rounded-6 cover-img w-100">
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(post.videoUrl))
+                                {
+                                    <div class="d-inline-flex w-100 text-center flex-shrink-0">
+                                        <video class="w-100" controls>
+                                            <source src="@post.videoUrl" type="video/mp4">
+                                            Votre navigateur ne supporte pas les vidéos HTML5.
+                                        </video>
+                                    </div>
+                                }
+
+                                <button class="btn btn-danger position-absolute top-0 end-0 mt-2" style="right:10px" @onclick="() => DeletePost(post.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+        </div>
+
+        }
+</div>
+  
+
+}
+
+ 
+
+@code {
+    private string? EnseignantId { get; set; }
+    private List<Post> Posts { get; set; } = new();
+    private bool isEnseignant;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Récupérer l'état d'authentification
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Vérifier si l'utilisateur est authentifié
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            EnseignantId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            isEnseignant = user.IsInRole("Enseignant");
+
+            if (!string.IsNullOrEmpty(EnseignantId))
+            {
+                // Charger les posts de l'enseignant
+                Posts = (await PostService.GetPostsByEnseignantIdAsync(EnseignantId)).ToList();
+            }
+        }
+
+    }
+
+    private async Task DeletePost(int postId)
+    {
+        try
+        {
+            // Récupérer le post à supprimer
+            var post = Posts.FirstOrDefault(p => p.Id == postId);
+            if (post == null)
+            {
+                Console.WriteLine("Le post n'existe pas ou a déjà été supprimé.");
+                return;
+            }
+
+            // Supprimer l'image associée s'il y en a une
+            if (!string.IsNullOrEmpty(post.image))
+            {
+                await CloudinaryService.DeleteAsync(post.image, CloudinaryDotNet.Actions.ResourceType.Image);
+            }
+
+            // Supprimer la vidéo associée s'il y en a une
+            if (!string.IsNullOrEmpty(post.videoUrl))
+            {
+                await CloudinaryService.DeleteAsync(post.videoUrl, CloudinaryDotNet.Actions.ResourceType.Video);
+            }
+
+            // Supprimer le post
+            await PostService.DeletePostAsync(postId);
+
+            // Mettre à jour la liste des posts localement
+            Posts = Posts.Where(p => p.Id != postId).ToList();
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la suppression du post : {ex.Message}");
+        }
+    }
+}

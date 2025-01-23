@@ -1,0 +1,86 @@
+﻿@inject ICloudinaryService CloudinaryService
+@inject IVideoService VideoService
+@rendermode InteractiveServer
+
+
+<div>
+    <div class="upload-card-item p-16 rounded-12 bg-main-50 mb-20">
+        <!-- Video Upload -->
+        <div class="flex-align gap-10 flex-wrap">
+            
+            <div>
+                <p class="text-15 text-gray-500">
+                    <label for="video" class="text-main-600 cursor-pointer flex-center w-26 h-26 text-gray-600 bg-gray-50 hover-bg-gray-100 rounded-circle text-md ">
+                            <i class="ph ph-video-camera"></i>
+                    </label>
+                    <InputFile OnChange="SetVideoFile" id="video" accept="video/mp4,video/x-m4v,video/*" hidden />
+                </p>
+                @if (!string.IsNullOrEmpty(uploadingmsg))
+                {
+                    <p class="text-main-600 cursor-pointer">@uploadingmsg</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (Video != null)
+    {
+        <div class="upload-card-item p-16 rounded-12 position-relative bg-main-50 mb-20">
+            <div class="flex-between flex-wrap gap-4 position-relative">
+                <div class="flex-align gap-10">
+                    <img src="@Video.Thumbnail" alt="Thumbnail" class="w-88 h-56 rounded-8">
+                    <div>
+                        <p class="text-15 text-gray-500">@Video.Title</p>
+                        <p class="text-13 text-gray-600">@Video.FormatDuration()</p>
+                    </div>
+                </div>
+
+                <!-- Bouton de suppression -->
+                <button type="button" @onclick="DeleteVideo"
+                        class="delete-item-btn position-absolute top-0 end-0 bg-transparent border-0 text-gray-300 p-2 rounded-circle">
+                    <span class="delete-icon">
+                        <i class="fa fa-times"></i> <!-- Icône de croix -->
+                    </span>
+                </button>
+            </div>
+        </div>
+
+    }
+</div>
+
+@code {
+    public string uploadingmsg = "";
+    public Video Video { get; set; }
+
+    private async Task SetVideoFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File; // Récupère le fichier sélectionné
+        if (file != null)
+        {
+            uploadingmsg = "Téléversement en cours... veuillez patienter";
+            using var stream = file.OpenReadStream(maxAllowedSize: 100000000);
+            var res = await CloudinaryService.UploadVideoAsync(stream, file.Name.Replace(".mp4", ""));
+
+            Video = new Video()
+                {
+                    VidPublicId = res.PublicId,
+                    Title = file.Name.Replace(".mp4", ""),
+                    Duree = res.Duration,
+                    Thumbnail = res.SecureUrl.ToString().Remove(res.SecureUrl.ToString().Length - 3) + "jpg",
+                    VideoUrl = res.SecureUrl.ToString()
+                };
+            uploadingmsg = "Téléversement terminé";
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteVideo()
+    {
+        if (Video != null)
+        {
+            await CloudinaryService.DeleteAsync(Video.VidPublicId, CloudinaryDotNet.Actions.ResourceType.Video);
+            Video = null; 
+            StateHasChanged();
+        }
+    }
+}

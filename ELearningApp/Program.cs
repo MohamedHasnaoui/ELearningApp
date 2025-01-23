@@ -204,6 +204,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddTransient<IdentityUserAccessor>();
 builder.Services.AddTransient<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 builder.Services.AddAuthentication(options =>
 {
