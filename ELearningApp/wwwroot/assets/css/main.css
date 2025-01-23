@@ -9458,11 +9458,13 @@ button:focus {
 
 .chat-list {
     width: 264px;
+
 }
 
 @media screen and (max-width: 767px) {
     .chat-list {
         width: 100%;
+        height: calc(100vh-100px);
     }
 }
 
@@ -9474,17 +9476,22 @@ button:focus {
     max-height: 740px;
 }
 
-.chat-box-item-wrapper.style-email {
-    max-height: calc(100vh - 374px);
-}
+    .chat-box-item-wrapper.style-email {
+        max-height: calc(100vh - 374px);
+
+    }
 
 .chat-box {
     width: calc(100% - 288px);
+    height: calc(100vh+100px);
+
+
 }
 
 @media screen and (max-width: 767px) {
     .chat-box {
         width: 100%;
+        height: calc(100vh);
     }
 }
 
@@ -9494,14 +9501,14 @@ button:focus {
     text-align: end;
 }
 
-.chat-box-item.right .chat-box-item__content {
-    align-items: end;
-}
+    .chat-box-item.right .chat-box-item__content {
+        align-items: end;
+    }
 
-.chat-box-item.right .chat-box-item__text {
-    border-radius: 16px 16px 0 16px;
-    background-color: #E5F3FF;
-}
+    .chat-box-item.right .chat-box-item__text {
+        border-radius: 16px 16px 0 16px;
+        background-color: #E5F3FF;
+    }
 
 .chat-box-item__content {
     display: flex;
@@ -9521,23 +9528,40 @@ button:focus {
         gap: 4 !important;
     }
 
-    .chat-box-bottom .file-btn {
-        height: 38px !important;
-        width: 38px !important;
-        font-size: 18px !important;
+        .chat-box-bottom .file-btn {
+            height: 38px !important;
+            width: 38px !important;
+            font-size: 18px !important;
+        }
+
+        .chat-box-bottom .submit-btn {
+            height: 38px !important;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .chat-box-bottom input {
+            height: 38px !important;
+        }
+}
+
+/* Layout adjustment for smaller screens */
+@media screen and (max-width: 767px) {
+    .chat-container {
+        display: flex;
+        flex-direction: column; /* Stack the elements vertically */
     }
 
-    .chat-box-bottom .submit-btn {
-        height: 38px !important;
-        padding: 8px 16px;
-        font-size: 12px;
+    .chat-box {
+        order: 1; /* Place chat box at the top */
     }
 
-    .chat-box-bottom input {
-        height: 38px !important;
+    .chat-list {
+        order: 2; /* Place chat list at the bottom */
     }
 }
 /* =============================== Chat Css End =========================== */
+
 /* ==================== Course Details Css Start ========================== */
 .course-item__button:hover span, .course-item__button.active span {
     color: var(--main-600) !important;
