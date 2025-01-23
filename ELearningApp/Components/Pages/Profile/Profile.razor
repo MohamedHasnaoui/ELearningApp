@@ -33,14 +33,7 @@
         <div class="card overflow-hidden">
             <div class="card-body p-0">
                 <div class="cover-img position-relative">
-                    <label for="coverImageUpload" class="btn border-gray-200 text-gray-200 fw-normal hover-bg-gray-400 rounded-pill py-4 px-14 position-absolute inset-block-start-0 inset-inline-end-0 mt-24 me-24">Modifier la couverture</label>
-                    <div class="avatar-upload">
-                        <InputFile onchange="HandleProfilelImageChange" type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg" />
-                        <div class="avatar-preview">
-                            <div id="coverImagePreview" style="background-image: url('assets/images/thumbs/setting-cover-img.png');">
-                            </div>
-                        </div>
-                    </div>
+                    <DivCoverImage AuthenticatedUser="AuthenticatedUser" />
                 </div>
 
                 <div class="setting-profile px-24">
@@ -147,22 +140,7 @@
                                 </div>
 
                                 <div class="col-12">
-                                    <label for="imageUpload" class="form-label mb-8 h6">Votre photo</label>
-                                    <div class="flex-align gap-22">
-                                        <div class="avatar-upload flex-shrink-0">
-                                            <InputFile OnChange="HandleProfilelImageChange" type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
-                                            <div class="avatar-preview">
-                                                <div id="profileImagePreview" style="background-image: url('assets/images/thumbs/setting-profile-img.jpg');">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="avatar-upload-box text-center position-relative flex-grow-1 py-24 px-4 rounded-16 border border-main-300 border-dashed bg-main-50 hover-bg-main-100 hover-border-main-400 transition-2 cursor-pointer">
-                                            <label for="imageUpload" class="position-absolute inset-block-start-0 inset-inline-start-0 w-100 h-100 rounded-16 cursor-pointer z-1"></label>
-                                            <span class="text-32 icon text-main-600 d-inline-flex"><i class="ph ph-upload"></i></span>
-                                            <span class="text-13 d-block text-gray-400 text my-8">Cliquez pour télécharger ou glisser-déposer</span>
-                                            <span class="text-13 d-block text-main-600">SVG, PNG, JPEG OU GIF (max 1080px1200px)</span>
-                                        </div>
-                                    </div>
+                                    <DivChangeImage AuthenticatedUser="AuthenticatedUser" />
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label mb-8 h6">Bio</label>
@@ -352,10 +330,11 @@ else
         Input.CountryCode ??= AuthenticatedUser.PhoneNumberCode;
 
         string[] formats = {
-    "M/d/yyyy h:mm:ss tt",
-    "MM/dd/yyyy HH:mm:ss",
-    "dd/MM/yyyy HH:mm:ss" // Added this format for your specific case
-};
+            "M/d/yyyy h:mm:ss tt", "MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "dd-MM-yyyy HH:mm:ss",
+            "MM-dd-yyyy hh:mm:ss tt", "dd MMM yyyy HH:mm:ss", "dd MMMM yyyy HH:mm:ss",
+            "M/d/yyyy HH:mm:ss", "d/M/yyyy HH:mm:ss"
+        };
         parsedDate = DateTime.ParseExact(AuthenticatedUser.joinDate.ToString(), formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None);
 
         // Stocker les dates originales et formatées
