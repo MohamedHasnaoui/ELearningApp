@@ -76,17 +76,17 @@
                 else if (topCours != null && topCours.Any())
                 {
                     <div class="card overflow-hidden">
-                        <div class="card-body p-0">
+                        <div class="card-body p-0 overflow-x-auto">
 
 
                             <!-- Table avec bordure ajoutée -->
-                            <table id="assignmentTable" class="table ">
+                            <table id="assignmentTable" class="table">
                                 <thead class="border border-gray-100 rounded-4">
                                     <tr>
-                                        <th style="width: 25%; text-align: center;">Cours</th>
-                                        <th style="width: 25%; text-align: center;">Catégorie</th>
-                                        <th style="width: 25%; text-align: center;">Evaluations</th>
-                                        <th style="width: 25%; text-align: center;">Etudiants Inscrits</th>
+                                        <th style="text-align: center;">Cours</th>
+                                        <th style="text-align: center;">Catégorie</th>
+                                        <th style="text-align: center;">Evaluations</th>
+                                        <th style="text-align: center;">Etudiants Inscrits</th>
                                     </tr>
                                 </thead>
                                 <tbody class="border border-gray-100 rounded-4">
@@ -342,9 +342,7 @@
                 series: [
                     {
                         name: 'Etudiants',
-                        data: JSON.stringify(MonthlyJoindStudents) === JSON.stringify(Mydata)
-                            ? [8, 15, 9, 20, 10, 33, 13, 22, 8, 17, 10, 15]
-                            : MonthlyJoindStudents,
+                        data: MonthlyJoindStudents,
                     },
                 ],
                 chart: {
