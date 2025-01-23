@@ -42,7 +42,6 @@ namespace ELearningApp.Services
         {
             var follow = await _context.MentorFollows
                 .FirstOrDefaultAsync(f => f.EtudiantId == etudiantId && f.EnseignantId == mentorId);
-            Console.WriteLine("thai the user 111111111111111111111111111111111 "+_context.Etudiants.FirstOrDefault(myid => myid.Id == etudiantId));
             if (follow != null)
             {
                 // If the student is already following the mentor, unfollow
