@@ -194,7 +194,7 @@
             </div>
         </div>
     </div>
-    <script src="assets/js/apexcharts.min.js"></script>
+    @* <script src="assets/js/apexcharts.min.js"></script> *@
     <script @key="StudyStatistique">
 
         function initChart(){
@@ -317,8 +317,6 @@
         {
             await JSRuntime.InvokeVoidAsync("initChart");
             nullStat = false;
-        }
-        if(firstRender){
             await JSRuntime.InvokeVoidAsync("initializeCallCalander");
 
         }
