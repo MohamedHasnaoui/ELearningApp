@@ -1,8 +1,12 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.SignalR.Client
+@using ELearningApp.Hubs
 
 @inject IUserService UserService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IHttpClientFactory HttpClientFactory
+
 
 
 <body>
@@ -15,7 +19,8 @@
     </div>
     <!--==================== Preloader End ====================-->
     <!--==================== Sidebar Overlay End ====================-->
-    <div class="side-overlay"></div>
+    <SideOverly AuthenticatedUser="AuthenticatedUser" />
+    
     <!--==================== Sidebar Overlay End ====================-->
     <!-- ============================ Sidebar Start ============================ -->
 
@@ -30,12 +35,12 @@
         </CascadingValue>
     </div>
 
-    
 
 
 
 
-    
+
+
 
 
 </body>
@@ -43,7 +48,7 @@
     private ApplicationUser? AuthenticatedUser;
     private bool isAuthenticated;
 
-    
+
     protected override async Task OnInitializedAsync()
     {
         // Get the authentication state
@@ -53,6 +58,7 @@
         // Check if the user is in the "Admin" role
         isAuthenticated = user.Identity.IsAuthenticated;
         AuthenticatedUser = await UserService.GetAuthenticatedUser2Async();
+
     }
 }
 

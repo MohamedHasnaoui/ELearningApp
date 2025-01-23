@@ -1,0 +1,59 @@
+﻿@using ELearningApp.Hubs
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject NavigationManager NavigationManager
+@inject IHttpClientFactory HttpClientFactory
+@implements IAsyncDisposable
+
+@rendermode InteractiveServer
+
+
+<div @onclick="toggleStatus" class="side-overlay @(isShow)"></div>
+
+@code {
+    [Parameter]
+    public ApplicationUser? AuthenticatedUser { get; set; }
+
+    private string CurrentUserId = string.Empty;
+    private string isShow = string.Empty;
+    private HubConnection? HubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticatedUser != null)
+            CurrentUserId = AuthenticatedUser.Id;
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/messagehub"))
+        .Build();
+        HubConnection.On<string>("ToglleStatusConnection", async (currentUserId) =>
+        {
+            if (currentUserId == CurrentUserId)
+            {
+                isShow = isShow == "" ? "show" : "";
+
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+        await HubConnection.StartAsync();
+    }
+    public async ValueTask DisposeAsync()
+    {
+
+        if (HubConnection is not null)
+        {
+            try
+            {
+                // await MessageHub.SetDisconnectData(CurrentUserId, CurrentConnectionId);
+                await HubConnection.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during disconnection: {ex.Message}");
+            }
+        }
+    }
+    private async Task toggleStatus()
+    {
+        await HubConnection.SendAsync("ToogleStatus", CurrentUserId);
+    }
+}
