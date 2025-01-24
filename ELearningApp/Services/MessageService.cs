@@ -22,8 +22,45 @@ namespace ELearningApp.Services
         }
         public async Task<List<(ApplicationUser User, Message? LastMessage, bool IsOnline, int NbrUnseenMsg)>> GetAllUsersOrderByLastMessageAsync(string currentUserId)
         {
-            var usersWithLastMessages = await _context.Users
-                .Where(u => u.Id != currentUserId) // Exclude the current user
+            // Get the current user and determine their type
+            var currentUser = await _context.Users.OfType<ApplicationUser>()
+                .FirstOrDefaultAsync(u => u.Id == currentUserId);
+
+            if (currentUser == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            IQueryable<ApplicationUser> targetUsers;
+
+            // Logic based on the user type
+            if (currentUser is Etudiant)
+            {
+                // Get all Enseignant users who either follow this Etudiant or have a course started by this Etudiant
+                targetUsers = _context.Users.OfType<Enseignant>()
+                    .Where(e =>
+                        e.Followers.Any(f => f.EtudiantId == currentUserId) || // Check if the `Enseignant` is followed by the `Etudiant`
+                        _context.CoursCommences.Any(cc => cc.Cours.EnseignantId == e.Id && cc.EtudiantId == currentUserId) // Check if the `Etudiant` has started a course taught by this `Enseignant`
+                    );
+
+
+            }
+            else if (currentUser is Enseignant)
+            {
+                // Get all Etudiant users who have started a course created by this Enseignant or are followers
+                targetUsers = _context.Users.OfType<Etudiant>()
+                    .Where(e =>
+                        e.CoursCommences.Any(cc => cc.Cours.EnseignantId == currentUserId) ||
+                        e.Following.Any(f => f.EnseignantId == currentUserId));
+            }
+            else
+            {
+                targetUsers = _context.Users
+                    .Where(u => u.Id != currentUserId);
+            }
+
+            // Fetch users with their last messages and unseen message count
+            var usersWithLastMessages = await targetUsers
                 .Select(u => new
                 {
                     User = u,
@@ -33,18 +70,19 @@ namespace ELearningApp.Services
                         .Where(m => (m.SenderId == currentUserId && m.ReceiverId == u.Id) ||
                                     (m.SenderId == u.Id && m.ReceiverId == currentUserId))
                         .OrderByDescending(m => m.SentAt)
-                        .FirstOrDefault(), // Get the latest message
+                        .FirstOrDefault(),
                     NbrUnseenMsg = _context.Messages
                         .Where(m => m.ReceiverId == currentUserId &&
                                     m.SenderId == u.Id &&
                                     !m.Status)
                         .Count()
                 })
-                .OrderByDescending(x => x.LastMessage.SentAt) // Order users by latest message time
-                .ToListAsync(); // Use ToListAsync for asynchronous operation
+                .OrderByDescending(x => x.LastMessage.SentAt)
+                .ToListAsync();
 
+            // Map results to the desired tuple format
             return usersWithLastMessages
-                .Select(x => (x.User, x.LastMessage, false, x.NbrUnseenMsg)) // Tuple of user, message, online status, unseen count
+                .Select(x => (x.User, x.LastMessage, false, x.NbrUnseenMsg))
                 .ToList();
         }
 

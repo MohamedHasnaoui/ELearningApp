@@ -35,10 +35,10 @@
         <!-- chat sidebar Start -->
         <div class="card chat-list" >
             <div class="card-header py-16 border-bottom border-gray-100">
-                <form action="#" class="position-relative">
-                    <button type="submit" class="input-icon text-xl d-flex text-gray-600 pointer-event-none"><i class="ph ph-magnifying-glass"></i></button>
+                <div  class="position-relative">
+                    <button class="input-icon text-xl d-flex text-gray-600 pointer-event-none"><i class="ph ph-magnifying-glass"></i></button>
                     <input @oninput="getUsers" type="text" class="form-control ps-44 h-44 border-gray-100 focus-border-main-600 rounded-pill placeholder-15" placeholder="Search here...">
-                </form>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="chat-list-wrapper p-24 overflow-y-auto scroll-sm">
@@ -267,6 +267,7 @@
 </style>
 @code {
     public List<(ApplicationUser User, Message? LastMessageContent, bool isOnline, int NbrUnseenMsg)> Users = new();
+    public List<(ApplicationUser User, Message? LastMessageContent, bool isOnline, int NbrUnseenMsg)> AllUsers = new();
     public ApplicationUser? AuthenticatedUser { get; set; }
     public ApplicationUser? TargetUser { get; set; }
     private List<Message> Messages = new();
@@ -296,6 +297,8 @@
             if (index != -1) Users[index] = (Users[index].User, Users[index].LastMessageContent, true, Users[index].NbrUnseenMsg);
 
         }
+        AllUsers = Users;
+
         HubConnection = new HubConnectionBuilder()
         .WithUrl(NavigationManager.ToAbsoluteUri("/messagehub") + $"?userId={CurrentUserId}")
         .Build();
@@ -309,6 +312,7 @@
                 {
                     Users[index] = (Users[index].User, Users[index].LastMessageContent, Users[index].isOnline, 0);
                 }
+                AllUsers = Users;
                 await InvokeAsync(StateHasChanged);
             }
         });
@@ -321,6 +325,7 @@
                 Users[index] = (Users[index].User, Users[index].LastMessageContent, isOnline, Users[index].NbrUnseenMsg);
                 InvokeAsync(StateHasChanged);
             }
+            AllUsers = Users;
         });
 
         HubConnection.On<string, string, string>("ReceiveMessage", async (senderId, message, receiverId) =>
@@ -338,6 +343,7 @@
                     Users[index] = (Users[index].User, newMessage, Users[index].isOnline, Users[index].NbrUnseenMsg);
                     Users=Users.OrderByDescending(x => x.LastMessageContent?.SentAt).ToList();
                 }
+                AllUsers = Users;
                 await InvokeAsync(StateHasChanged);
 
             }
@@ -363,7 +369,7 @@
                     Users = Users.OrderByDescending(x => x.LastMessageContent?.SentAt).ToList();
                 }
                 await InvokeAsync(StateHasChanged);
-
+                AllUsers = Users;
             }
 
 
@@ -381,7 +387,7 @@
                 NewMessageIndex = Messages.Count - 1;
                 await Task.Delay(500);
                 NewMessageIndex = -1;
-
+                AllUsers = Users;
                 InvokeAsync(StateHasChanged);
 
                 await JSRuntime.InvokeVoidAsync("scrollDivToBottom");
@@ -399,6 +405,7 @@
             TargetUser = Context.Users.FirstOrDefault(u => u.UserName == UserName);
             if (TargetUser is not null)
                 await this.GetTargetUserLocal(TargetUser);
+
         }
     }
 
@@ -451,6 +458,7 @@
         {
             Users[index] = (Users[index].User, Users[index].LastMessageContent, Users[index].isOnline, 0);
         }
+        AllUsers = Users;
         await InvokeAsync(StateHasChanged);
     }
     private async Task GetTargetUser(ApplicationUser user)
@@ -477,7 +485,7 @@
         }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender){
-            await JSRuntime.InvokeVoidAsync("scrollDivToBottom");// Call to scroll
+        await JSRuntime.InvokeVoidAsync("scrollDivToBottom");// Call to scroll
     }
 
     private void ShowDateOfMsg(int i)
@@ -496,11 +504,15 @@
     {
         if (!string.IsNullOrEmpty(e.Value.ToString()))
         {
-            Users = Users.Where(c => c.User.FormalUserName.Contains(e.Value.ToString())).ToList();
+
+            Users = AllUsers.Where(c => c.User.FormalUserName.Contains(e.Value.ToString())).ToList();
         }
         else{
-            Users = await MessageService.GetAllUsersOrderByLastMessageAsync(CurrentUserId);
+
+            Users = AllUsers;
         }
+        await InvokeAsync(StateHasChanged);
+
     }
 }
 <script>

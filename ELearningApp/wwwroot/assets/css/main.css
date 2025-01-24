@@ -9458,7 +9458,7 @@ button:focus {
 
 .chat-list {
     width: 264px;
-
+    height:100vh;
 }
 
 @media screen and (max-width: 767px) {
