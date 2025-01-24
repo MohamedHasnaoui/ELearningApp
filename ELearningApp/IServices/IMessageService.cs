@@ -8,7 +8,8 @@ namespace ELearningApp.Services
         Task<bool> SaveMessageAsync(Message message);
         Task<List<(ApplicationUser User, Message? LastMessage, bool IsOnline, int NbrUnseenMsg)>> GetAllUsersOrderByLastMessageAsync(string currentUserId);
         Task<List<Message>> GetConversationAsync(string userId1, string userId2);
-        List<(ApplicationUser User, Message? LastUnseenMessage)> GetUsersWithUnseenMessages(string currentUserId);
+        Task<List<(ApplicationUser User, Message? LastUnseenMessage)>> GetUsersWithUnseenMessages(string currentUserId);
+        Task<List<(ApplicationUser User, Message? LastUnseenMessage)>> GetUsersWithUnseenMessages2(string currentUserId);
         Task MarkAllAsSeen(string currentUserId, string senderId);
     }
 }

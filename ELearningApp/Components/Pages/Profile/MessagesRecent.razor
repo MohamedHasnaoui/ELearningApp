@@ -1,0 +1,97 @@
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Collections.ObjectModel
+@using ELearningApp.Hubs
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ApplicationDbContext Context
+@inject IMessageService MessageService
+@inject IHttpClientFactory HttpClientFactory
+@inject IMessageHub MessageHub 
+@implements IAsyncDisposable 
+
+
+@rendermode InteractiveServer 
+
+@if (UsersWithUnseenMessage != null)
+{
+    <div class="card mt-24">
+        <div class="card-body">
+            <h6 class="mb-12">Messages récents</h6>
+            @foreach (var message in UsersWithUnseenMessage)
+            {
+                <div class="rounded-8 border border-gray-100 p-16 mb-16">
+                    <div class="comments-box__content flex-between gap-8">
+                        <div class="flex-align align-items-start gap-12">
+                            <img src='@(message.User.imgProfile ?? "assets/images/thumbs/user-img1.png")' class="w-32 h-32 rounded-circle object-fit-cover flex-shrink-0" alt="Image de l'utilisateur">
+                            <div>
+                                <h6 class="text-lg mb-8">@message.User.FormalUserName</h6>
+                                <p class="text-gray-600 text-15">@message.LastMessageContent.Content</p>
+                            </div>
+                        </div>
+                        <a href="/Messages/@message.User.UserName" type="button" class="flex-shrink-0 fw-bold text-13 text-main-600 flex-align gap-8 hover-text-main-800">Répondre <i class="ph ph-arrow-bend-up-left d-flex text-lg"></i> </a>
+                    </div>
+                </div>
+            }
+
+            <a href="/Messages" class="flex-shrink-0 fw-bold text-13 text-main-600 flex-align gap-8 hover-text-main-800 hover-text-decoration-underline">
+                Voir tout <i class="ph ph-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+}
+@code {
+    [Parameter]
+    public ApplicationUser? AuthenticatedUser { get; set; }
+    public List<(ApplicationUser User, Message? LastMessageContent)> UsersWithUnseenMessage = new();
+    private string CurrentUserId = string.Empty;
+    private HubConnection? HubConnection;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var principal = authState.User;
+        if (AuthenticatedUser != null)
+            CurrentUserId = AuthenticatedUser.Id;
+        UsersWithUnseenMessage = await MessageService.GetUsersWithUnseenMessages2(CurrentUserId);
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/messagehub"))
+        .Build();
+        HubConnection.On<string, string>("MessageStatusUpdate", async (currentUserId, senderId) =>
+        {
+            if (currentUserId == CurrentUserId)
+            {
+                await MessageService.MarkAllAsSeen(CurrentUserId, senderId);
+                UsersWithUnseenMessage = await MessageService.GetUsersWithUnseenMessages2(CurrentUserId);
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+
+        HubConnection.On<string, string, string>("ReceiveMessage", async (senderId, message, receiverId) =>
+        {
+            if (receiverId == CurrentUserId)
+            {
+                UsersWithUnseenMessage = await MessageService.GetUsersWithUnseenMessages2(CurrentUserId);
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+
+        await HubConnection.StartAsync();
+
+    }
+    public async ValueTask DisposeAsync()
+    {
+
+        if (HubConnection is not null)
+        {
+            try
+            {
+                await HubConnection.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during disconnection: {ex.Message}");
+            }
+        }
+    }
+}
