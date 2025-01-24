@@ -9464,7 +9464,6 @@ button:focus {
 @media screen and (max-width: 767px) {
     .chat-list {
         width: 100%;
-        height: calc(100vh-100px);
     }
 }
 
@@ -9483,15 +9482,12 @@ button:focus {
 
 .chat-box {
     width: calc(100% - 288px);
-    height: calc(100vh+100px);
-
-
+    height: 100vh;
 }
 
 @media screen and (max-width: 767px) {
     .chat-box {
         width: 100%;
-        height: calc(100vh);
     }
 }
 

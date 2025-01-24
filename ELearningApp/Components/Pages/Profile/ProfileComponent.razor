@@ -1,4 +1,6 @@
-﻿<div class="tab-pane fade show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+﻿
+
+<div class="tab-pane fade show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
     <div class="row gy-4">
         <div class="col-lg-6">
             <div class="card mt-24">
@@ -7,80 +9,7 @@
                     <p class="text-gray-600 text-15 rounded-8 border border-gray-100 p-16">@AuthenticatedUser.Bio</p>
                 </div>
             </div>
-            <div class="card mt-24">
-                <div class="card-body">
-                    <h6 class="mb-12">Messages récents</h6>
-
-                    <div class="rounded-8 border border-gray-100 p-16 mb-16">
-                        <div class="comments-box__content flex-between gap-8">
-                            <div class="flex-align align-items-start gap-12">
-                                <img src="assets/images/thumbs/user-img1.png" class="w-32 h-32 rounded-circle object-fit-cover flex-shrink-0" alt="Image de l'utilisateur">
-                                <div>
-                                    <h6 class="text-lg mb-8">Michel Smith</h6>
-                                    <p class="text-gray-600 text-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Commodo pellentesque massa </p>
-                                </div>
-                            </div>
-                            <button type="button" class="flex-shrink-0 fw-bold text-13 text-main-600 flex-align gap-8 hover-text-main-800">Répondre <i class="ph ph-arrow-bend-up-left d-flex text-lg"></i> </button>
-                        </div>
-                    </div>
-
-                    <div class="rounded-8 border border-gray-100 p-16 mb-16">
-                        <div class="comments-box__content flex-between gap-8">
-                            <div class="flex-align align-items-start gap-12">
-                                <img src="assets/images/thumbs/user-img5.png" class="w-32 h-32 rounded-circle object-fit-cover flex-shrink-0" alt="Image de l'utilisateur">
-                                <div>
-                                    <h6 class="text-lg mb-8">Zara Maliha</h6>
-                                    <p class="text-gray-600 text-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Commodo pellentesque massa </p>
-                                </div>
-                            </div>
-                            <button type="button" class="flex-shrink-0 fw-bold text-13 text-main-600 flex-align gap-8 hover-text-main-800">Répondre <i class="ph ph-arrow-bend-up-left d-flex text-lg"></i> </button>
-                        </div>
-                    </div>
-
-                    <div class="rounded-8 border border-gray-100 p-16 mb-16">
-                        <div class="comments-box__content flex-between gap-8">
-                            <div class="flex-align align-items-start gap-12">
-                                <img src="assets/images/thumbs/user-img3.png" class="w-32 h-32 rounded-circle object-fit-cover flex-shrink-0" alt="Image de l'utilisateur">
-                                <div>
-                                    <h6 class="text-lg mb-8">Simon Doe</h6>
-                                    <p class="text-gray-600 text-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Commodo pellentesque massa </p>
-                                </div>
-                            </div>
-                            <button type="button" class="flex-shrink-0 fw-bold text-13 text-main-600 flex-align gap-8 hover-text-main-800">Répondre <i class="ph ph-arrow-bend-up-left d-flex text-lg"></i> </button>
-                        </div>
-                    </div>
-
-                    <div class="rounded-8 border border-gray-100 p-16 mb-16">
-                        <div class="comments-box__content flex-between gap-8">
-                            <div class="flex-align align-items-start gap-12">
-                                <img src="assets/images/thumbs/user-img4.png" class="w-32 h-32 rounded-circle object-fit-cover flex-shrink-0" alt="Image de l'utilisateur">
-                                <div>
-                                    <h6 class="text-lg mb-8">Elejabeth Jenny</h6>
-                                    <p class="text-gray-600 text-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Commodo pellentesque massa </p>
-                                </div>
-                            </div>
-                            <button type="button" class="flex-shrink-0 fw-bold text-13 text-main-600 flex-align gap-8 hover-text-main-800">Répondre <i class="ph ph-arrow-bend-up-left d-flex text-lg"></i> </button>
-                        </div>
-                    </div>
-
-                    <div class="rounded-8 border border-gray-100 p-16 mb-16">
-                        <div class="flex-between gap-8">
-                            <div class="flex-align align-items-start gap-12">
-                                <img src="assets/images/thumbs/user-img8.png" class="w-32 h-32 rounded-circle object-fit-cover flex-shrink-0" alt="Image de l'utilisateur">
-                                <div>
-                                    <h6 class="text-lg mb-8">Ronald Doe</h6>
-                                    <p class="text-gray-600 text-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Commodo pellentesque massa </p>
-                                </div>
-                            </div>
-                            <button type="button" class="flex-shrink-0 fw-bold text-13 text-main-600 flex-align gap-8 hover-text-main-800">Répondre <i class="ph ph-arrow-bend-up-left d-flex text-lg"></i> </button>
-                        </div>
-                    </div>
-
-                    <a href="#" class="flex-shrink-0 fw-bold text-13 text-main-600 flex-align gap-8 hover-text-main-800 hover-text-decoration-underline">
-                        Voir tout <i class="ph ph-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
+            <MessagesRecent AuthenticatedUser="AuthenticatedUser" />
             <div class="card mt-24">
                 <div class="card-body">
                     <h6 class="mb-12">Réseaux sociaux</h6>
@@ -162,12 +91,12 @@
                 </div>
             </div>
 
-            <MyPosts/>
-            
+            <MyPosts />
 
-                <CreatePost />
 
-           
+            <CreatePost />
+
+
         </div>
     </div>
 </div>
@@ -175,4 +104,5 @@
 @code {
     [CascadingParameter]
     public ApplicationUser? AuthenticatedUser { get; set; }
+
 }
