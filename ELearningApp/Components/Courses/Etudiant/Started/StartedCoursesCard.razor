@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 @if (hasSubscription){
-                <NavLink href="@watchlink" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continuer à regarder</NavLink>
+                    <NavLink href="@watchlink" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continuer à regarder</NavLink>
                 }else{
                     <NavLink href="/AbonnementPage" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continuer à regarder</NavLink>
                 }
@@ -43,9 +43,12 @@
     bool hasSubscription = false;
     protected override async Task OnInitializedAsync()
     {
+        hasSubscription = await AbonnementAchete.IsAbonnementAchete(courscommence.EtudiantId);
+    }
+    protected override async Task OnParametersSetAsync()
+    {
         watchlink = NavigationManager.GetUriWithQueryParameters(
          NavigationManager.ToAbsoluteUri("courses/etudiant/watch").AbsoluteUri,
              new Dictionary<string, object?> { ["coursCommenceId"] = courscommence.Id });
-        hasSubscription = await AbonnementAchete.IsAbonnementAchete(courscommence.EtudiantId);
     }
 }
