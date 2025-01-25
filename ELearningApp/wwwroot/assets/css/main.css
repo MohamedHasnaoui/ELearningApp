@@ -9468,7 +9468,7 @@ button:focus {
 }
 
 .chat-list-wrapper {
-    max-height: 710px;
+    max-height: calc(100vh - 76px);
 }
 
 .chat-box-item-wrapper {
