@@ -1,4 +1,17 @@
-$(document).ready(function() {
+window.initEventsJs = function () {
+    document.addEventListener("DOMContentLoaded", () => {
+        const alertElement = document.getElementById('alertMessage');
+        if (alertElement) {
+            setTimeout(() => {
+                alertElement.classList.add('fade-out');
+                // Optionally, hide it completely after fading out
+                setTimeout(() => {
+                    alertElement.style.display = 'none';
+                }, 1000); // Wait for the transition to complete before hiding
+            }, 3000); // 3 seconds
+        }
+    });
+$(document).ready(function () {
     var date = new Date();
       var d = date.getDate();
       var m = date.getMonth();
@@ -6279,7 +6292,7 @@ function HorizontalPositionCache(getElement) {
 
 })(jQuery);
 
-
+}
 
 
 

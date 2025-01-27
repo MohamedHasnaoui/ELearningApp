@@ -6,12 +6,15 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using ELearningApp.Data
+@using Microsoft.AspNetCore.Authorization
+
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
+@inject SignInManager<ApplicationUser> signInManager
 @inject IdentityRedirectManager RedirectManager
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <PageTitle>Connexion</PageTitle>
 <div class="auth-left bg-main-50 flex-center p-24">
     <img src="assets/images/thumbs/auth-img1.png" alt="">
@@ -92,7 +95,17 @@
         </EditForm>
     </div>
 </div>
-
+<script>
+      $(".toggle-password").on('click', function() {
+      $(this).toggleClass("active");
+      var input = $($(this).attr("id"));
+      if (input.attr("type") == "password") {
+        input.attr("type", "text");
+      } else {
+        input.attr("type", "password");
+      }
+    });
+</script>
 
 @code {
     private string? errorMessage;
@@ -106,12 +119,21 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
+    private bool isAuthenticated;
+
+
     protected override async Task OnInitializedAsync()
     {
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
-        {
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        // Get the authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is in the "Admin" role
+        isAuthenticated = user.Identity.IsAuthenticated;
+        if(isAuthenticated){
+            await signInManager.SignOutAsync();
         }
+
     }
     public async Task LoginUser()
     {

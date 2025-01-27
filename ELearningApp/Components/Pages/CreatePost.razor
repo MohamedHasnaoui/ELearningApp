@@ -5,6 +5,7 @@
 @inject IVideoService VideoService
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
 
 @if(isEnseignant){
 
@@ -338,8 +339,14 @@
     {
         post = new Post { EnseignantId = EnseignantId };
     } 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await JSRuntime.InvokeVoidAsync("initPostJs");// Call to scroll
+    }
 }
 <script>
+    window.initPostJs = function (){
     $(function() {
         function handleFiles(files) { // Assuming only one file is selected
             var file = files[0];
@@ -362,4 +369,5 @@
             console.log("changed1");
 
     });
+    }
 </script>

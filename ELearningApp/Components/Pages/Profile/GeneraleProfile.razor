@@ -25,7 +25,7 @@
                     <div class="avatar-upload">
                         <input type='file' id="coverImageUpload" accept=".png, .jpg, .jpeg">
                         <div class="avatar-preview">
-                            <div id="coverImagePreview" style="background-image: url('@(User?.imgProfile ?? "assets/images/thumbs/setting-cover-img.png")');">
+                            <div id="coverImagePreview" style="background-image: url('@(User?.imgCover ?? "assets/images/thumbs/setting-cover-img.png")');">
                             </div>
                         </div>
                     </div>
@@ -107,35 +107,6 @@
                     <div class="col-lg-6">
                         <div class="card mt-24">
                             <div class="card-body">
-                                <div class="row gy-4">
-                                    <div class="col-xxl-4 col-xl-6 col-md-4 col-sm-6">
-                                        <div class="statistics-card p-xl-4 p-16 flex-align gap-10 rounded-8 bg-main-50">
-                                            <span class="text-white bg-main-600 w-36 h-36 rounded-circle flex-center text-xl flex-shrink-0"><i class="ph ph-users-three"></i></span>
-                                            <div>
-                                                <h4 class="mb-0">450k</h4>
-                                                <span class="fw-medium text-main-600">Abonnés</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xxl-4 col-xl-6 col-md-4 col-sm-6">
-                                        <div class="statistics-card p-xl-4 p-16 flex-align gap-10 rounded-8 bg-info-50">
-                                            <span class="text-white bg-info-600 w-36 h-36 rounded-circle flex-center text-xl flex-shrink-0"><i class="ph ph-users-three"></i></span>
-                                            <div>
-                                                <h4 class="mb-0">289k</h4>
-                                                <span class="fw-medium text-info-600">Abonnements</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xxl-4 col-xl-6 col-md-4 col-sm-6">
-                                        <div class="statistics-card p-xl-4 p-16 flex-align gap-10 rounded-8 bg-purple-50">
-                                            <span class="text-white bg-purple-600 w-36 h-36 rounded-circle flex-center text-xl flex-shrink-0"><i class="ph ph-thumbs-up"></i></span>
-                                            <div>
-                                                <h4 class="mb-0">1256k</h4>
-                                                <span class="fw-medium text-purple-600">J'aime</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="mt-24">
                                     @if (!string.IsNullOrEmpty(User.PhoneNumber))
                                     {
@@ -197,7 +168,13 @@
             enseignant = User as Enseignant;
             // You can now access teacher-specific attributes
         }
-        parsedDate = DateTime.ParseExact(User.joinDate.ToString(), "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+        string[] formats = {
+            "M/d/yyyy h:mm:ss tt", "MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "dd-MM-yyyy HH:mm:ss",
+            "MM-dd-yyyy hh:mm:ss tt", "dd MMM yyyy HH:mm:ss", "dd MMMM yyyy HH:mm:ss",
+            "M/d/yyyy HH:mm:ss", "d/M/yyyy HH:mm:ss"
+    };
+        parsedDate = DateTime.ParseExact(User.joinDate.ToString(), formats, System.Globalization.CultureInfo.InvariantCulture);
         originalDate = parsedDate.ToString("MM/dd/yyyy HH:mm:ss");
         formattedDate = parsedDate.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture);
     }

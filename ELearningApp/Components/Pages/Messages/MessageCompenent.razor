@@ -1,0 +1,546 @@
+﻿@page "/Messages/{UserName?}"
+@attribute [Authorize]
+@using ELearningApp.Components.Account
+@using ELearningApp.Hubs
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Collections.ObjectModel
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+
+@inject IUserService UserService
+@inject ApplicationDbContext Context
+@inject IMessageService MessageService
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JSRuntime
+@inject IMessageHub MessageHub
+@implements IAsyncDisposable
+
+@rendermode InteractiveServer
+<PageTitle>Messages</PageTitle>
+<div class="dashboard-body">
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb mb-24">
+        <ul class="flex-align gap-4">
+            <li><a href="/" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+            <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
+            <li><span class="text-main-600 fw-normal text-15">Message</span></li>
+        </ul>
+    </div>
+    <!-- Breadcrumb End -->
+
+
+    <div class="chart-wrapper d-flex flex-wrap gap-24" >
+        <!-- chat sidebar Start -->
+        <div class="card chat-list" >
+            <div class="card-header py-16 border-bottom border-gray-100">
+                <div  class="position-relative">
+                    <button class="input-icon text-xl d-flex text-gray-600 pointer-event-none"><i class="ph ph-magnifying-glass"></i></button>
+                    <input @oninput="getUsers" type="text" class="form-control ps-44 h-44 border-gray-100 focus-border-main-600 rounded-pill placeholder-15" placeholder="Search here...">
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="chat-list-wrapper p-24 overflow-y-auto scroll-sm">
+                    @if(Users!=null){
+                        @foreach (var user in Users.ToList())
+                        {
+                            <div class="position-relative chat-list__item flex-between gap-8 cursor-pointer">
+                                <div class="d-flex align-items-start gap-16 w-100 cursor-pointer" @onclick="() => GetTargetUser(user.User)">
+                                    <div class="position-relative flex-shrink-0">
+                                        <img src='@(user.User.imgProfile ?? "assets/images/thumbs/avatar-img1.png")' alt="" class="w-44 h-44 rounded-circle object-fit-cover flex-shrink-0">
+                                        <span class='@(user.isOnline ? "activation-badge" : "status-badge offline")  w-12 h-12 border-2 rounded-circle position-absolute inset-block-end-0 inset-inline-end-0'></span>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <h6 class="text-line-1 text-15 text-gray-400 fw-bold mb-0">@user.User.FormalUserName</h6>
+                                        @if (user.LastMessageContent is null)
+                                        {
+                                            <span class="text-line-1 text-13 text-gray-200">@(user.LastMessageContent?.Content ?? "No messages exchanged")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-line-1 text-13 text-gray-200">@(user.LastMessageContent.SenderId == CurrentUserId ? "You :" + user.LastMessageContent.Content : user.LastMessageContent.Content)</span>
+                                        }
+                                    </div>
+                                </div>
+                                @if(user.NbrUnseenMsg!=0){
+                                    <div  style="margin-right: 20px;" @onclick="() => GetTargetUser(user.User)" class=" bg-green-50 rounded-circle position-absolute inset-block-start-0 inset-inline-end-0 text-sm px-8 py-2 hover-text-primary-600">@user.NbrUnseenMsg</div>
+                                }
+
+                                <div class="dropdown flex-shrink-0">
+                                    <button class="text-gray-400 text-xl d-flex rounded-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ph-fill ph-dots-three-outline-vertical"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu--md border-0 bg-transparent p-0">
+                                        <div class="card border border-gray-100 rounded-12 box-shadow-custom">
+                                            <div class="card-body p-12">
+                                                <div class="max-h-200 overflow-y-auto scroll-sm pe-8">
+                                                    <ul>
+                                                        <li class="mb-0">
+                                                            <a href="/Profile/@user.User.UserName" type="button" class="delete-item-btn py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
+                                                                <span class="text"> <i class="ph ph-user me-4"></i> Profile</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+        <!-- chat sidebar End -->
+        @if (TargetUser != null)
+        {
+            <!-- chat sidebar Start -->
+            <div class="card chat-box">
+                <div class="card-header py-16 border-bottom border-gray-100">
+                    <div class="chat-list__item flex-between gap-8 cursor-pointer">
+                        <a href="/Profile/@TargetUser.UserName" class="d-flex align-items-start gap-16">
+                            <div class="position-relative flex-shrink-0">
+                                <img src='@(TargetUser.imgProfile ?? "assets/images/thumbs/avatar-img1.png")' alt="" class="w-40 h-40 rounded-circle object-fit-cover flex-shrink-0">
+                                <span class='@(Users.FirstOrDefault(u => u.User.Id == TargetUser.Id).isOnline ? "activation-badge" : "status-badge offline") w-12 h-12 border-2 rounded-circle position-absolute inset-block-end-0 inset-inline-end-0'></span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <h6 class="text-line-1 text-15 text-gray-400 fw-bold mb-0">@TargetUserName</h6>
+                                <span class="text-line-1 text-13 text-gray-200">
+                                    @{
+                                        var user = Users.FirstOrDefault(u => u.User.Id == TargetUser.Id);
+                                        if (user.User != null )
+                                        {
+                                            if (user.isOnline)
+                                            {
+                                                @("Online")
+                                                ;
+                                            }
+                                            else
+                                            {
+                                                if(lastConnectin !=DateTime.MinValue){
+                                                    if (lastConnectin.Date == DateTime.Today)
+                                                    {
+                                                        @($"Last seen today at {lastConnectin:HH:mm}")
+                                                        ;
+                                                    }
+                                                    else if (lastConnectin.Date == DateTime.Today.AddDays(-1))
+                                                    {
+                                                        @($"Last seen yesterday at {lastConnectin:HH:mm}")
+                                                        ;
+                                                    }
+                                                    else
+                                                    {
+                                                        @($"Last seen on {lastConnectin:dd MMM yyyy} at {lastConnectin:HH:mm}")
+                                                        ;
+                                                    }
+                                                }
+                                                else{
+                                                    @("Offline")
+                                                    ;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @("Offline")
+                                            ;
+                                        }
+                                    }
+                                </span>
+
+                            </div>
+                        </a>
+
+                        <div class="flex-align gap-16">
+                            <button type="button" class="text-main-600 text-xl d-flex"><i class="ph-fill ph-phone"></i></button>
+                            <button type="button" class="text-main-600 text-xl d-flex"><i class="ph-fill ph-video-camera"></i></button>
+                            <div class="dropdown flex-shrink-0">
+                                <button class="text-gray-400 text-xl d-flex rounded-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="ph-fill ph-dots-three-outline-vertical"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu--md border-0 bg-transparent p-0">
+                                    <div class="card border border-gray-100 rounded-12 box-shadow-custom">
+                                        <div class="card-body p-12">
+                                            <div class="max-h-200 overflow-y-auto scroll-sm pe-8">
+                                                <ul>
+                                                    <li class="mb-0">
+                                                        <button type="button" class="delete-item-btn py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
+                                                            <span class="text"><i class="ph ph-x-circle"></i> All Clear</span>
+                                                        </button>
+                                                    </li>
+                                                    <li class="mb-0">
+                                                        <a href="/Profile/@TargetUser.UserName" type="button" class="delete-item-btn py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
+                                                            <span class="text"> <i class="ph ph-user me-4"></i> Profile</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="Mydiv" class="chat-box-item-wrapper overflow-y-auto scroll-sm p-24" style="max-height: 540px;">
+
+                        @for (int i = 0; i < Messages.Count(); i++)
+                        {
+                            var index = i;
+                            <div class="chat-box-item @(Messages[i].SenderId == CurrentUserId ? "right" : "") d-flex align-items-end gap-8 @(NewMessageIndex == i ? "new-message" : "")">
+                                @if (i == Messages.Count()-1 || Messages[i].SenderId != Messages[i + 1].SenderId)
+                                {
+                                    <img src='@((Messages[i].Sender?.imgProfile) ?? "assets/images/thumbs/avatar-img1.png" )' alt="" class="w-40 h-40 rounded-circle object-fit-cover flex-shrink-0">
+                                }
+                                else
+                                {
+                                    <div class="w-40 h-40 rounded-circle object-fit-cover flex-shrink-0"></div>
+                                }
+                                <div class="chat-box-item__content">
+                                    @if (i == Messages.Count()-1 || Messages[i].SenderId != Messages[i + 1].SenderId)
+                                    {
+                                        <p @onclick="()=>ShowDateOfMsg(index)" class="chat-box-item__text cursor-pointer py-16 px-16 px-lg-4">@Messages[i].Content</p>
+                                    }
+                                    else{
+                                        <p @onclick="()=>ShowDateOfMsg(index)" class="chat-box-item__text cursor-pointer p-16 rounded-16 mb-12">@Messages[i].Content</p>
+                                    }
+                                    <span class="text-gray-200 text-13 mt-2 d-block message-date @((showingDate[i] || i == Messages.Count() - 1 || Messages[i].SenderId != Messages[i + 1].SenderId) ? "show" : "")">
+                                        @Messages[i].SentAt.ToString("HH:mm MMM dd")
+                                    </span>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+                <div class="card-footer border-top border-gray-100">
+                    <EditForm Model="MyMessage" FormName="sendMessage" OnValidSubmit="SendMessage" method="post" class="flex-align gap-8 chat-box-bottom">
+                        <label for="fileUp" class="flex-shrink-0 file-btn w-48 h-48 flex-center bg-main-50 text-24 text-main-600 rounded-circle hover-bg-main-100 transition-2">
+                            <i class="ph ph-plus"></i>
+                        </label>
+                        <input type="file" name="fileName" id="fileUp" hidden>
+                        <input @onkeydown="HandleKeyPress" type="text" @bind="CurrentMessage" class="form-control h-48 border-transparent px-20 focus-border-main-600 bg-main-50 rounded-pill placeholder-15" placeholder="Type your message...">
+                        <button type="button" class="flex-shrink-0 file-btn w-48 h-48 flex-center bg-main-50 text-24 text-main-600 rounded-circle hover-bg-main-100 transition-2">
+                            <i class="ph-fill ph-microphone"></i>
+                        </button>
+                        <button type="submit" class="flex-shrink-0 submit-btn btn btn-main rounded-pill flex-align gap-4 py-15">
+                            Send <span class="d-flex text-md d-sm-flex d-none"><i class="ph-fill ph-paper-plane-tilt"></i></span>
+                        </button>
+                    </EditForm>
+                </div>
+            </div>
+            <!-- chat sidebar End -->
+        }
+    </div>
+
+</div>
+<style>
+    .message-date {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+    }
+
+    .message-date.show {
+    opacity: 1;
+    max-height: 50px; /* Adjust based on the expected height */
+    }
+
+    .status-badge {
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: inline-block;
+    }
+
+    .status-badge.offline {
+    background-color: gray; /* Gray color for offline */
+    }
+
+</style>
+@code {
+    public List<(ApplicationUser User, Message? LastMessageContent, bool isOnline, int NbrUnseenMsg)> Users = new();
+    public List<(ApplicationUser User, Message? LastMessageContent, bool isOnline, int NbrUnseenMsg)> AllUsers = new();
+    public ApplicationUser? AuthenticatedUser { get; set; }
+    public ApplicationUser? TargetUser { get; set; }
+    private List<Message> Messages = new();
+    private Message MyMessage = new();
+    private string CurrentMessage = string.Empty;
+    private HubConnection? HubConnection;
+    private string CurrentUserId = string.Empty;
+    private string CurrentConnectionId = string.Empty;
+    private string TargetUserId = string.Empty;
+    private string TargetUserName = string.Empty;
+    public ObservableCollection<bool> showingDate = new ObservableCollection<bool>();
+    private int NewMessageIndex = -1;
+    public DateTime lastConnectin;
+    [Parameter]
+    public string? UserName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticatedUser = await UserService.GetAuthenticatedUserAsync();
+        CurrentUserId = AuthenticatedUser.Id;
+
+        Users = await MessageService.GetAllUsersOrderByLastMessageAsync(CurrentUserId);
+        var connectedUsers = MessageHub.GetAllConnectedUsers();
+        foreach (var user2 in connectedUsers)
+        {
+            var index = Users.FindIndex(u => u.User.Id == user2.Key);
+            if (index != -1) Users[index] = (Users[index].User, Users[index].LastMessageContent, true, Users[index].NbrUnseenMsg);
+
+        }
+        AllUsers = Users;
+
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/messagehub") + $"?userId={CurrentUserId}")
+        .Build();
+        HubConnection.On<string, string>("MessageStatusUpdate", async (currentUserId, senderId) =>
+        {
+
+            if (currentUserId == CurrentUserId)
+            {
+                var index = Users.FindIndex(u => u.User.Id == senderId);
+                if (index != -1)
+                {
+                    Users[index] = (Users[index].User, Users[index].LastMessageContent, Users[index].isOnline, 0);
+                }
+                AllUsers = Users;
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+        HubConnection.On<string, bool>("UserStatusChanged", (userId, isOnline) =>
+        {
+            var index = Users.FindIndex(u => u.User.Id == userId);
+            if (index != -1)
+            {
+                lastConnectin = MessageHub.GetLastConnectionTime(userId) ?? DateTime.MinValue;
+                Users[index] = (Users[index].User, Users[index].LastMessageContent, isOnline, Users[index].NbrUnseenMsg);
+                InvokeAsync(StateHasChanged);
+            }
+            AllUsers = Users;
+        });
+
+        HubConnection.On<string, string, string>("ReceiveMessage", async (senderId, message, receiverId) =>
+        {
+            if(senderId==CurrentUserId){
+                var newMessage = new Message
+                    {
+                        SenderId = senderId,
+                        ReceiverId = receiverId,
+                        Content = message,
+                    };
+                var index = Users.FindIndex(u => u.User.Id == receiverId);
+                if (index != -1)
+                {
+                    Users[index] = (Users[index].User, newMessage, Users[index].isOnline, Users[index].NbrUnseenMsg);
+                    Users=Users.OrderByDescending(x => x.LastMessageContent?.SentAt).ToList();
+                }
+                AllUsers = Users;
+                await InvokeAsync(StateHasChanged);
+
+            }
+            if (receiverId == CurrentUserId)
+            {
+                var index = Users.FindIndex(u => u.User.Id == senderId);
+                if (index != -1)
+                {
+                    var newMessage = new Message
+                        {
+                            SenderId = senderId,
+                            ReceiverId = receiverId,
+                            Content = message,
+                        };
+                    if (TargetUserId!=receiverId)
+                    {
+                        Users[index] = (Users[index].User, newMessage, Users[index].isOnline, Users[index].NbrUnseenMsg + 1);
+                    }
+                    else
+                    {
+                        Users[index] = (Users[index].User, newMessage, Users[index].isOnline, Users[index].NbrUnseenMsg);
+                    }
+                    Users = Users.OrderByDescending(x => x.LastMessageContent?.SentAt).ToList();
+                }
+                await InvokeAsync(StateHasChanged);
+                AllUsers = Users;
+            }
+
+
+            if (senderId == TargetUserId && receiverId == CurrentUserId)
+            {
+                await HubConnection.SendAsync("MarkAsSeen", CurrentUserId, TargetUserId);
+                // Console.WriteLine($"11111111111111111111 from {AuthenticatedUser.FormalUserName}");
+                Messages.Add(new Message { SenderId = senderId, ReceiverId = receiverId, Content = message });
+                var index = Users.FindIndex(u => u.User.Id == senderId);
+                if (index != -1)
+                {
+                    Users[index] = (Users[index].User, Users[index].LastMessageContent, Users[index].isOnline, 0);
+                }
+                showingDate.Add(false);
+                NewMessageIndex = Messages.Count - 1;
+                await Task.Delay(500);
+                NewMessageIndex = -1;
+                AllUsers = Users;
+                InvokeAsync(StateHasChanged);
+
+                await JSRuntime.InvokeVoidAsync("scrollDivToBottom");
+            }
+        });
+
+
+
+        await HubConnection.StartAsync();
+        var connectionId = await HubConnection.InvokeAsync<string>("GetConnectionId");
+
+        CurrentConnectionId = connectionId;
+        if (UserName != null)
+        {
+            TargetUser = Context.Users.FirstOrDefault(u => u.UserName == UserName);
+            if (TargetUser is not null)
+                await this.GetTargetUserLocal(TargetUser);
+
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(UserName))
+        {
+            // Validate if UserName exists in AllUsers
+            var userExists = AllUsers.Any(u => u.User.UserName == UserName);
+        
+            if (!userExists)
+            {
+                // Redirect to a default route or handle invalid UserName
+                NavigationManager.NavigateTo("/Messages");
+            }
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(CurrentMessage))
+        {
+            var newMessage = new Message
+                {
+                    SenderId = CurrentUserId,
+                    ReceiverId = TargetUserId,
+                    Content = CurrentMessage,
+                    SentAt = DateTime.UtcNow
+                };
+
+            await MessageService.SaveMessageAsync(newMessage);
+            await HubConnection.SendAsync("SendMessage", CurrentUserId, CurrentMessage, TargetUserId);
+            Messages.Add(newMessage);
+            showingDate.Add(false);
+            NewMessageIndex = Messages.Count - 1;
+            CurrentMessage = string.Empty;
+            // Wait for the animation to complete, then reset
+            await Task.Delay(500);
+            NewMessageIndex = -1;
+            StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("scrollDivToBottom"); // Call to scroll
+
+
+        }
+    }
+
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            SendMessage();
+        }
+    }
+    private async Task GetTargetUserLocal(ApplicationUser user){
+        TargetUser = user;
+        TargetUserId = user.Id;
+        TargetUserName = user.FormalUserName;
+        Messages = await MessageService.GetConversationAsync(CurrentUserId, TargetUserId);
+        showingDate = new ObservableCollection<bool>(Enumerable.Repeat(false, Messages.Count));
+        lastConnectin = MessageHub.GetLastConnectionTime(TargetUserId) ?? DateTime.MinValue ;
+        await HubConnection.SendAsync("MarkAsSeen", CurrentUserId, TargetUserId);
+        var index = Users.FindIndex(u => u.User.Id == TargetUserId);
+        if (index != -1)
+        {
+            Users[index] = (Users[index].User, Users[index].LastMessageContent, Users[index].isOnline, 0);
+        }
+        AllUsers = Users;
+        await InvokeAsync(StateHasChanged);
+    }
+    private async Task GetTargetUser(ApplicationUser user)
+    {
+        // await this.GetTargetUserLocal(user);
+        NavigationManager.NavigateTo($"/Messages/{user.UserName}", forceLoad: false);
+        // await JSRuntime.InvokeVoidAsync("scrollDivToBottom");Call to scroll
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+
+        if (HubConnection is not null)
+        {
+            try
+            {
+                // await MessageHub.SetDisconnectData(CurrentUserId, CurrentConnectionId);
+                await HubConnection.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during disconnection: {ex.Message}");
+            }
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        await JSRuntime.InvokeVoidAsync("scrollDivToBottom");// Call to scroll
+    }
+
+    private void ShowDateOfMsg(int i)
+    {
+        if (i >= 0 && i < showingDate.Count)
+        {
+            showingDate[i] = !showingDate[i];
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"Index {i} is out of range for showingDate.");
+        }
+    }
+    private async void getUsers(ChangeEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(e.Value.ToString()))
+        {
+
+            Users = AllUsers.Where(c => c.User.FormalUserName.Contains(e.Value.ToString())).ToList();
+        }
+        else{
+
+            Users = AllUsers;
+        }
+        await InvokeAsync(StateHasChanged);
+
+    }
+}
+<script>
+    window.scrollDivToBottom = function () {
+        var div = document.getElementById('Mydiv');
+        if (div) {
+            div.scrollTo({
+                top: div.scrollHeight,
+                behavior: 'smooth' // Enables smooth scrolling
+            });
+        } else {
+            console.error("Element with id 'Mydiv' not found.");
+        }
+    };
+
+</script>

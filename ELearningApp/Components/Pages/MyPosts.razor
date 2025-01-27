@@ -7,7 +7,7 @@
 
 @if(isEnseignant){
  <div class="card mt-5 p-5">
-        if (Posts == null || !Posts.Any())
+        @if (Posts == null || !Posts.Any())
         {
         <p>Aucun post trouvé.</p>
         }

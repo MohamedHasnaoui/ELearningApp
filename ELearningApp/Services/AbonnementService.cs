@@ -1,6 +1,7 @@
 ﻿using ELearningApp.Data;
 using ELearningApp.IServices;
 using ELearningApp.Model;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
@@ -13,15 +14,19 @@ public class AbonnementService : IAbonnementService
 {
     private readonly ApplicationDbContext _context;
     private readonly HttpClient _httpClient;
+    private readonly NavigationManager _navigation;
 
     // Injection d'HttpClient via le constructeur
 
-    public AbonnementService(HttpClient httpClient, ApplicationDbContext context)
+    public AbonnementService(HttpClient httpClient, ApplicationDbContext context, NavigationManager navigation)
     {
-
+        _navigation = navigation;
         _context = context;
         _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri("https://localhost:7134/"); // Définir l'URL de base de votre API
+
+        // Dynamically set the base address using NavigationManager
+        var dynamicBaseUrl = _navigation.BaseUri.TrimEnd('/');
+        _httpClient.BaseAddress = new Uri(dynamicBaseUrl); // Définir l'URL de base de votre API
 
     }
     public async Task<List<Abonnement>> GetAllAbonnementsAsync()

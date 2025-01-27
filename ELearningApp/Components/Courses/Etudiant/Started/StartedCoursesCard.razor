@@ -3,13 +3,13 @@
 <div class="col-xxl-3 col-lg-4 col-sm-6">
     <div class="card border border-gray-100">
         <div class="card-body p-8">
-            <NavLink href="course-details.html" class="bg-main-100 rounded-8 overflow-hidden text-center mb-8 h-164 flex-center p-8">
+            <div class="bg-main-100 rounded-8 overflow-hidden text-center mb-8 h-164 flex-center p-8">
                 <div class="bg-image" style="background-image: url(@courscommence.Cours.CoursImg); width: 100%; height: 100%; background-size: cover; background-position: center;">
                 </div>
-            </NavLink>
+            </div>
             <div class="p-8">
                 <span class="text-13 py-2 px-10 rounded-pill bg-success-50 text-success-600 mb-16">@courscommence.Cours.Category.Name</span>
-                <h5 class="mb-0"><NavLink href="course-details.html" class="hover-text-main-600">@courscommence.Cours.Nom</NavLink></h5>
+                <h5 class="mb-0"><button class="hover-text-main-600">@courscommence.Cours.Nom</button></h5>
 
                 <div class="flex-align gap-8 mt-12">
                     <span class="text-main-600 flex-shrink-0 text-13 fw-medium">@courscommence.Progres %</span>
@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="flex-align gap-8 flex-wrap mt-16">
-                    <img src="assets/images/thumbs/user-img1.png" class="w-32 h-32 rounded-circle object-fit-cover" alt="User Image">
+                    <img src="@(courscommence.Cours.Enseignant.imgProfile ?? "assets/images/thumbs/user-img.png")" class="w-32 h-32 rounded-circle object-fit-cover" alt="User Image">
                     <div>
                         <span class="text-gray-600 text-13">Créé par <button class="fw-semibold text-gray-700 hover-text-main-600 hover-text-decoration-underline">@courscommence.Cours.Enseignant.UserName</button> </span>
                         <div class="flex-align gap-4">
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 @if (hasSubscription){
-                <NavLink href="@watchlink" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continuer à regarder</NavLink>
+                    <NavLink href="@watchlink" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continuer à regarder</NavLink>
                 }else{
                     <NavLink href="/AbonnementPage" class="btn btn-outline-main rounded-pill py-9 w-100 mt-24">Continuer à regarder</NavLink>
                 }
@@ -43,9 +43,12 @@
     bool hasSubscription = false;
     protected override async Task OnInitializedAsync()
     {
+        hasSubscription = await AbonnementAchete.IsAbonnementAchete(courscommence.EtudiantId);
+    }
+    protected override async Task OnParametersSetAsync()
+    {
         watchlink = NavigationManager.GetUriWithQueryParameters(
          NavigationManager.ToAbsoluteUri("courses/etudiant/watch").AbsoluteUri,
              new Dictionary<string, object?> { ["coursCommenceId"] = courscommence.Id });
-        hasSubscription = await AbonnementAchete.IsAbonnementAchete(courscommence.EtudiantId);
     }
 }

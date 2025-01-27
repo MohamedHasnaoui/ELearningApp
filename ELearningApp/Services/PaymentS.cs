@@ -1,7 +1,9 @@
 ﻿using ELearningApp.Data;
 using ELearningApp.IServices;
 using ELearningApp.Model;
+using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Stripe;
 using Stripe.Checkout;
 using System.Collections.Generic;
@@ -11,49 +13,47 @@ namespace ELearningApp.Services
     public class PaymentS : IPayment
     {
         private readonly ApplicationDbContext _context;
-
-        public PaymentS(ApplicationDbContext context)
+        private readonly NavigationManager _navigation;
+        public PaymentS(ApplicationDbContext context, NavigationManager navigation)
         {
+            _navigation = navigation;
             _context = context;
             StripeConfiguration.ApiKey = "sk_test_51Qc2SdKXk8GKN0SWJzl1muovelWngKG3y8YEnoBtOXyE71skkpIvXRzyszipUKBRuOxEHD2MvZA1g0vVKReD5Mik00DJLjMFcS";
         }
-        public string CreateCheckoutSession(int id,string plan, int prix)
+        public string CreateCheckoutSession(int id, string plan, int prix, string successUrl, string cancelUrl)
         {
             if (id == 0) return null!;
 
-            // Créer l'élément de ligne avec les informations de l'abonnement
             var lineItem = new SessionLineItemOptions
             {
                 PriceData = new SessionLineItemPriceDataOptions
                 {
-                    UnitAmountDecimal = prix * 100, // Stripe attend l'unité en cents (pas d'unités entières)
+                    UnitAmountDecimal = prix * 100,
                     Currency = "mad",
                     ProductData = new SessionLineItemPriceDataProductDataOptions
                     {
-                        Name = "Abonnement #" + id.ToString(),  // Ajout du nom de l'abonnement avec ID
+                        Name = "Abonnement #" + id.ToString(),
                         Description = $"Abonnement pour Plan {plan}"
                     }
                 },
-                Quantity = 1 // On suppose qu'un utilisateur ne peut acheter qu'un seul abonnement à la fois
+                Quantity = 1
             };
 
-            // Configuration de la session de paiement
             var options = new SessionCreateOptions
             {
                 PaymentMethodTypes = new List<string> { "card" },
-                LineItems = new List<SessionLineItemOptions> { lineItem }, // Liste contenant un seul abonnement
-                Mode = "payment", // Mode de paiement (pas abonnement dans ce cas)
-                SuccessUrl = $"https://localhost:7134/success?abonnementId={id}", // URL de succès avec le paramètre ID
-                CancelUrl = "https://localhost:7134/", // URL de retour en cas d'annulation
+                LineItems = new List<SessionLineItemOptions> { lineItem },
+                Mode = "payment",
+                SuccessUrl = successUrl,
+                CancelUrl = cancelUrl,
             };
 
-            // Création de la session de paiement via Stripe
             var service = new SessionService();
-            Session session = service.Create(options);
-
-            // Retourne l'URL de la session pour rediriger l'utilisateur vers Stripe Checkout
+            var session = service.Create(options);
             return session.Url;
         }
+
+
 
 
 

@@ -70,7 +70,7 @@
                                 if (!seeAll && count == 2) break;
                                 <li class="mt-24">
                                     <div class="d-flex align-items-start gap-8 flex-xs-row flex-column">
-                                        <img src="assets/images/thumbs/mentor-img1.png" alt="" class="w-48 h-48 rounded-circle object-fit-cover flex-shrink-0">
+                                        <img src="@(cv.Utilisateur.imgProfile?? "assets/images/thumbs/user-img.png")" alt="" class="w-48 h-48 rounded-circle object-fit-cover flex-shrink-0">
                                         <div class="">
                                             <div class="flex-align flex-wrap gap-8">
                                                 <h6 class="text-15 fw-bold mb-0">@cv.Utilisateur.UserName</h6>
