@@ -409,6 +409,21 @@
         }
     }
 
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(UserName))
+        {
+            // Validate if UserName exists in AllUsers
+            var userExists = AllUsers.Any(u => u.User.UserName == UserName);
+        
+            if (!userExists)
+            {
+                // Redirect to a default route or handle invalid UserName
+                NavigationManager.NavigateTo("/Messages");
+            }
+        }
+    }
+
     private async Task SendMessage()
     {
         if (!string.IsNullOrWhiteSpace(CurrentMessage))
