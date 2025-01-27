@@ -118,7 +118,7 @@
                         </div>
                     </div>
                 }
-                
+
             </div>
             <!-- Top Course Start -->
             <div class="card mt-24">
@@ -156,7 +156,7 @@
                 </div>
             </div>
             <!-- Top Course End -->
-           
+
         </div>
         <div class="col-lg-3">
             <!-- Calendar Start -->
@@ -196,10 +196,12 @@
             <!-- Assignment End -->
             <div class="card mt-24">
                 <div class="card-body">
-                    <h4 class="mb-2">@TotalEvaluations+</h4>
-                    <span class="text-gray-600">Total Evaluation</span>
+                    <h4 class="mb-2">@MoyenEvaluations+</h4>
+                    <span class="text-gray-600">Moyen d'Evaluations</span>
                     <div class="flex-between gap-8 mt-16">
-                        <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-purple-600 text-white text-2xl"> <i class="ph-fill ph-graduation-cap"></i></span>
+                        <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-purple-600 text-white text-2xl">
+                            <i class="ph-fill ph-star"></i>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -228,6 +230,7 @@
     private int TotalCours;
     private int TotalEtudiants;
     private double TotalEvaluations;
+    private double MoyenEvaluations;
     private string? ErrorMessage;
     private string sortOption = "evaluation"; // Variable to hold the selected sorting option
     private int[] MonthlyJoindStudents { get; set; } = new int[12];
@@ -265,6 +268,8 @@
                     TotalCours = stats.totalCours;
                     TotalEtudiants = stats.totalEtudiants;
                     TotalEvaluations = stats.totalEvaluations;
+                    MoyenEvaluations = (double)TotalEvaluations / TotalCours;
+
                 }
                 else
                 {
