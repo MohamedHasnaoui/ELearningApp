@@ -78,12 +78,6 @@
                                 <button class="nav-link" id="pills-plan-tab" onclick="setActiveTab('pills-plan')" data-bs-toggle="pill" data-bs-target="#pills-plan" type="button" role="tab" aria-controls="pills-plan" aria-selected="false">Plan</button>
                             </li>
                         }
-                        @if (!isAdmin && !isEnseignant)
-                        {
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-billing-tab" onclick="setActiveTab('pills-billing')" data-bs-toggle="pill" data-bs-target="#pills-billing" type="button" role="tab" aria-controls="pills-billing" aria-selected="false">Facturation</button>
-                            </li>
-                        }
                     </ul>
                 </div>
 
@@ -230,12 +224,6 @@
                 <!-- Plan Tab Start -->
                 <PlanTab />
                 <!-- Plan Tab End -->
-            }
-            @if (!isAdmin && !isEnseignant)
-            {
-                <!-- Billing Tab Start -->
-                <Billing />
-                <!-- Billing Tab End -->
             }
 
         </div>

@@ -269,6 +269,8 @@ builder.Services.AddScoped<IMentorRatingService, MentorRatingService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddTransient<IRatingService, RatingService>();
 builder.Services.AddSingleton<IMessageHub, MessageHub>();
+builder.Services.AddScoped<IEventService, EventService>();
+
 
 //AbonnementService
 builder.Services.AddHttpClient();
