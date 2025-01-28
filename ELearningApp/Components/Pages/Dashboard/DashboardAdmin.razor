@@ -214,8 +214,8 @@
     private int TotaleUser { get; set; }
     private int TotaleStudents { get; set; }
     private int TotaleMentors { get; set; }
-    private float PercentageStudents { get; set; } = 0;
-    private float PercentageMentors { get; set; } = 0;
+    private float PercentageStudents { get; set; } = 0.0f;
+    private float PercentageMentors { get; set; } = 0.0f;
     private float[] PercentageUsers { get; set; } = new float[] { 0.0f, 0.0f };
     private int[] MonthlyJoindStudents { get; set; } = new int[12];
     private int[] MonthlyJoindMentors { get; set; } = new int[12];
@@ -258,7 +258,7 @@
         TodayJoindMentors = await EnseignantService.GetRegistrationsBy2HourIntervalsAsync();
         MonthlyDayJoindStudents = await EtudiantService.GetDailyRegistrationsAsync();
         MonthlyDayJoindMentors = await EnseignantService.GetDailyRegistrationsAsync();
-        if (TotaleUser != 0)
+        if ((TotaleStudents + TotaleMentors) != 0)
         {
             PercentageStudents = (float)Math.Round(((float)TotaleStudents / (TotaleStudents + TotaleMentors)) * 100, 2);
             PercentageMentors = (float)Math.Round(((float)TotaleMentors / (TotaleStudents + TotaleMentors)) * 100, 2);
