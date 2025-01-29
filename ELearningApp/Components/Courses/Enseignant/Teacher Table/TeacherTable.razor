@@ -147,7 +147,7 @@
                                         @if (!isEnseignant)
                                         {
                                             <button type="button" @onclick="() => ToggleFollow(enseignant.Id)"
-                                                    class="follow-btn py-2 px-8 flex-align gap-4 text-13 fw-medium text-white border border-white rounded-pill position-absolute inset-block-start-0 inset-inline-end-0 mt-8 me-8 transition-1 @((followStatus.ContainsKey(enseignant.Id) && followStatus[enseignant.Id]) ? "active" : "")">
+                                            class="follow-btn py-2 px-8 flex-align gap-4 text-13 fw-medium text-white border border-white rounded-pill position-absolute inset-block-start-0 inset-inline-end-0 mt-8 me-8 transition-1 @((followStatus.ContainsKey(enseignant.Id) && followStatus[enseignant.Id]) ? "active" : "")">
                                                 <i class="ph ph-plus d-flex"></i>
                                                 <span class="text">@GetFollowText(enseignant.Id)</span>
                                             </button>
@@ -174,7 +174,7 @@
                                             </div>
                                             <div class="flex-align gap-4">
                                                 <span class="text-15 fw-normal text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
-                                                <span class="text-13 fw-normal text-gray-600">@Rating[enseignant.Id]</span>
+                                                <span class="text-13 fw-normal text-gray-600">@Rating[enseignant.Id].ToString("0.0")</span>
                                                 <span class="text-13 fw-normal text-gray-600">(@RatingCounts[enseignant.Id] Avis)</span>
                                             </div>
                                         </div>
@@ -254,14 +254,34 @@
             TotalCount = result.TotalCount;
             pageNbs = (TotalCount - 1) / PageSize + 1;
             CurrentPage = pageNumber;
+
             foreach (var mentor in enseignants)
             {
+                var stats = await EnseignantService.GetEnseignantStatsAsync(mentor.Id);
+
+                if (stats != default)
+                {
+                    var TotalCoursRated = stats.ratedCourses;
+                    var TotalEvaluations = stats.totalEvaluations;
+                    double MoyenEvaluations = 0.0;
+
+                    if (TotalCoursRated != 0)
+                    {
+                        MoyenEvaluations = (double)TotalEvaluations / TotalCoursRated;
+                    }
+                    Rating[mentor.Id] = MoyenEvaluations;
+                    RatingCounts[mentor.Id] = stats.totaleRating;
+                }
+                else{
+                    Rating[mentor.Id] = 0;
+                    RatingCounts[mentor.Id] = 0;
+                }
                 var count = await CoursService.GetAllCoursByEnseignantAsync(mentor.Id);
                 courseCounts[mentor.Id] = count.Count();
-                var count2 = await MentorRatingService.GetAverageRatingForMentorAsync(mentor.Id);
-                Rating[mentor.Id] = count2;
-                var count3 = await MentorRatingService.GetRatingsByMentorIdAsync(mentor.Id);
-                RatingCounts[mentor.Id] = count3.Count();
+                // var count2 = await MentorRatingService.GetAverageRatingForMentorAsync(mentor.Id);
+                // Rating[mentor.Id] = count2;
+                // var count3 = await MentorRatingService.GetRatingsByMentorIdAsync(mentor.Id);
+                // RatingCounts[mentor.Id] = count3.Count();
             }
         }
         catch (Exception ex)

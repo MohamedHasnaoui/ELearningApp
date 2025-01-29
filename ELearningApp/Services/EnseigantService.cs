@@ -15,7 +15,7 @@ namespace ELearningApp.Services
             _context = context;
         }
 
-        public async Task<(int totalCours, int totalEtudiants, double totalEvaluations)> GetEnseignantStatsAsync(string enseignantId)
+        public async Task<(int totalCours, int totalEtudiants, double totalEvaluations,int ratedCourses,int totaleRating)> GetEnseignantStatsAsync(string enseignantId)
         {
             var cours = await _context.Cours
                 .Include(c => c.sections)
@@ -24,15 +24,19 @@ namespace ELearningApp.Services
 
             int totalCours = cours.Count;
 
+            var ratedCourses = cours.Where(c => c.Evaluation > 0).Select(c => c.Id).ToList();
+            var totaleRating = _context.CoursCommences
+                .Where(cc => ratedCourses.Contains(cc.CoursId))
+                .ToList().Count;
+
             int totalEtudiants = await _context.CoursCommences
                 .Where(cc => cours.Select(c => c.Id).Contains(cc.CoursId))
                 .Select(cc => cc.EtudiantId)
-                .Distinct()
                 .CountAsync();
 
             double totalEvaluations = cours.Sum(c => c.Evaluation);
 
-            return (totalCours, totalEtudiants, totalEvaluations);
+            return (totalCours, totalEtudiants, totalEvaluations, ratedCourses.Count, totaleRating);
         }
         public async Task<int[]> GetDailyRegistrationsAsync()
         {

@@ -10,7 +10,7 @@ namespace ELearningApp.IServices
         Task<int[]> GetMonthlyMentorsRegistrationsAsync();
         Task<List<Enseignant>> GetAllEnseignantsAsync();
         Task<PaginatedResult2<Enseignant>> GetPaginatedEnseignantsAsync(int pageNumber, int pageSize);
-        Task<(int totalCours, int totalEtudiants, double totalEvaluations)> GetEnseignantStatsAsync(string enseignantId);
+        Task<(int totalCours, int totalEtudiants, double totalEvaluations, int ratedCourses, int totaleRating)> GetEnseignantStatsAsync(string enseignantId);
 
         Task<Enseignant?> GetEnseignantByIdAsync(string enseignantId);
         Task<Enseignant?> CreateEnseignantAsync(Enseignant enseignant, string password);
