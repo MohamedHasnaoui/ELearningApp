@@ -196,7 +196,7 @@
             <!-- Assignment End -->
             <div class="card mt-24">
                 <div class="card-body">
-                    <h4 class="mb-2">@MoyenEvaluations+</h4>
+                    <h4 class="mb-2">@MoyenEvaluations.ToString("0.0")+</h4>
                     <span class="text-gray-600">Moyen d'Evaluations</span>
                     <div class="flex-between gap-8 mt-16">
                         <span class="flex-shrink-0 w-48 h-48 flex-center rounded-circle bg-purple-600 text-white text-2xl">
@@ -265,7 +265,7 @@
 
                 if (stats != default) // Vérification correcte pour un tuple
                 {
-                    TotalCours = stats.totalCours;
+                    TotalCours = stats.ratedCourses;
                     TotalEtudiants = stats.totalEtudiants;
                     TotalEvaluations = stats.totalEvaluations;
                     MoyenEvaluations = (double)TotalEvaluations / TotalCours;
