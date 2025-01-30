@@ -7,8 +7,8 @@ namespace ELearningApp.Services
 {
     public class EmailSender : IEmailSender
     {
-        private readonly string _emailSender = "simo.moustfi75@gmail.com";
-        private readonly string _password = "kgdj qmxh qezw gupw"; 
+        private readonly string _emailSender = "helpdesk.elearningapp@gmail.com";
+        private readonly string _password = "pdyh dpib wibh jfxd"; 
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
