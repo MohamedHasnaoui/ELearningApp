@@ -117,7 +117,7 @@ namespace ELearningApp.Services
 
             // Fetch the students for the requested page
             var items = await _context.Enseignants
-                .OrderBy(e => e.FormalUserName) // Optional: Order by a column (adjust as needed)
+                .OrderByDescending(e => e.CoursCrees.Count()) // Optional: Order by a column (adjust as needed)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
