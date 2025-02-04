@@ -230,7 +230,7 @@
     private int TotalCours;
     private int TotalEtudiants;
     private double TotalEvaluations;
-    private double MoyenEvaluations;
+    private double MoyenEvaluations=0;
     private string? ErrorMessage;
     private string sortOption = "evaluation"; // Variable to hold the selected sorting option
     private int[] MonthlyJoindStudents { get; set; } = new int[12];
@@ -268,7 +268,9 @@
                     TotalCours = stats.ratedCourses;
                     TotalEtudiants = stats.totalEtudiants;
                     TotalEvaluations = stats.totalEvaluations;
-                    MoyenEvaluations = (double)TotalEvaluations / TotalCours;
+                    if (TotalEvaluations != null && TotalCours!=0){
+                        MoyenEvaluations = (double)TotalEvaluations / TotalCours;
+                    }
 
                 }
                 else

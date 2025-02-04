@@ -377,7 +377,7 @@
             {
                 await HubConnection.SendAsync("MarkAsSeen", CurrentUserId, TargetUserId);
                 // Console.WriteLine($"11111111111111111111 from {AuthenticatedUser.FormalUserName}");
-                Messages.Add(new Message { SenderId = senderId, ReceiverId = receiverId, Content = message });
+                Messages.Add(new Message { SenderId = senderId, ReceiverId = receiverId, Content = message,Sender=TargetUser });
                 var index = Users.FindIndex(u => u.User.Id == senderId);
                 if (index != -1)
                 {

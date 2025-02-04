@@ -3,7 +3,7 @@
 @inject NavigationManager Navigation
 @inject ICloudinaryService CloudinaryService
 @rendermode InteractiveServer
-
+<PageTitle>Les Posts</PageTitle>
 @page "/allPosts"
 
 <div class="card m-5 p-5">
@@ -48,8 +48,8 @@
                             }
                             @if (post.EnseignantId == EnseignantId)
                             {
-                                <button class="btn btn-danger position-absolute top-0  mt-2" style="right:10px" @onclick="() => DeletePost(post.Id)">
-                                    <i class="bi bi-trash"></i>
+                                <button class="btn  position-absolute top-0 end-0 mt-2" style="right:10px" @onclick="() => DeletePost(post.Id)">
+                                    <i class="bi bi-trash" style="color: red;"></i>
                                 </button>
                             }
                         </div>

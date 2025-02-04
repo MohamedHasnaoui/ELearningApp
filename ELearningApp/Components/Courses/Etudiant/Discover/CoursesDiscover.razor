@@ -3,7 +3,7 @@
 @inject ICategoryCoursService CategoryCoursService
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
-<PageTitle>Discover</PageTitle>
+<PageTitle>Découvrir</PageTitle>
 
 <div class="dashboard-body">
     <!-- Breadcrumb Start -->
@@ -43,7 +43,7 @@
             <div class="row g-20">
                 @foreach (var c in Courses)
                 {
-                    <DiscCoursCard ensName="@c.Enseignant.UserName" ensImage="@c.Enseignant.imgProfile" categoryStyle="@categoryStyle[count++%5]" coursimg="@c.CoursImg" coursId="@c.Id" Category="@c.Category.Name" CoursTitle="@c.Nom" Duree="@c.FormatDuration()" Rating="@c.Evaluation" />
+                    <DiscCoursCard ensName="@c.Enseignant.FormalUserName" ensImage="@c.Enseignant.imgProfile" categoryStyle="@categoryStyle[count++%5]" coursimg="@c.CoursImg" coursId="@c.Id" Category="@c.Category.Name" CoursTitle="@c.Nom" Duree="@c.FormatDuration()" Rating="@c.Evaluation" />
                 }
             </div>
             <div class="flex-between flex-wrap gap-8 mt-20">
@@ -73,7 +73,7 @@
     private string SearchQuery = string.Empty;
     protected override async Task OnInitializedAsync()
     {
-        Courses = await CourService.GetAllAsync(pageNumber, 9);
+        Courses = await CourService.GetAllAsync(pageNumber, 8);
         nbPages = await CourService.CountCourses();
         nbPages = (nbPages - 1) / 9 + 1;
         categories = await CategoryCoursService.GetAllCategoriesAsync();
@@ -111,13 +111,13 @@
         {
             if (categId != 0)
             {
-                Courses = await CourService.SearchCoursesByTitleAndCategoryIdAsync(SearchQuery, categId, pageNumber, 9);
+                Courses = await CourService.SearchCoursesByTitleAndCategoryIdAsync(SearchQuery, categId, pageNumber, 8);
                 nbPages = await CourService.CountCoursesByTitleAndCategoryIdAsync(SearchQuery, categId);
                 nbPages = (nbPages - 1) / 9 + 1;
             }
             else
             {
-                Courses = await CourService.SearchCoursesByTitleAsync(SearchQuery, pageNumber, 9);
+                Courses = await CourService.SearchCoursesByTitleAsync(SearchQuery, pageNumber, 8);
                 nbPages = await CourService.CountCoursesByTitleAsync(SearchQuery);
                 nbPages = (nbPages - 1) / 9 + 1;
             }
@@ -126,13 +126,13 @@
         {
             if (categId != 0)
             {
-                Courses = await CourService.GetCoursByCategoryIdAsync(categId, pageNumber, 9);
+                Courses = await CourService.GetCoursByCategoryIdAsync(categId, pageNumber, 8);
                 nbPages = await CourService.CountByCategoryIdAsync(categId);
                 nbPages = (nbPages - 1) / 9 + 1;
             }
             else
             {
-                Courses = await CourService.GetAllAsync(pageNumber, 9);
+                Courses = await CourService.GetAllAsync(pageNumber, 8);
                 nbPages = await CourService.CountCourses();
                 nbPages = (nbPages - 1) / 9 + 1;
             }

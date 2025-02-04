@@ -58,7 +58,7 @@
     [Parameter] public string ensImage { get; set; }
     public int nbsection;
     private string coursUrl;
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         await Task.Delay(100);
         nbsection = await SectionService.CountSectionsByCourseIdAsync(coursId.Value);
